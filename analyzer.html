@@ -89,6 +89,101 @@ select:focus,input:focus{border-color:var(--green)}
   .top{height:42px}.topSection{flex-basis:72px}.cardSection{flex-basis:60px}.actionSection{flex-basis:92px}
   .slot{width:33px;height:41px}.seat input{height:24px}.seg button{height:28px}
 }
+
+/* 手機優先：緊湊座位、固定操作列、原生觸控尺寸 */
+.quickBet{display:flex;align-items:center;gap:5px;margin:0 0 6px;min-width:0}
+.quickBet[hidden]{display:none}
+.quickBet span{color:#c6e2d2;font-size:10px;flex:1;white-space:nowrap}
+.quickBet button{min-width:29px;height:32px;border:1px solid #407759;border-radius:8px;background:#183c2a;color:#c9f6dc;font-size:11px;font-weight:800}
+.seatQuick{border:1px solid #376449;border-radius:6px;background:#113121;color:#83eab3;min-width:22px;min-height:22px;padding:0;font-weight:900}
+.seat.editing{border-color:var(--gold);box-shadow:0 0 0 1px #ffd07155}
+.potPreview{padding:5px 2px 0;color:#9ed9b7;text-align:center;font-size:10px;font-weight:700}
+.sheetSub{font-size:10px;color:var(--muted);display:block;font-weight:500;margin-top:2px}
+.rangeDetails{margin:8px 0}.rangeDetails summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:9px 11px;background:#102131;border:1px solid #35516a;border-radius:10px;color:#aad1f7;font-size:11px;font-weight:800}
+.rangeDetails summary::-webkit-details-marker{display:none}.rangeDetails[open] summary span{transform:rotate(180deg)}
+.resultScroll{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:620px){
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  .app{height:100dvh;min-height:0;padding:0 9px max(8px,env(safe-area-inset-bottom,0px))}
+  .top{height:50px;gap:7px;flex:0 0 auto}
+  .brand b{font-size:15px}.brand small{font-size:9px}
+  .back{width:37px;height:37px}.newhand{height:35px;font-size:11px;padding:0 9px;flex-shrink:0}
+  .workspace{gap:7px;margin-top:7px;flex:1;min-height:0}
+  .section{padding:8px;border-radius:13px;min-width:0}
+  .topSection,.cardSection,.actionSection{flex:0 0 auto}
+  .seg{gap:5px}.seg button{height:35px;border-radius:9px;font-size:11px}
+  .quick{grid-template-columns:1fr .96fr 1.05fr;gap:6px;margin-top:7px}
+  .quick label{display:block;font-size:9px;margin-bottom:3px}
+  .quick select,.quick input{height:36px;min-width:0;font-size:12px;padding:0 7px}
+  #pot{color:var(--green);font-weight:900;background:#0a2216}
+  .cardsArea{grid-template-columns:auto minmax(0,1fr);gap:9px}
+  .cardGroup label{font-size:10px;margin-bottom:5px;color:#b5d4c3}
+  .cardsLine{gap:4px}.slot{width:clamp(30px,8.8vw,40px);height:49px;font-size:15px;border-radius:8px}
+  .seatSection{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+  .seatSection::-webkit-scrollbar{display:none}
+  .seatSection h2{display:block;font-size:11px;color:#b9dcc9;margin:0 0 6px}
+  .seats{height:auto;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:auto;align-content:start;gap:5px}
+  .seats[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .seat{min-width:0;min-height:88px;padding:6px 5px;gap:3px;border-radius:11px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .seat.hero{background:#122c20;border-color:#5cdb9a}
+  .seat:has(.seatOn:not(:checked)):not(.hero){opacity:.65}
+  .seat:focus-within{border-color:var(--gold)}
+  .seatName{gap:3px}.seatName .toggle{gap:3px;min-width:0}
+  .seatName b{font-size:12px;white-space:nowrap;letter-spacing:-.03em}
+  .seatName span{font-size:9px;margin-left:auto;white-space:nowrap}
+  .toggle input{width:16px;height:16px;flex:0 0 auto;accent-color:var(--green)}
+  .seat label{display:block;font-size:9px;color:#9db6a8;letter-spacing:-.02em;text-overflow:clip}
+  .seat input{height:34px;min-width:0;padding:0 4px;border-radius:8px;font-size:13px;font-weight:700;text-align:center}
+  .seatQuick{min-width:22px;min-height:24px}
+  .actionSection{padding:7px 8px 8px;margin-top:auto}
+  .advanced{gap:5px;grid-template-columns:1fr .74fr 1.24fr}
+  .advanced label{display:none}.advanced select{height:34px;padding:0 5px;font-size:11px}
+  .potPreview{padding:5px 0 1px;font-size:10px}
+  .actionsBar{margin-top:6px;display:block}
+  .analyze{height:48px;width:100%;font-size:16px;letter-spacing:.02em;border-radius:12px;box-shadow:0 6px 20px #37d6891a}
+  .analyze:disabled{opacity:.5}
+  .hint{display:none}.quickBet{gap:4px;margin-bottom:7px}
+  .quickBet span{font-size:10px;max-width:116px;overflow:hidden;text-overflow:ellipsis}
+  .quickBet button{height:34px;min-width:31px}
+  .waitingBar.show{margin:5px 0 0;padding:7px}
+  .waitingText{font-size:11px}.waitingActions button{min-height:34px}
+  .error{position:absolute;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:14px;right:14px;font-size:12px;box-shadow:0 6px 22px #0009}
+  .pickerModal,.result{padding:0 5px max(4px,env(safe-area-inset-bottom,0px))}
+  .pickerModal .sheet{border-radius:20px 20px 13px 13px;padding:13px 12px 16px}
+  .rank,.suit{min-height:45px;font-size:15px}
+  .result .sheet{width:100%;height:min(82dvh,730px);max-height:calc(100dvh - 12px - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;padding:12px 11px 10px;overflow:hidden;border-radius:20px 20px 12px 12px}
+  .result .sheetHead{flex:0 0 auto;margin:0 0 9px;padding:1px 1px 6px;border-bottom:1px solid #214636}
+  .result .sheetHead b{font-size:15px}.result .close{width:36px;height:36px;flex-shrink:0}
+  .resultScroll{flex:1 1 auto;min-height:0;overflow:auto;scrollbar-width:none;padding-right:2px}
+  .resultScroll::-webkit-scrollbar{display:none}
+  .summary{gap:4px}.metric{padding:7px 4px}.metric span{font-size:9px}.metric b{font-size:10px}
+  .flowInfo{font-size:11px;margin-top:7px;padding:7px 9px}
+  .recommend{margin-top:7px;padding:10px 11px;border-radius:12px}
+  .recommend h3{font-size:26px;margin:3px 0}.recommend .size{font-size:12px}
+  .reason{max-height:90px;gap:4px;margin-top:6px}.reason div{font-size:11px;padding:6px 8px}
+  .rangeDetails{margin:7px 0}.rangeDetails summary{min-height:36px}
+  .decision{flex:0 0 auto;position:relative;margin:8px 0 0;padding:10px;border-radius:13px;border:1px solid #5bcf91;background:linear-gradient(135deg,#153825,#0b2417);box-shadow:0 -8px 24px #0004}
+  .decisionTitle{font-size:14px;margin-bottom:4px}.decisionPrompt{font-size:11px;margin-bottom:7px;line-height:1.35}
+  .decisionChoices{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .move{min-height:43px;font-size:13px;padding:7px 2px}
+  .raiseEditor{margin-top:7px}.raiseEditor input{height:40px;font-size:16px}
+  .confirmMove{height:46px;font-size:15px;margin-top:7px;border-radius:10px}
+}
+@media(max-width:620px) and (max-height:710px){
+  .app{padding-left:7px;padding-right:7px}.workspace{gap:5px;margin-top:5px}
+  .top{height:43px}.seg button{height:30px}
+  .quick{margin-top:5px}.quick label{font-size:8px}.quick select,.quick input{height:30px}
+  .section{padding:6px}.slot{height:41px}.cardGroup label{margin-bottom:2px}
+  .seat{min-height:80px;padding:4px 3px}.seat input{height:30px;font-size:12px}
+  .seatSection h2{font-size:10px;margin-bottom:3px}
+  .advanced select{height:30px}.actionSection{padding:6px}.analyze{height:42px}
+  .potPreview{padding-top:4px}.quickBet button{height:30px}
+  .result .sheet{height:min(90dvh,650px)}.reason{max-height:65px}
+}
+@media(min-width:621px){
+  .result .sheet{max-height:calc(100dvh - 28px);display:flex;flex-direction:column;overflow:hidden}
+  .resultScroll{flex:1;min-height:0}.decision{flex:0 0 auto}
+}
 </style>
 </head>
 <body>
