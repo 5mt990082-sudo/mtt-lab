@@ -16,14 +16,14 @@ label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field{d
 .picker{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff0d}.pickerTitle{font-size:11px;color:var(--muted);margin-bottom:8px}.ranks{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.suits{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}.rank,.suit{min-height:38px;border:1px solid #294838;background:#0b1a13;color:var(--text);border-radius:9px;font-weight:900}.rank.on,.suit.on{border-color:var(--green);color:var(--green);background:#143324}.suit.red{color:#ff8d8d}
 .seats{display:grid;gap:7px}.seat{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:end;padding:9px;border:1px solid #ffffff0c;border-radius:13px;background:#09150f}.seat.hero{border-color:#61f2a555;background:#0d2018}.seatName{display:flex;flex-direction:column;gap:4px;align-self:center}.seatName b{font-size:13px}.seatName span{font-size:10px;color:var(--muted)}.seat input{min-height:40px;font-size:15px}.seat label{margin:0 0 3px}.toggle{display:flex;align-items:center;gap:6px}.toggle input{width:18px;height:18px;min-height:0}.heroTag{color:var(--green)!important;font-weight:900}
 .analyze{width:100%;margin-top:14px;border:0;border-radius:14px;background:var(--green);color:#062316;min-height:52px;font-size:16px;font-weight:1000}.analyze:active{transform:translateY(1px)}
-.result{display:none;margin-top:14px}.result.show{display:block}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{padding:11px;border:1px solid var(--line);border-radius:13px;background:#09150f}.metric span{display:block;font-size:10px;color:var(--muted)}.metric b{display:block;margin-top:5px;font-size:14px}.recommend{margin-top:10px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-weight:900}.recommend h3{font-size:26px;margin:6px 0}.recommend .size{color:#e5f4eb;font-weight:900}.reason{margin-top:10px;display:grid;gap:7px}.reason div{padding:10px 12px;border-radius:11px;background:#08140f;color:#b5c9be;font-size:12px;line-height:1.55}.warn{color:#ffd6a0!important;background:#2b1c0b!important}.error{display:none;margin-top:10px;color:#ff9b9b;font-size:12px}.error.show{display:block}
+.result{display:none;margin-top:14px}.result.show{display:block}.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.metric{padding:11px;border:1px solid var(--line);border-radius:13px;background:#09150f}.metric span{display:block;font-size:10px;color:var(--muted)}.metric b{display:block;margin-top:5px;font-size:14px}.recommend{margin-top:10px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-weight:900}.recommend h3{font-size:26px;margin:6px 0}.recommend .size{color:#e5f4eb;font-weight:900}.reason{margin-top:10px;display:grid;gap:7px}.reason div{padding:10px 12px;border-radius:11px;background:#08140f;color:#b5c9be;font-size:12px;line-height:1.55}.warn{color:#ffd6a0!important;background:#2b1c0b!important}.error{display:none;margin-top:10px;color:#ff9b9b;font-size:12px}.error.show{display:block}
 @media(max-width:620px){.section{padding:14px}.summary{grid-template-columns:1fr 1fr}.field3{grid-template-columns:1fr 1fr}.seat{grid-template-columns:68px 1fr 1fr}.ranks{grid-template-columns:repeat(7,1fr)}}
 </style>
 </head>
 <body>
 <div class="app" id="app">
 <header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器</b></div></header>
-<div class="note">這是訓練／賽後複盤工具。第一版使用規則引擎，不是 GTO Solver 精確解；它會把牌力、牌面、SPR、Pot Odds、位置與下注壓力整理成可讀建議。</div>
+<div class="note">2026 實戰案例版：以公開 MTT 教學與手牌案例整理成決策規則，會辨識面對 Open、3-bet、4-bet、下注與 Raise。用途是訓練／賽後複盤，不是 GTO Solver 精確解。</div>
 
 <section class="section">
 <h2>1. 目前街數與底池</h2>
@@ -57,9 +57,10 @@ label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field{d
 
 <section class="section">
 <h2>4. 分析</h2>
-<div class="field">
+<div class="field3">
 <div><label>賽事階段</label><select id="phase"><option value="normal">一般階段</option><option value="bubble">泡沫期</option><option value="ft">決賽桌</option></select></div>
 <div><label>玩家數</label><select id="players"><option>2</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
+<div><label>主要對手傾向</label><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注型</option><option value="aggressive">高侵略型</option></select></div>
 </div>
 <button class="analyze" id="analyze">分析這手牌</button>
 <div class="error" id="error"></div>
@@ -69,6 +70,7 @@ label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field{d
 <div class="metric"><span>牌面類型</span><b id="mBoard">—</b></div>
 <div class="metric"><span>SPR</span><b id="mSpr">—</b></div>
 <div class="metric"><span>Pot Odds</span><b id="mOdds">—</b></div>
+<div class="metric"><span>動作脈絡</span><b id="mContext">—</b></div>
 </div>
 <div class="recommend">
 <small>訓練建議</small>
@@ -164,6 +166,88 @@ function estimateDrawEq(d,street){
 }
 function fmt(n){return Number.isFinite(n)?n.toFixed(2):"—"}
 
+function inferContext(st,heroBet,maxBet){
+ if(maxBet<=heroBet+0.05){
+   if(st==="preflop") return heroBet>1.05?"你目前是主動方":"尚未面對加注";
+   return "目前沒有下注壓力";
+ }
+ if(st==="preflop"){
+   if(heroBet<=1.05)return "面對 Open";
+   if(heroBet<=3.6)return "Open 後面對 3-bet";
+   if(heroBet<=10.5)return "3-bet 後面對 4-bet";
+   return "面對再加注";
+ }
+ return heroBet>0.05?"你下注後被 Raise":"面對下注";
+}
+
+function preflopProfile(hole){
+ const h=hole.map(parse), a=h[0],b=h[1], hi=Math.max(a.v,b.v),lo=Math.min(a.v,b.v),pair=a.v===b.v,suited=a.s===b.s;
+ const ace=hi===14, broad=hi>=12&&lo>=10;
+ let tier=5;
+ if(pair&&hi>=12 || ace&&lo>=13) tier=1;
+ else if(pair&&hi>=10 || ace&&lo>=11 || suited&&broad) tier=2;
+ else if(pair&&hi>=7 || ace&&lo>=9 || suited&&hi>=11&&lo>=9) tier=3;
+ else if(ace&&suited || suited&&hi>=9&&lo>=7 || hi===13&&lo>=10) tier=4;
+ return{tier,pair,suited,hi,lo,ace,broad};
+}
+
+function practicalDecision(o){
+ const p=preflopProfile(o.hole), late=["CO","BTN","SB"].includes(o.villainPos), early=["UTG","HJ"].includes(o.villainPos);
+ const covered=o.villainStack>o.heroStack+0.5, icm=o.phase!=="normal", tight=o.tendency==="tight"||o.tendency==="passive", loose=o.tendency==="loose"||o.tendency==="aggressive";
+ let out=null,why=[];
+ if(o.street==="preflop"&&o.context==="面對 Open"){
+   if(o.eff<=15){
+     if(p.tier<=2){out={action:"再加注全下",size:"以有效籌碼全下"};why.push("15BB 左右，強牌面對開池通常不需要保留太多翻後空間。")}
+     else if(p.tier===3&&late&&!icm){out={action:o.heroPos==="BB"?"跟注／全下混合":"全下偏多",size:"晚位開池較寬，可用短碼再偷盲"};why.push("對手從晚位開池時，短碼反擊範圍可以比面對前位更寬。")}
+     else if(o.heroPos==="BB"&&o.call/o.pot<.32){out={action:"跟注偏多",size:"利用大盲價格看翻牌"};why.push("大盲已投入盲注且關閉行動時，可比其他位置多保留跟注。")}
+     else {out={action:"棄牌偏多",size:"保留較強牌再全下"};why.push("短碼但對手開池位置較早時，邊界牌需要明顯收緊。")}
+   } else if(o.eff<=30){
+     if(p.tier===1){out={action:"3-bet 價值／全下",size:early?"小 3-bet 後準備跟全下":"3-bet 全下或小 3-bet"};why.push("20–30BB 強頂端牌要主動建立底池。")}
+     else if(p.tier===2){out={action:late?"3-bet／全下混合":"跟注或小 3-bet",size:late?"面對晚位可提高再加注比例":"面對前位降低再加注頻率"};why.push("同樣一手牌，對晚位寬開池比對前位強範圍更能積極反擊。")}
+     else if(p.tier===3&&o.ip){out={action:"跟注為主",size:"利用位置實現權益"};why.push("中等強度牌在有位置時，跟注通常比把自己推進高變異底池更自然。")}
+     else if(p.tier===4&&late&&!tight){out={action:"3-bet bluff／棄牌混合",size:o.eff<=25?"小 3-bet 或部分全下":"約 2.5–3× Open"};why.push("對晚位寬範圍，可使用帶阻擋牌或同花可玩性的牌做再加注。")}
+   } else {
+     if(p.tier===1)out={action:"3-bet 價值",size:o.ip?"約 3× Open":"約 3.5–4× Open"};
+     else if(p.tier<=3&&o.ip)out={action:"跟注／3-bet 混合",size:"位置好時保留跟注範圍"};
+   }
+ }
+ if(o.street==="preflop"&&o.context==="Open 後面對 3-bet"){
+   if(o.eff<=25){
+     if(p.tier===1){out={action:"4-bet 全下",size:"以有效籌碼全下"};why.push("20–25BB 的頂端範圍通常不需要怕把籌碼投入。")}
+     else if(p.tier===2){
+       if(icm&&covered){out={action:"跟注／棄牌混合",size:"ICM 下避免把所有強但非頂端牌自動打光"};why.push("被覆蓋且有 ICM 壓力時，跟注與棄牌的價值上升。")}
+       else{out={action:o.ip?"跟注／全下混合":"全下偏多",size:"小 3-bet 可保留跟注；尺度大時偏全下"};why.push("20–25BB 面對小 3-bet 不是純 shove/fold，仍會存在跟注分支。")}
+     } else if(p.tier===3&&o.ip&&o.call/o.pot<=.35&&!tight){out={action:"跟注少量",size:"只對小 3-bet 與較寬範圍防守"};why.push("有位置、價格好、對手範圍不過緊時，部分中強牌可以跟注。")}
+     else{out={action:"棄牌偏多",size:"避免用邊界牌在低 SPR 對強範圍硬撐"};why.push("短碼被 3-bet 後，邊界牌的翻後容錯很低。")}
+   } else {
+     if(p.tier===1)out={action:"4-bet 價值",size:"約 2.1–2.3× 對手 3-bet 或視深度全下"};
+     else if(p.tier===2)out={action:o.ip?"跟注／4-bet 混合":"跟注偏少、4-bet 或棄牌",size:"位置越差越少平跟"};
+     else if(p.tier===3&&o.ip)out={action:"跟注小尺度 3-bet",size:"尺度過大則棄牌比例提高"};
+     else out={action:"棄牌偏多",size:"保留阻擋牌型少量 4-bet bluff"};
+   }
+ }
+ if(o.street==="preflop"&&(o.context==="3-bet 後面對 4-bet"||o.context==="面對再加注")){
+   if(p.tier===1){out={action:"全下／跟全下",size:"頂端範圍繼續"};why.push("面對 4-bet 時，繼續範圍必須非常集中。")}
+   else if(p.tier===2&&!tight&&o.eff<=25&&!icm){out={action:"全下或棄牌",size:"不建議平跟把 SPR 壓到極低"};why.push("短碼面對 4-bet，多數策略會高度壓縮。")}
+   else{out={action:"棄牌偏多",size:"特別是偏緊對手或早位對早位"};why.push("實戰中 4-bet 的價值密度通常很高，非頂端牌不要過度英雄式防守。")}
+ }
+ if(o.street!=="preflop"&&o.context==="你下注後被 Raise"){
+   if(o.made.score>=3){out={action:o.spr<=2?"再加注全下／跟全下":"再加注或跟注",size:o.tex.wet>=2?"濕面偏快打":"乾面可保留跟注"};why.push("三條以上面對 Raise 通常屬於明確繼續區。")}
+   else if(o.made.score===2){out={action:o.spr<=1.8?"全下／跟注":"跟注偏多",size:o.tex.wet>=2?"濕面提高再加注比例":"乾面避免把較弱價值牌全趕走"};why.push("兩對在低 SPR 或高濕度牌面承諾度很高。")}
+   else if(["頂對","超對"].includes(o.handName)){
+     if(o.tendency==="tight"&&o.pressure>.55){out={action:"跟注與棄牌混合，偏棄牌",size:"偏緊對手的大 Raise 要尊重"};why.push("頂對面對緊手的大型 Raise 常被價值區壓制。")}
+     else if(o.pressure<=.45&&o.spr>2){out={action:"跟注",size:"不要把一對自動升級成再加注"};why.push("中小型 Raise 下，一對常靠跟注保留對手 bluff。")}
+     else{out={action:o.spr<=1.2?"跟注／全下評估":"跟注偏多，避免再加注",size:"尺度越大、街數越晚越謹慎"};why.push("頂對/超對通常不是天然的再加注價值牌。")}
+   } else if(o.draw.combo){out={action:o.street==="flop"&&o.spr<=3?"跟注／再加注全下混合":"跟注",size:"強複合抽牌可把 fold equity 納入考量"};why.push("強抽牌被 Raise 時仍有大量權益，但要看剩餘街數。")}
+   else if(o.draw.flush||o.draw.oesd){out={action:o.odds<=o.drawEq?"跟注":"棄牌偏多",size:"用 Pot Odds 對照粗估抽牌權益"};why.push("純抽牌不應只因為『有聽牌』就自動跟任何尺度。")}
+   else{out={action:"棄牌偏多",size:"沒有強成手或可靠抽牌時，不要對 Raise 過度防守"};why.push("被 Raise 後對手範圍通常比單純下注更集中。")}
+ }
+ if(!out)return null;
+ if(loose&&["跟注為主","跟注","跟注偏多"].some(x=>out.action.includes(x)))why.push("對手偏鬆／高侵略，可比基準多保留 bluff-catch。");
+ if(tight&&out.action.includes("3-bet bluff")){out.action="跟注或棄牌";out.size="降低 bluff 3-bet";why.push("對手偏緊時，減少沒有足夠棄牌率的再加注 bluff。")}
+ return{action:out.action,size:out.size,why};
+}
+
 function analyze(){
  hideError();const need=requiredBoard(), hole=[cards.h0,cards.h1], board=[cards.b0,cards.b1,cards.b2,cards.b3,cards.b4].slice(0,need);
  if(hole.some(x=>!x)){showError("請先選完整兩張手牌。");return}
@@ -172,7 +256,7 @@ function analyze(){
  const opp=seats.filter(x=>x.on&&!x.hero), activeOpp=opp.map(x=>x.pos);if(!opp.length){showError("至少要保留一位仍在牌局的對手。");return}
  const maxBet=Math.max(...opp.map(x=>x.bet),0), call=Math.max(0,maxBet-hero.bet), bettor=opp.filter(x=>x.bet===maxBet&&maxBet>hero.bet).sort((a,b)=>a.stack-b.stack)[0]||opp[0];
  const eff=Math.min(hero.stack,bettor.stack), spr=pot>0?eff/pot:0, odds=call>0?call/(pot+call):0, all=hole.concat(board), made=madeHand(all), handName=pairQuality(hole,board,made), draw=drawInfo(all,hole,board), tex=boardTexture(board), ip=inPosition(heroPos,activeOpp);
- const phase=document.getElementById("phase").value, role=document.getElementById("role").value;
+ const phase=document.getElementById("phase").value, role=document.getElementById("role").value, tendency=document.getElementById("tendency").value, context=inferContext(street,hero.bet,maxBet);
  let action="",size="",why=[];
  const pressure=call/pot, strong=made.score>=2, monster=made.score>=4, topish=["頂對","超對"].includes(handName), weakPair=made.score===1&&!topish;
  if(street==="preflop"){
@@ -195,11 +279,18 @@ function analyze(){
    else if(weakPair){action="過牌為主";size=ip&&tex.wet<=1?"可少量 25–33%":"控制底池";why.push("中弱一對主要目標是實現攤牌價值。")}
    else{action=role==="aggressor"&&tex.wet<=1?"小注或過牌":"過牌";size=role==="aggressor"&&tex.wet<=1?"25–33% 底池":"不必強行詐唬";why.push("空氣牌要依範圍優勢選擇性下注。")}
  }
- if(ip)why.push("你目前相對仍在牌局的對手有位置，較容易控制底池與實現權益。");else why.push("你目前位置較差，邊界牌與大型底池要更謹慎。");
+ const practical=practicalDecision({
+   street,hole,heroPos,villainPos:bettor.pos,villainStack:bettor.stack,heroStack:hero.stack,eff,context,phase,tendency,call,pot,odds,spr,
+   made,handName,draw,drawEq:estimateDrawEq(draw,street),tex,ip,role,pressure
+ });
+ if(practical){action=practical.action;size=practical.size;why=practical.why.concat(why);}
+ if(context==="Open 後面對 3-bet")why.push("2026 實戰基準：20–25BB 面對小型 3-bet 仍可能保留 Call / Jam，而不是只剩純全下或棄牌。");
+ if(context==="你下注後被 Raise")why.push("實戰基準：被 Raise 後先把一對、兩對以上與強抽牌分開，不把『有牌』直接等同於再加注。");
+  if(ip)why.push("你目前相對仍在牌局的對手有位置，較容易控制底池與實現權益。");else why.push("你目前位置較差，邊界牌與大型底池要更謹慎。");
  if(spr<=1.5)why.push("SPR 很低，強一對以上的承諾度會提高。");else if(spr>=5)why.push("SPR 偏高，單一對牌不宜太早把大量籌碼放進底池。");
  if(phase==="bubble"||phase==="ft")why.push("目前屬於 "+(phase==="bubble"?"泡沫期":"決賽桌")+"；真正 ICM 決策還需要獎金結構與全桌籌碼分布，本版只做提醒，不假裝精確計算。");
  document.getElementById("mHand").textContent=handName+(draw.combo?"＋複合抽牌":draw.flush?"＋聽花":draw.oesd?"＋兩頭順":draw.gut?"＋卡順":"");
- document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";
+ document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";document.getElementById("mContext").textContent=context;
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
  document.getElementById("result").classList.add("show");document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"})
 }
