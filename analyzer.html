@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07120d">
+<meta name="theme-color" content="#06100c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>牌局分析器｜MTT LAB</title>
 <style>
 :root{--panel:#0d1b15;--panel2:#09150f;--line:#1d3b2e;--text:#f2f7f4;--muted:#89a698;--green:#61f2a5;--red:#ff8585;--gold:#ffd071}
@@ -188,7 +190,7 @@ select:focus,input:focus{border-color:var(--green)}
 </head>
 <body>
 <div class="app" id="app">
-<header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器・單螢幕版</b></div><button class="newhand" id="newHand">新的一局</button></header>
+<header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器</b></div><button class="newhand" id="newHand">新的一局</button></header>
 
 <div class="workspace">
 <section class="section topSection">
@@ -218,12 +220,14 @@ select:focus,input:focus{border-color:var(--green)}
 
 <section class="section actionSection">
 <h2>分析設定</h2>
+<div class="quickBet" id="quickBet" hidden><span id="quickBetTitle">快速設定新增 BB</span><button type="button" data-quick="2">2</button><button type="button" data-quick="3">3</button><button type="button" data-quick="6">6</button><button type="button" data-quick="10">10</button><button type="button" data-quick="0">清除</button></div>
 <div class="advanced">
 <div><label>賽事階段</label><select id="phase"><option value="normal">一般階段</option><option value="bubble">泡沫期</option><option value="ft">決賽桌</option></select></div>
 <div><label>玩家數</label><select id="players"><option>2</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
 <div><label>主要對手</label><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注</option><option value="aggressive">高侵略</option></select></div>
 </div>
-<div class="actionsBar"><button class="analyze" id="analyze">分析這手牌</button><div class="hint">輸入對手本次新增投入 BB，再分析；分析不會直接記帳。</div></div>
+<div class="potPreview" id="potPreview" aria-live="polite">目前已入池 2BB</div>
+<div class="actionsBar"><button class="analyze" id="analyze">分析我該怎麼做 →</button><div class="hint">輸入對手本次新增投入 BB，再分析；分析不會直接記帳。</div></div>
 <div id="waitingBar" class="waitingBar"><div id="waitingText" class="waitingText"></div><div class="waitingActions"><button type="button" id="oppCalls">對手跟注</button><button type="button" id="oppFolds">對手棄牌</button><button type="button" id="streetDone">確認本街結束</button></div></div>
 <div class="error" id="error"></div>
 </section>
@@ -240,7 +244,8 @@ select:focus,input:focus{border-color:var(--green)}
 
 <div class="result" id="result" role="dialog" aria-modal="true">
 <div class="sheet">
-<div class="sheetHead"><b>分析結果</b><button class="close" id="closeResult">×</button></div>
+<div class="sheetHead"><b>決策建議 <span class="sheetSub">先看建議，再確認你的實際動作</span></b><button class="close" id="closeResult" aria-label="關閉分析">×</button></div>
+<div class="resultScroll">
 <div class="summary">
 <div class="metric"><span>牌力</span><b id="mHand">—</b></div>
 <div class="metric"><span>牌面</span><b id="mBoard">—</b></div>
@@ -250,7 +255,8 @@ select:focus,input:focus{border-color:var(--green)}
 </div>
 <div class="flowInfo" id="flowInfo">尚未分析｜目前總底池 2BB</div>
 <div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
-<div class="decision" id="decision"><div class="decisionTitle">輪到你｜實際採取什麼動作？</div><div id="decisionPrompt" class="decisionPrompt"></div><div class="decisionChoices"><button type="button" class="move" data-move="fold">棄牌</button><button type="button" class="move" data-move="check">過牌</button><button type="button" class="move" data-move="call">跟注</button><button type="button" class="move" data-move="raise">下注／加注</button></div><div id="raiseEditor" class="raiseEditor" hidden><label for="raiseTo">下注／加注至本街累計 BB（不是再增加多少）</label><input type="number" id="raiseTo" min="0.1" step="0.1" inputmode="decimal"></div><div id="decisionError" class="decisionError" role="alert"></div><button type="button" class="confirmMove" id="confirmMove" disabled>確認我的實際動作</button></div>
+
+<details class="rangeDetails" id="rangeDetails"><summary>展開對手 Range 與進階資訊 <span>⌄</span></summary>
 <div class="rangeBox">
 <b>主要對手可能 Range｜啟發式估計</b>
 <div class="rangeText" id="oppRange">尚未分析</div>
@@ -259,6 +265,9 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="rangeTrail" id="rangeTrail">尚未建立逐街軌跡</div>
 <div class="rangeMeta"><span id="rangeNarrow">收窄程度 —</span><span>非 Solver 精確頻率</span></div>
 </div>
+</details>
+</div>
+<div class="decision" id="decision"><div class="decisionTitle">輪到你｜實際採取什麼動作？</div><div id="decisionPrompt" class="decisionPrompt"></div><div class="decisionChoices"><button type="button" class="move" data-move="fold">棄牌</button><button type="button" class="move" data-move="check">過牌</button><button type="button" class="move" data-move="call">跟注</button><button type="button" class="move" data-move="raise">下注／加注</button></div><div id="raiseEditor" class="raiseEditor" hidden><label for="raiseTo">下注／加注至本街累計 BB（不是再增加多少）</label><input type="number" id="raiseTo" min="0.1" step="0.1" inputmode="decimal"></div><div id="decisionError" class="decisionError" role="alert"></div><button type="button" class="confirmMove" id="confirmMove" disabled>確認我的實際動作</button></div>
 </div>
 </div>
 <script>
