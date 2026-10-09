@@ -117,7 +117,7 @@ select:focus,input:focus{border-color:var(--green)}
 </section>
 
 <section class="section seatSection">
-<h2>各位置｜剩餘 BB / 本街投入</h2>
+<h2>各位置｜剩餘 BB / 本次新增投入</h2>
 <div class="seats" id="seats"></div>
 </section>
 
@@ -259,7 +259,7 @@ const seatDefaults={
 function renderSeats(){
  const hero=document.getElementById("heroPos").value, box=document.getElementById("seats");box.innerHTML="";
  currentPositions().forEach(p=>{const d=seatDefaults[p]||{on:false,s:30,b:0}, row=document.createElement("div");row.className="seat"+(p===hero?" hero":"");row.dataset.pos=p;
- row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span></div><div><label>剩餘 BB</label><input class="stackIn" type="number" min="0" step="0.1" value="'+d.s+'"></div><div><label>本筆投入 BB</label><input class="betIn" type="number" min="0" step="0.1" value="'+d.b+'"></div>';
+ row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span></div><div><label>剩餘 BB</label><input class="stackIn" type="number" min="0" step="0.1" value="'+d.s+'"></div><div><label>本次新增 BB</label><input class="betIn" type="number" min="0" step="0.1" value="'+d.b+'"></div>';
  box.appendChild(row)
  });
  const bb=box.querySelector('[data-pos="BB"]'); if(bb&&hero!=="BB"){bb.querySelector(".seatOn").checked=true;bb.querySelector(".stackIn").value=25;bb.querySelector(".betIn").value=0}
@@ -544,6 +544,16 @@ function analyze(){
  const pot=Math.max(.1,basePot+addedThisStep);
  const opp=seats.filter(x=>x.on&&!x.hero), activeOpp=opp.map(x=>x.pos);if(!opp.length){showError("至少要保留一位仍在牌局的對手。");return}
  const maxBet=Math.max(...opp.map(x=>(investedThisStreet[x.pos]||0)+x.bet),0), heroBet=(investedThisStreet[heroPos]||0)+hero.bet;
+ // 若上一個動作是你加注，而對手只是跟注或尚未跟足，不應再要求你決策。
+ if(waitingOnOpp&&addedThisStep>0&&maxBet<=heroBet+.001){
+   seats.filter(x=>x.on&&x.bet>0).forEach(x=>deductSeat(x.pos,x.bet));
+   syncPot();resetBetInputs();
+   const all=seatData().filter(x=>x.on);
+   const totals=all.map(x=>investedThisStreet[x.pos]||0);
+   if(Math.max(...totals)-Math.min(...totals)<=.01){advanceAfterRound();if(pendingPicker){pendingPicker=false;openPicker()}}
+   else updateFlowBar("已記錄對手新增投入，仍有玩家未跟足本街最高金額，請繼續等待其動作。");
+   return;
+ }
  const call=Math.max(0,maxBet-heroBet), bettor=opp.filter(x=>(investedThisStreet[x.pos]||0)+x.bet===maxBet&&maxBet>heroBet).sort((a,b)=>a.stack-b.stack)[0]||opp[0];
  const eff=Math.min(hero.stack,bettor.stack), spr=pot>0?eff/pot:0, odds=call>0?call/(pot+call):0, all=hole.concat(board), made=madeHand(all), handName=pairQuality(hole,board,made), draw=drawInfo(all,hole,board), tex=boardTexture(board), ip=inPosition(heroPos,activeOpp);
  const phase=document.getElementById("phase").value, role=document.getElementById("role").value, tendency=document.getElementById("tendency").value, context=inferContext(street,heroBet,maxBet);
@@ -586,7 +596,7 @@ function analyze(){
  const beforeRange=JSON.parse(JSON.stringify(rangeMemory));
  const evolvedProfile=evolveRangeProfile(opponentRangeProfile(rangeInput),bettor.pos,street,context);
  const nextRange=JSON.parse(JSON.stringify(rangeMemory));
- rangeMemory=beforeRange;renderRangeProfile(evolvedProfile);
+ rangeMemory=beforeRange;renderRangeProfile(evolvedProfile);document.getElementById("rangeTrail").textContent=nextRange.history.length?"Range 軌跡｜"+nextRange.history.map(x=>x.label).join(" → "):"尚未建立逐街軌跡";
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
  pendingDecision={street,heroPos,seats,call,pot,basePot,addedThisStep,maxBet,heroBet,heroStack:hero.stack,opponentCount:opp.length,bettorPos:bettor.pos,ip,rangeNext:nextRange};
  selectedMove=null;
@@ -683,6 +693,8 @@ document.getElementById("oppFolds").addEventListener("click",()=>{
 document.getElementById("streetDone").addEventListener("click",()=>{
  if(!waitingOnOpp)return;
  if(Array.from(document.querySelectorAll(".betIn")).some(x=>Number(x.value)>0)){showError("仍有未入帳的下注，請先分析／記錄。");return}
+ const totals=seatData().filter(x=>x.on).map(x=>investedThisStreet[x.pos]||0);
+ if(totals.length&&Math.max(...totals)-Math.min(...totals)>.01){showError("本街仍有玩家尚未跟足最高下注，請先記錄其跟注或棄牌。");return}
  if(!confirm("確定本街所有在局玩家的動作都已完成？"))return;
  advanceAfterRound();
  if(pendingPicker){pendingPicker=false;openPicker()}
