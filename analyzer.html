@@ -52,7 +52,7 @@ select:focus,input:focus{border-color:var(--green)}
 .rangeBox{margin-top:6px;padding:9px 10px;border:1px solid #38506b;border-radius:10px;background:#0a1520;color:#c9def5;font-size:10px;line-height:1.45}.rangeBox b{color:#8cc8ff}
 .rangeText{margin:4px 0 7px;color:#b9cde1}
 .rangeBars{display:grid;gap:4px}.rangeRow{display:grid;grid-template-columns:62px 1fr 30px;gap:6px;align-items:center}.rangeRow span{font-size:9px;color:#a9bed1}.rangeTrack{height:6px;background:#122334;border-radius:99px;overflow:hidden}.rangeFill{height:100%;background:#8cc8ff;border-radius:99px}.rangePct{text-align:right;font-size:9px;color:#dbeaff}
-.rangeMeta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;padding-top:6px;border-top:1px solid #ffffff12;font-size:9px;color:#8fa8bc}.rangeExamples{margin-top:5px;color:#d8e7f6;font-size:9px}
+.rangeMeta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;padding-top:6px;border-top:1px solid #ffffff12;font-size:9px;color:#8fa8bc}.rangeExamples{margin-top:5px;color:#d8e7f6;font-size:9px}.rangeTrail{margin-top:6px;padding:6px 8px;border-radius:8px;background:#0d2030;color:#9fc4e6;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .recommend{margin-top:8px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-size:9px;font-weight:900}.recommend h3{font-size:24px;margin:4px 0}.recommend .size{font-size:12px;color:#e5f4eb;font-weight:900}.reason{margin-top:7px;display:grid;gap:5px;max-height:132px;overflow:auto}.reason div{padding:7px 9px;border-radius:9px;background:#08140f;color:#b5c9be;font-size:10px;line-height:1.4}.warn{color:#ffd6a0!important;background:#2b1c0b!important}
 @media(max-width:620px){
   html,body{height:100%;overflow:hidden}
@@ -144,6 +144,7 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="rangeText" id="oppRange">尚未分析</div>
 <div class="rangeBars" id="rangeBars"></div>
 <div class="rangeExamples" id="rangeExamples"></div>
+<div class="rangeTrail" id="rangeTrail">尚未建立逐街軌跡</div>
 <div class="rangeMeta"><span id="rangeNarrow">收窄程度 —</span><span>非 Solver 精確頻率</span></div>
 </div>
 <div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
@@ -161,6 +162,7 @@ const tableLayouts={
 };
 function currentPositions(){return tableLayouts[Number(document.getElementById("players").value)]||tableLayouts[6]}
 let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=2, pendingPicker=false;
+let rangeMemory={villain:null,profile:null,history:[]};
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
 
@@ -204,6 +206,8 @@ function resetBetInputs(){document.querySelectorAll(".betIn").forEach(i=>i.value
 function newHand(){
  runningPot=2;document.getElementById("pot").value="2";
  Object.keys(cards).forEach(k=>cards[k]=null);
+ rangeMemory={villain:null,profile:null,history:[]};
+ document.getElementById("rangeTrail").textContent="尚未建立逐街軌跡";
  resetBetInputs();setStreet("preflop",false);activeSlot="h0";renderCardSlots();
  document.getElementById("result").classList.remove("show");hideError();
 }
@@ -387,6 +391,48 @@ function opponentRangeProfile(o){
  return p;
 }
 
+function normalizeProfile(p){
+ let vals=["value","show","draw","bluff"].map(k=>Math.max(0,Math.round(p[k]||0)));
+ let total=vals.reduce((a,b)=>a+b,0);
+ if(total<=0)vals=[25,25,25,25],total=100;
+ vals=vals.map(v=>Math.round(v/total*100));
+ let diff=100-vals.reduce((a,b)=>a+b,0);vals[1]+=diff;
+ p.value=vals[0];p.show=vals[1];p.draw=vals[2];p.bluff=vals[3];
+ return p;
+}
+function evolveRangeProfile(current,villainPos,streetName,context){
+ let merged;
+ if(!rangeMemory.profile||rangeMemory.villain!==villainPos||streetName==="preflop"){
+   merged=normalizeProfile({...current});
+   rangeMemory={villain:villainPos,profile:merged,history:[]};
+ }else{
+   const prev=rangeMemory.profile;
+   const w=streetName==="flop"?.58:streetName==="turn"?.68:.78;
+   merged={
+     value:prev.value*(1-w)+current.value*w,
+     show:prev.show*(1-w)+current.show*w,
+     draw:prev.draw*(1-w)+current.draw*w,
+     bluff:prev.bluff*(1-w)+current.bluff*w,
+     narrow:Math.min(97,Math.max(current.narrow,prev.narrow+(context.includes("Raise")?14:context.includes("下注")?9:6))),
+     examples:current.examples
+   };
+   merged=normalizeProfile(merged);
+   rangeMemory.profile=merged;
+ }
+ const label=streetLabel(streetName)+" "+Math.round(merged.narrow)+"%";
+ if(!rangeMemory.history.length||rangeMemory.history[rangeMemory.history.length-1].street!==streetName){
+   rangeMemory.history.push({street:streetName,label});
+ }else{
+   rangeMemory.history[rangeMemory.history.length-1]={street:streetName,label};
+ }
+ rangeMemory.history=rangeMemory.history.slice(-4);
+ return merged;
+}
+function renderRangeTrail(){
+ const el=document.getElementById("rangeTrail");
+ el.textContent=rangeMemory.history.length?"Range 軌跡｜"+rangeMemory.history.map(x=>x.label).join(" → "):"尚未建立逐街軌跡";
+}
+
 function renderRangeProfile(p){
  const rows=[
    ["強價值",p.value],
@@ -401,7 +447,8 @@ function renderRangeProfile(p){
    box.appendChild(row);
  });
  document.getElementById("rangeExamples").textContent=p.examples;
- document.getElementById("rangeNarrow").textContent="Range 收窄程度 "+p.narrow+"%";
+ document.getElementById("rangeNarrow").textContent="Range 收窄程度 "+Math.round(p.narrow)+"%";
+ renderRangeTrail();
 }
 
 function practicalDecision(o){
@@ -508,7 +555,8 @@ function analyze(){
  document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";document.getElementById("mContext").textContent=context;
  const rangeInput={street,context,villainPos:bettor.pos,tendency,tex,eff};
  document.getElementById("oppRange").textContent=opponentRangeEstimate(rangeInput);
- renderRangeProfile(opponentRangeProfile(rangeInput));
+ const evolvedProfile=evolveRangeProfile(opponentRangeProfile(rangeInput),bettor.pos,street,context);
+ renderRangeProfile(evolvedProfile);
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
  const analyzedStreet=street, nxt=nextStreet(analyzedStreet);
  runningPot=pot;document.getElementById("pot").value=runningPot.toFixed(1).replace(/\.0$/,"");
