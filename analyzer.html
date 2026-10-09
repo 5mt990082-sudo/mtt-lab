@@ -6,82 +6,135 @@
 <meta name="theme-color" content="#07120d">
 <title>牌局分析器｜MTT LAB</title>
 <style>
-:root{--bg:#06100c;--panel:#0d1b15;--panel2:#11251c;--line:#1d3b2e;--text:#f2f7f4;--muted:#89a698;--green:#61f2a5;--red:#ff7878;--gold:#ffd071;--blue:#8cc8ff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#153d2d 0,#07120d 42%,#040806 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif;min-height:100vh}
-.app{max-width:920px;margin:auto;padding:0 14px 52px}.top{min-height:70px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #ffffff0c}.back{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:20px}.brand small{display:block;color:var(--green);font-size:10px;font-weight:900;letter-spacing:.12em}.brand b{font-size:19px}
-.note{margin:14px 0 0;padding:12px 14px;border:1px solid #ffd07136;border-radius:14px;background:#ffd0710b;color:#d9c89b;font-size:12px;line-height:1.55}
-.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}.section h2{font-size:17px;margin:0 0 12px}.sub{font-size:12px;color:var(--muted);margin:-4px 0 12px;line-height:1.5}.row{display:flex;gap:8px;flex-wrap:wrap}.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.seg button,.chip{min-height:42px;border:1px solid #294838;background:#102119;color:#dceae3;border-radius:11px;font-weight:800}.seg button.on,.chip.on{background:#173b2a;border-color:var(--green);color:var(--green)}
-label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}select,input{width:100%;min-height:44px;border:1px solid #294838;background:#09150f;color:var(--text);border-radius:11px;padding:0 10px;font-size:16px;outline:none}input:focus,select:focus{border-color:var(--green)}
-.cardsLine{display:flex;gap:8px;flex-wrap:wrap}.slot{width:54px;height:72px;border-radius:10px;border:1px dashed #40614f;background:#0a1711;color:#799889;font-weight:900;font-size:18px}.slot.filled{background:#f7fbf8;color:#111;border-style:solid;border-color:#dce8e1}.slot.red{color:#ce3e3e}.slot.active{outline:2px solid var(--green);outline-offset:2px}.boardGap{width:8px}
-.picker{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff0d}.pickerTitle{font-size:11px;color:var(--muted);margin-bottom:8px}.ranks{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.suits{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}.rank,.suit{min-height:38px;border:1px solid #294838;background:#0b1a13;color:var(--text);border-radius:9px;font-weight:900}.rank.on,.suit.on{border-color:var(--green);color:var(--green);background:#143324}.suit.red{color:#ff8d8d}
-.seats{display:grid;gap:7px}.seat{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:end;padding:9px;border:1px solid #ffffff0c;border-radius:13px;background:#09150f}.seat.hero{border-color:#61f2a555;background:#0d2018}.seatName{display:flex;flex-direction:column;gap:4px;align-self:center}.seatName b{font-size:13px}.seatName span{font-size:10px;color:var(--muted)}.seat input{min-height:40px;font-size:15px}.seat label{margin:0 0 3px}.toggle{display:flex;align-items:center;gap:6px}.toggle input{width:18px;height:18px;min-height:0}.heroTag{color:var(--green)!important;font-weight:900}
-.analyze{width:100%;margin-top:14px;border:0;border-radius:14px;background:var(--green);color:#062316;min-height:52px;font-size:16px;font-weight:1000}.analyze:active{transform:translateY(1px)}
-.result{display:none;margin-top:14px}.result.show{display:block}.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.metric{padding:11px;border:1px solid var(--line);border-radius:13px;background:#09150f}.metric span{display:block;font-size:10px;color:var(--muted)}.metric b{display:block;margin-top:5px;font-size:14px}.recommend{margin-top:10px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-weight:900}.recommend h3{font-size:26px;margin:6px 0}.recommend .size{color:#e5f4eb;font-weight:900}.reason{margin-top:10px;display:grid;gap:7px}.reason div{padding:10px 12px;border-radius:11px;background:#08140f;color:#b5c9be;font-size:12px;line-height:1.55}.warn{color:#ffd6a0!important;background:#2b1c0b!important}.error{display:none;margin-top:10px;color:#ff9b9b;font-size:12px}.error.show{display:block}
-@media(max-width:620px){.section{padding:14px}.summary{grid-template-columns:1fr 1fr}.field3{grid-template-columns:1fr 1fr}.seat{grid-template-columns:68px 1fr 1fr}.ranks{grid-template-columns:repeat(7,1fr)}}
+:root{--panel:#0d1b15;--panel2:#09150f;--line:#1d3b2e;--text:#f2f7f4;--muted:#89a698;--green:#61f2a5;--red:#ff8585;--gold:#ffd071}
+*{box-sizing:border-box}
+html,body{margin:0;background:#06100c;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+body{background:radial-gradient(circle at 50% -20%,#153d2d 0,#07120d 48%,#040806 100%)}
+button,input,select{font:inherit}
+.app{max-width:920px;margin:auto;padding:0 12px 18px}
+.top{height:54px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #ffffff0c}
+.back{width:38px;height:38px;border:1px solid var(--line);border-radius:11px;background:#0b1912;color:#fff;font-size:20px}
+.brand small{display:block;color:var(--green);font-size:9px;font-weight:900;letter-spacing:.14em}.brand b{font-size:18px}
+.note{margin:8px 0;padding:8px 10px;border:1px solid #ffd0712e;border-radius:10px;background:#ffd0710a;color:#d6c69d;font-size:10px;line-height:1.35}
+.workspace{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:9px}
+.section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:11px;min-width:0}
+.section h2{font-size:13px;margin:0 0 8px}.sub{font-size:10px;color:var(--muted);margin:-2px 0 7px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.seg button{height:34px;border:1px solid #294838;border-radius:9px;background:#102119;color:#dceae3;font-weight:800;font-size:11px}
+.seg button.on{background:#173b2a;border-color:var(--green);color:var(--green)}
+.quick{display:grid;grid-template-columns:1.05fr .8fr .95fr;gap:6px;margin-top:7px}
+label{display:block;font-size:9px;color:var(--muted);margin-bottom:3px}
+select,input{width:100%;height:34px;border:1px solid #294838;background:#09150f;color:var(--text);border-radius:9px;padding:0 7px;font-size:13px;outline:none}
+select:focus,input:focus{border-color:var(--green)}
+.cardsArea{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.cardGroup label{margin-bottom:4px}
+.cardsLine{display:flex;gap:5px;align-items:center;flex-wrap:nowrap}
+.slot{width:42px;height:54px;border-radius:8px;border:1px dashed #40614f;background:#0a1711;color:#799889;font-weight:900;font-size:16px;flex:0 0 auto}
+.slot.filled{background:#f7fbf8;color:#111;border-style:solid;border-color:#dce8e1}.slot.red{color:#ce3e3e}.slot.active{outline:2px solid var(--green);outline-offset:1px}.boardGap{width:2px}
+.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.seat{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px;border:1px solid #ffffff10;border-radius:10px;background:#09150f;min-width:0}
+.seat.hero{border-color:#61f2a566;background:#0d2018}.seatName{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;min-width:0}
+.seatName .toggle{display:flex;gap:4px;align-items:center}.seatName b{font-size:11px}.seatName span{font-size:9px;color:var(--muted)}
+.toggle input{width:14px;height:14px;min-height:0}.seat label{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.seat input{height:30px;font-size:12px;padding:0 5px}.heroTag{color:var(--green)!important;font-weight:900}
+.advanced{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:6px}
+.actionsBar{display:grid;grid-template-columns:1fr 128px;gap:8px;align-items:end}
+.analyze{height:43px;border:0;border-radius:11px;background:var(--green);color:#062316;font-size:14px;font-weight:1000}
+.hint{font-size:9px;color:var(--muted);line-height:1.3}.error{display:none;margin-top:5px;color:#ff9b9b;font-size:10px}.error.show{display:block}
+.pickerModal,.result{display:none;position:fixed;inset:0;z-index:50;background:#020806bb;backdrop-filter:blur(4px);padding:12px;align-items:flex-end;justify-content:center}
+.pickerModal.show,.result.show{display:flex}
+.sheet{width:min(520px,100%);background:#0b1812;border:1px solid #315843;border-radius:20px;padding:14px;box-shadow:0 18px 60px #0008}
+.sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.sheetHead b{font-size:14px}.close{width:34px;height:34px;border-radius:10px;border:1px solid #315843;background:#102119;color:#fff;font-size:18px}
+.ranks{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.suits{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:6px}
+.rank,.suit{height:38px;border:1px solid #294838;background:#0b1a13;color:#fff;border-radius:9px;font-weight:900}.rank.on,.suit.on{border-color:var(--green);color:var(--green);background:#143324}.suit.red{color:#ff8d8d}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.metric{padding:7px;border:1px solid var(--line);border-radius:10px;background:#08140f;min-width:0}.metric span{display:block;font-size:8px;color:var(--muted)}.metric b{display:block;margin-top:3px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recommend{margin-top:8px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-size:9px;font-weight:900}.recommend h3{font-size:24px;margin:4px 0}.recommend .size{font-size:12px;color:#e5f4eb;font-weight:900}.reason{margin-top:7px;display:grid;gap:5px;max-height:132px;overflow:auto}.reason div{padding:7px 9px;border-radius:9px;background:#08140f;color:#b5c9be;font-size:10px;line-height:1.4}.warn{color:#ffd6a0!important;background:#2b1c0b!important}
+@media(max-width:620px){
+  html,body{height:100%;overflow:hidden}
+  .app{height:100dvh;display:flex;flex-direction:column;padding:0 8px 6px}
+  .top{height:46px;flex:0 0 auto}.back{width:34px;height:34px}.brand b{font-size:16px}
+  .note{display:none}
+  .workspace{display:flex;flex-direction:column;gap:6px;margin-top:6px;flex:1;min-height:0}
+  .section{padding:7px;border-radius:12px;margin:0}.section h2{display:none}.sub{display:none}
+  .topSection{flex:0 0 78px}.cardSection{flex:0 0 67px}.seatSection{flex:1;min-height:0}.actionSection{flex:0 0 102px}
+  .seg button{height:30px;font-size:10px}.quick{margin-top:5px}.quick label{display:none}.quick select,.quick input{height:31px;font-size:12px}
+  .cardsArea{grid-template-columns:94px 1fr;gap:8px}.slot{width:36px;height:46px;font-size:14px}.cardGroup label{font-size:8px;margin:0 0 2px}
+  .seats{height:100%;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:4px}.seat{padding:4px;gap:3px}.seat input{height:26px;font-size:11px}.seat label{font-size:7px}.seatName b{font-size:10px}.seatName span{font-size:8px}
+  .advanced{gap:4px}.advanced label{display:none}.advanced select{height:31px;font-size:11px;padding:0 4px}
+  .actionsBar{grid-template-columns:1fr;gap:4px;margin-top:5px}.analyze{height:38px}.hint{display:none}
+  .error{position:absolute;left:10px;right:10px;bottom:6px;background:#351717;padding:7px;border-radius:8px;z-index:20}
+  .pickerModal,.result{padding:8px}.sheet{padding:11px;border-radius:16px}
+  .reason{max-height:118px}
+}
+@media(max-height:700px) and (max-width:620px){
+  .top{height:42px}.topSection{flex-basis:72px}.cardSection{flex-basis:60px}.actionSection{flex-basis:92px}
+  .slot{width:33px;height:41px}.seat input{height:24px}.seg button{height:28px}
+}
 </style>
 </head>
 <body>
 <div class="app" id="app">
-<header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器</b></div></header>
-<div class="note">2026 實戰案例版：以公開 MTT 教學與手牌案例整理成決策規則，會辨識面對 Open、3-bet、4-bet、下注與 Raise。用途是訓練／賽後複盤，不是 GTO Solver 精確解。</div>
+<header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器・單螢幕版</b></div></header>
 
-<section class="section">
-<h2>1. 目前街數與底池</h2>
+<div class="workspace">
+<section class="section topSection">
+<h2>局面</h2>
 <div class="seg" id="streets">
 <button type="button" data-street="preflop">翻牌前</button><button type="button" class="on" data-street="flop">Flop</button><button type="button" data-street="turn">Turn</button><button type="button" data-street="river">River</button>
 </div>
-<div class="field3" style="margin-top:10px">
-<div><label>目前底池 BB（含已投入）</label><input id="pot" type="number" min="0.1" step="0.1" value="5.5"></div>
-<div><label>你的座位</label><select id="heroPos"><option>UTG</option><option>HJ</option><option>CO</option><option selected>BTN</option><option>SB</option><option>BB</option></select></div>
-<div><label>翻牌前角色</label><select id="role"><option value="unknown">不確定</option><option value="aggressor" selected>主動方</option><option value="caller">跟注方</option></select></div>
+<div class="quick">
+<div><label>底池 BB</label><input id="pot" type="number" min="0.1" step="0.1" value="5.5" aria-label="底池 BB"></div>
+<div><label>你的位置</label><select id="heroPos" aria-label="你的位置"><option>UTG</option><option>HJ</option><option>CO</option><option selected>BTN</option><option>SB</option><option>BB</option></select></div>
+<div><label>翻牌前角色</label><select id="role" aria-label="翻牌前角色"><option value="unknown">不確定</option><option value="aggressor" selected>主動方</option><option value="caller">跟注方</option></select></div>
 </div>
 </section>
 
-<section class="section">
-<h2>2. 點選你的手牌與公牌</h2>
-<p class="sub">先點一個卡槽，再選點數與花色。已使用的牌不能重複。</p>
-<div><label>你的手牌</label><div class="cardsLine"><button class="slot active" data-slot="h0">＋</button><button class="slot" data-slot="h1">＋</button></div></div>
-<div style="margin-top:12px"><label>公牌</label><div class="cardsLine" id="boardSlots"><button class="slot" data-slot="b0">＋</button><button class="slot" data-slot="b1">＋</button><button class="slot" data-slot="b2">＋</button><span class="boardGap"></span><button class="slot" data-slot="b3">＋</button><button class="slot" data-slot="b4">＋</button></div></div>
-<div class="picker">
-<div class="pickerTitle">目前選取：<b id="activeName">手牌 1</b></div>
-<div class="ranks" id="ranks"></div>
-<div class="suits" id="suits"></div>
+<section class="section cardSection">
+<h2>手牌與公牌</h2>
+<div class="cardsArea">
+<div class="cardGroup"><label>手牌</label><div class="cardsLine"><button class="slot active" data-slot="h0">＋</button><button class="slot" data-slot="h1">＋</button></div></div>
+<div class="cardGroup"><label>公牌</label><div class="cardsLine" id="boardSlots"><button class="slot" data-slot="b0">＋</button><button class="slot" data-slot="b1">＋</button><button class="slot" data-slot="b2">＋</button><span class="boardGap"></span><button class="slot" data-slot="b3">＋</button><button class="slot" data-slot="b4">＋</button></div></div>
 </div>
 </section>
 
-<section class="section">
-<h2>3. 每個位置的 BB 與本街下注</h2>
-<p class="sub">「剩餘 BB」填目前身後籌碼；「本街投入 BB」填這一街已經放進底池的量。沒參與這手牌的位置把「仍在牌局」取消。</p>
+<section class="section seatSection">
+<h2>各位置｜剩餘 BB / 本街投入</h2>
 <div class="seats" id="seats"></div>
 </section>
 
-<section class="section">
-<h2>4. 分析</h2>
-<div class="field3">
+<section class="section actionSection">
+<h2>分析設定</h2>
+<div class="advanced">
 <div><label>賽事階段</label><select id="phase"><option value="normal">一般階段</option><option value="bubble">泡沫期</option><option value="ft">決賽桌</option></select></div>
 <div><label>玩家數</label><select id="players"><option>2</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
-<div><label>主要對手傾向</label><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注型</option><option value="aggressive">高侵略型</option></select></div>
+<div><label>主要對手</label><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注</option><option value="aggressive">高侵略</option></select></div>
 </div>
-<button class="analyze" id="analyze">分析這手牌</button>
+<div class="actionsBar"><button class="analyze" id="analyze">分析這手牌</button><div class="hint">點牌面開選牌器；取消勾選可排除已棄牌位置。</div></div>
 <div class="error" id="error"></div>
-<div class="result" id="result">
-<div class="summary">
-<div class="metric"><span>目前牌力</span><b id="mHand">—</b></div>
-<div class="metric"><span>牌面類型</span><b id="mBoard">—</b></div>
-<div class="metric"><span>SPR</span><b id="mSpr">—</b></div>
-<div class="metric"><span>Pot Odds</span><b id="mOdds">—</b></div>
-<div class="metric"><span>動作脈絡</span><b id="mContext">—</b></div>
-</div>
-<div class="recommend">
-<small>訓練建議</small>
-<h3 id="recAction">—</h3>
-<div class="size" id="recSize"></div>
-<div class="reason" id="reasons"></div>
-</div>
-</div>
 </section>
 </div>
+</div>
 
+<div class="pickerModal" id="pickerModal" role="dialog" aria-modal="true">
+<div class="sheet">
+<div class="sheetHead"><div>選牌：<b id="activeName">手牌 1</b></div><button class="close" id="closePicker">×</button></div>
+<div class="ranks" id="ranks"></div>
+<div class="suits" id="suits"></div>
+</div>
+</div>
+
+<div class="result" id="result" role="dialog" aria-modal="true">
+<div class="sheet">
+<div class="sheetHead"><b>分析結果</b><button class="close" id="closeResult">×</button></div>
+<div class="summary">
+<div class="metric"><span>牌力</span><b id="mHand">—</b></div>
+<div class="metric"><span>牌面</span><b id="mBoard">—</b></div>
+<div class="metric"><span>SPR</span><b id="mSpr">—</b></div>
+<div class="metric"><span>Pot Odds</span><b id="mOdds">—</b></div>
+<div class="metric"><span>脈絡</span><b id="mContext">—</b></div>
+</div>
+<div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
+</div>
+</div>
 <script>
 (function(){
 const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"], suits=["♠","♥","♦","♣"], pos=["UTG","HJ","CO","BTN","SB","BB"];
@@ -92,6 +145,12 @@ const app=document.getElementById("app");
 document.getElementById("back").addEventListener("click",()=>{location.href="./"});
 document.querySelectorAll("#streets button").forEach(b=>b.addEventListener("click",()=>{street=b.dataset.street;document.querySelectorAll("#streets button").forEach(x=>x.classList.toggle("on",x===b));updateSlots()}));
 document.getElementById("heroPos").addEventListener("change",renderSeats);
+const pickerModal=document.getElementById("pickerModal");
+function openPicker(){pickerModal.classList.add("show");document.getElementById("activeName").textContent=slotName(activeSlot)}
+function closePicker(){pickerModal.classList.remove("show")}
+document.getElementById("closePicker").addEventListener("click",closePicker);
+pickerModal.addEventListener("click",e=>{if(e.target===pickerModal)closePicker()});
+document.getElementById("closeResult").addEventListener("click",()=>document.getElementById("result").classList.remove("show"));
 
 const ranksBox=document.getElementById("ranks"), suitsBox=document.getElementById("suits");
 ranks.forEach(r=>{const b=document.createElement("button");b.type="button";b.className="rank";b.textContent=r;b.addEventListener("click",()=>{pickRank=r;document.querySelectorAll(".rank").forEach(x=>x.classList.toggle("on",x===b));commitPick()});ranksBox.appendChild(b)});
@@ -106,7 +165,7 @@ function nextSlot(){
 function used(card,except){return Object.keys(cards).some(k=>k!==except&&cards[k]===card)}
 function commitPick(){if(!pickRank||!pickSuit)return;const c=pickRank+pickSuit;if(used(c,activeSlot)){showError("這張牌已經被使用。");return}cards[activeSlot]=c;pickRank=null;pickSuit=null;document.querySelectorAll(".rank,.suit").forEach(x=>x.classList.remove("on"));nextSlot();renderCardSlots()}
 function renderCardSlots(){
- document.querySelectorAll(".slot").forEach(el=>{const k=el.dataset.slot, c=cards[k];el.classList.toggle("active",k===activeSlot);el.classList.toggle("filled",!!c);el.classList.toggle("red",!!c&&/[♥♦]/.test(c));el.textContent=c||"＋";el.onclick=()=>{activeSlot=k;renderCardSlots()}});
+ document.querySelectorAll(".slot").forEach(el=>{const k=el.dataset.slot, c=cards[k];el.classList.toggle("active",k===activeSlot);el.classList.toggle("filled",!!c);el.classList.toggle("red",!!c&&/[♥♦]/.test(c));el.textContent=c||"＋";el.onclick=()=>{activeSlot=k;renderCardSlots();openPicker()}});
  document.getElementById("activeName").textContent=slotName(activeSlot)
 }
 function updateSlots(){const need=requiredBoard();["b0","b1","b2","b3","b4"].forEach((k,i)=>{const el=document.querySelector('[data-slot="'+k+'"]');el.style.display=i<need?"":"none";if(i>=need)cards[k]=null});if(need===0&&activeSlot[0]==="b")activeSlot="h0";renderCardSlots()}
@@ -292,7 +351,7 @@ function analyze(){
  document.getElementById("mHand").textContent=handName+(draw.combo?"＋複合抽牌":draw.flush?"＋聽花":draw.oesd?"＋兩頭順":draw.gut?"＋卡順":"");
  document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";document.getElementById("mContext").textContent=context;
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
- document.getElementById("result").classList.add("show");document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"})
+ document.getElementById("result").classList.add("show")
 }
 function showError(t){const e=document.getElementById("error");e.textContent=t;e.classList.add("show")}
 function hideError(){document.getElementById("error").classList.remove("show")}
