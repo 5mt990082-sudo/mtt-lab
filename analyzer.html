@@ -32,8 +32,8 @@ select:focus,input:focus{border-color:var(--green)}
 .cardsLine{display:flex;gap:5px;align-items:center;flex-wrap:nowrap}
 .slot{width:42px;height:54px;border-radius:8px;border:1px dashed #40614f;background:#0a1711;color:#799889;font-weight:900;font-size:16px;flex:0 0 auto}
 .slot.filled{background:#f7fbf8;color:#111;border-style:solid;border-color:#dce8e1}.slot.red{color:#ce3e3e}.slot.active{outline:2px solid var(--green);outline-offset:1px}.boardGap{width:2px}
-.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.seat{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px;border:1px solid #ffffff10;border-radius:10px;background:#09150f;min-width:0}
+.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.seat{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:4px;border:1px solid #ffffff10;border-radius:10px;background:#09150f;min-width:0}
 .seat.hero{border-color:#61f2a566;background:#0d2018}.seatName{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;min-width:0}
 .seatName .toggle{display:flex;gap:4px;align-items:center}.seatName b{font-size:11px}.seatName span{font-size:9px;color:var(--muted)}
 .toggle input{width:14px;height:14px;min-height:0}.seat label{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.seat input{height:30px;font-size:12px;padding:0 5px}.heroTag{color:var(--green)!important;font-weight:900}
@@ -49,6 +49,7 @@ select:focus,input:focus{border-color:var(--green)}
 .rank,.suit{height:38px;border:1px solid #294838;background:#0b1a13;color:#fff;border-radius:9px;font-weight:900}.rank.on,.suit.on{border-color:var(--green);color:var(--green);background:#143324}.suit.red{color:#ff8d8d}
 .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.metric{padding:7px;border:1px solid var(--line);border-radius:10px;background:#08140f;min-width:0}.metric span{display:block;font-size:8px;color:var(--muted)}.metric b{display:block;margin-top:3px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .flowInfo{margin-top:8px;padding:8px 10px;border:1px solid #315843;border-radius:10px;background:#0b1c14;color:#cbe6d8;font-size:11px;line-height:1.5}
+.rangeBox{margin-top:6px;padding:9px 10px;border:1px solid #38506b;border-radius:10px;background:#0a1520;color:#c9def5;font-size:10px;line-height:1.45}.rangeBox b{color:#8cc8ff}
 .recommend{margin-top:8px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-size:9px;font-weight:900}.recommend h3{font-size:24px;margin:4px 0}.recommend .size{font-size:12px;color:#e5f4eb;font-weight:900}.reason{margin-top:7px;display:grid;gap:5px;max-height:132px;overflow:auto}.reason div{padding:7px 9px;border-radius:9px;background:#08140f;color:#b5c9be;font-size:10px;line-height:1.4}.warn{color:#ffd6a0!important;background:#2b1c0b!important}
 @media(max-width:620px){
   html,body{height:100%;overflow:hidden}
@@ -60,7 +61,7 @@ select:focus,input:focus{border-color:var(--green)}
   .topSection{flex:0 0 78px}.cardSection{flex:0 0 67px}.seatSection{flex:1;min-height:0}.actionSection{flex:0 0 102px}
   .seg button{height:30px;font-size:10px}.quick{margin-top:5px}.quick label{display:none}.quick select,.quick input{height:31px;font-size:12px}
   .cardsArea{grid-template-columns:94px 1fr;gap:8px}.slot{width:36px;height:46px;font-size:14px}.cardGroup label{font-size:8px;margin:0 0 2px}
-  .seats{height:100%;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:4px}.seat{padding:4px;gap:3px}.seat input{height:26px;font-size:11px}.seat label{font-size:7px}.seatName b{font-size:10px}.seatName span{font-size:8px}
+  .seats{height:100%;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(0,1fr);gap:3px}.seat{padding:3px;gap:2px}.seat input{height:23px;font-size:10px}.seat label{font-size:7px}.seatName b{font-size:9px}.seatName span{font-size:7px}
   .advanced{gap:4px}.advanced label{display:none}.advanced select{height:31px;font-size:11px;padding:0 4px}
   .actionsBar{grid-template-columns:1fr;gap:4px;margin-top:5px}.analyze{height:38px}.hint{display:none}
   .error{position:absolute;left:10px;right:10px;bottom:6px;background:#351717;padding:7px;border-radius:8px;z-index:20}
@@ -135,12 +136,21 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="metric"><span>脈絡</span><b id="mContext">—</b></div>
 </div>
 <div class="flowInfo" id="flowInfo">本筆入池 +0BB｜目前總底池 2BB</div>
+<div class="rangeBox"><b>主要對手可能 Range</b><div id="oppRange">尚未分析</div></div>
 <div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
 </div>
 </div>
 <script>
 (function(){
-const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"], suits=["♠","♥","♦","♣"], pos=["UTG","HJ","CO","BTN","SB","BB"];
+const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"], suits=["♠","♥","♦","♣"];
+const tableLayouts={
+  2:["BTN","BB"],
+  6:["UTG","HJ","CO","BTN","SB","BB"],
+  7:["UTG","LJ","HJ","CO","BTN","SB","BB"],
+  8:["UTG","UTG+1","LJ","HJ","CO","BTN","SB","BB"],
+  9:["UTG","UTG+1","UTG+2","LJ","HJ","CO","BTN","SB","BB"]
+};
+function currentPositions(){return tableLayouts[Number(document.getElementById("players").value)]||tableLayouts[6]}
 let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=2, pendingPicker=false;
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
@@ -148,6 +158,13 @@ const app=document.getElementById("app");
 document.getElementById("back").addEventListener("click",()=>{location.href="./"});
 document.querySelectorAll("#streets button").forEach(b=>b.addEventListener("click",()=>setStreet(b.dataset.street,false)));
 document.getElementById("heroPos").addEventListener("change",renderSeats);
+document.getElementById("players").addEventListener("change",()=>{syncHeroPositions();renderSeats()});
+function syncHeroPositions(){
+ const sel=document.getElementById("heroPos"), current=sel.value, positions=currentPositions();
+ sel.innerHTML="";
+ positions.forEach(p=>{const o=document.createElement("option");o.value=p;o.textContent=p;sel.appendChild(o)});
+ sel.value=positions.includes(current)?current:(positions.includes("BTN")?"BTN":positions[0]);
+}
 const pickerModal=document.getElementById("pickerModal");
 function openPicker(){pickerModal.classList.add("show");document.getElementById("activeName").textContent=slotName(activeSlot)}
 function closePicker(){pickerModal.classList.remove("show")}
@@ -197,10 +214,14 @@ function renderCardSlots(){
 }
 function updateSlots(){const need=requiredBoard();["b0","b1","b2","b3","b4"].forEach((k,i)=>{const el=document.querySelector('[data-slot="'+k+'"]');el.style.display=i<need?"":"none";if(i>=need)cards[k]=null});if(need===0&&activeSlot[0]==="b")activeSlot="h0";renderCardSlots()}
 
-const seatDefaults={UTG:{on:false,s:30,b:0},HJ:{on:false,s:28,b:0},CO:{on:false,s:30,b:0},BTN:{on:true,s:25,b:0},SB:{on:false,s:18,b:0},BB:{on:true,s:25,b:0}};
+const seatDefaults={
+ "UTG":{on:false,s:30,b:0},"UTG+1":{on:false,s:30,b:0},"UTG+2":{on:false,s:30,b:0},
+ "LJ":{on:false,s:30,b:0},"HJ":{on:false,s:28,b:0},"CO":{on:false,s:30,b:0},
+ "BTN":{on:true,s:25,b:0},"SB":{on:false,s:18,b:0},"BB":{on:true,s:25,b:0}
+};
 function renderSeats(){
  const hero=document.getElementById("heroPos").value, box=document.getElementById("seats");box.innerHTML="";
- pos.forEach(p=>{const d=seatDefaults[p], row=document.createElement("div");row.className="seat"+(p===hero?" hero":"");row.dataset.pos=p;
+ currentPositions().forEach(p=>{const d=seatDefaults[p]||{on:false,s:30,b:0}, row=document.createElement("div");row.className="seat"+(p===hero?" hero":"");row.dataset.pos=p;
  row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span></div><div><label>剩餘 BB</label><input class="stackIn" type="number" min="0" step="0.1" value="'+d.s+'"></div><div><label>本筆投入 BB</label><input class="betIn" type="number" min="0" step="0.1" value="'+d.b+'"></div>';
  box.appendChild(row)
  });
@@ -245,7 +266,9 @@ function boardTexture(board){
  let parts=[];if(paired)parts.push("疊牌");if(mono)parts.push(maxSuit>=4?"四同花以上":"三同花");else if(two)parts.push("兩張同花");if(connected)parts.push("連接");if(!parts.length)parts.push("乾燥");return{label:parts.join("＋"),wet,paired,mono,two,connected}
 }
 function inPosition(hero,activeOpp){
- const order={SB:0,BB:1,UTG:2,HJ:3,CO:4,BTN:5};if(!activeOpp.length)return true;return activeOpp.every(p=>order[hero]>order[p])
+ const order={"SB":0,"BB":1,"UTG":2,"UTG+1":3,"UTG+2":4,"LJ":5,"HJ":6,"CO":7,"BTN":8};
+ if(!activeOpp.length)return true;
+ return activeOpp.every(p=>(order[hero]??0)>(order[p]??0))
 }
 function estimateDrawEq(d,street){
  let outs=d.combo?15:d.flush?9:d.oesd?8:d.gut?4:0;if(!outs)return 0;return Math.min(.65,outs*(street==="flop"?4:2)/100)
@@ -277,8 +300,41 @@ function preflopProfile(hole){
  return{tier,pair,suited,hi,lo,ace,broad};
 }
 
+function opponentRangeEstimate(o){
+ const tight=o.tendency==="tight"||o.tendency==="passive", loose=o.tendency==="loose"||o.tendency==="aggressive";
+ const early=["UTG","UTG+1","UTG+2","LJ","HJ"].includes(o.villainPos), late=["CO","BTN","SB"].includes(o.villainPos);
+ let main="", note="";
+ if(o.street==="preflop"){
+   if(o.context==="面對 Open"){
+     if(early) main=tight?"99+、AJs+、AQo+、KQs 為核心":"66+、ATs+、AJo+、KQs/KJs/QJs，少量同花連張";
+     else if(late) main=loose?"22+、多數 Ax、K8s+、Q9s+、J9s+、T8s+/98s，Broadway":"44+、A8s+、ATo+、KTs+、QTs+、JTs";
+     else main="中小口袋對、Ax、Broadway、同花連張";
+   } else if(o.context==="Open 後面對 3-bet"){
+     main=tight?"JJ+、AQs+、AK 為核心":"TT+、AQ+、KQs；部分 A5s/A4s 作阻擋牌 3-bet";
+   } else if(o.context==="3-bet 後面對 4-bet"||o.context==="面對再加注"){
+     main=tight?"QQ+、AK，高度價值集中":"JJ+、AQs+、AK；較高侵略玩家可能混 A5s/A4s";
+   } else {
+     main=early?"前位未加注範圍通常較緊":"晚位未加注範圍可包含大量 Ax、Broadway、同花牌與口袋對";
+   }
+ } else {
+   if(o.context==="你下注後被 Raise"){
+     if(o.tex.wet>=2) main="價值：兩對/Set/強頂對；半詐唬：強聽花、OESD、複合抽牌";
+     else main=tight?"價值密度高：Set、兩對、強頂對；純 bluff 較少":"Set/兩對/頂對強踢腳，加上少量後門或 blocker bluff";
+   } else if(o.context==="面對下注"){
+     if(o.tex.mono) main="成花、帶高花阻擋牌的一對、Set/兩對，以及少量空氣 bluff";
+     else if(o.tex.wet>=2) main="頂對+、Pair+Draw、聽花、兩頭順、強高牌半詐唬";
+     else main="頂對/中對/口袋對、少量 Set，以及範圍優勢下的小注 bluff";
+   } else {
+     main="尚未有明確攻擊動作，Range 仍較寬；需等下注/跟注/加注後再縮窄";
+   }
+ }
+ if(loose)note="對手偏鬆/侵略，弱 Ax、弱 Broadway 與 bluff 組合要保留更多。";
+ if(tight)note="對手偏緊/被動，強價值牌權重提高，純 bluff 權重降低。";
+ return o.villainPos+"｜"+main+(note?"；"+note:"");
+}
+
 function practicalDecision(o){
- const p=preflopProfile(o.hole), late=["CO","BTN","SB"].includes(o.villainPos), early=["UTG","HJ"].includes(o.villainPos);
+ const p=preflopProfile(o.hole), late=["CO","BTN","SB"].includes(o.villainPos), early=["UTG","UTG+1","UTG+2","LJ","HJ"].includes(o.villainPos);
  const covered=o.villainStack>o.heroStack+0.5, icm=o.phase!=="normal", tight=o.tendency==="tight"||o.tendency==="passive", loose=o.tendency==="loose"||o.tendency==="aggressive";
  let out=null,why=[];
  if(o.street==="preflop"&&o.context==="面對 Open"){
@@ -379,6 +435,7 @@ function analyze(){
  if(phase==="bubble"||phase==="ft")why.push("目前屬於 "+(phase==="bubble"?"泡沫期":"決賽桌")+"；真正 ICM 決策還需要獎金結構與全桌籌碼分布，本版只做提醒，不假裝精確計算。");
  document.getElementById("mHand").textContent=handName+(draw.combo?"＋複合抽牌":draw.flush?"＋聽花":draw.oesd?"＋兩頭順":draw.gut?"＋卡順":"");
  document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";document.getElementById("mContext").textContent=context;
+ document.getElementById("oppRange").textContent=opponentRangeEstimate({street,context,villainPos:bettor.pos,tendency,tex,eff});
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
  const analyzedStreet=street, nxt=nextStreet(analyzedStreet);
  runningPot=pot;document.getElementById("pot").value=runningPot.toFixed(1).replace(/\.0$/,"");
@@ -390,7 +447,7 @@ function analyze(){
 function showError(t){const e=document.getElementById("error");e.textContent=t;e.classList.add("show")}
 function hideError(){document.getElementById("error").classList.remove("show")}
 document.getElementById("analyze").addEventListener("click",analyze);
-renderSeats();setStreet("preflop",false);document.getElementById("pot").value="2";
+syncHeroPositions();renderSeats();setStreet("preflop",false);document.getElementById("pot").value="2";
 })();
 </script>
 </body>
