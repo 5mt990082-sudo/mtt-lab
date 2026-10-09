@@ -186,6 +186,63 @@ select:focus,input:focus{border-color:var(--green)}
   .result .sheet{max-height:calc(100dvh - 28px);display:flex;flex-direction:column;overflow:hidden}
   .resultScroll{flex:1;min-height:0}.decision{flex:0 0 auto}
 }
+
+/* Home-screen Web App repair: keep the header below the iOS status bar. */
+@media(max-width:620px){
+  .app{
+    height:100vh;
+    height:100dvh;
+    padding-top:max(9px,env(safe-area-inset-top,0px));
+    padding-bottom:max(12px,env(safe-area-inset-bottom,0px));
+  }
+  .workspace{min-height:0}
+  .top{min-height:46px}
+  /* Don't draw a massive, empty, stretched seat panel. */
+  .seatSection{
+    flex:0 1 auto;
+    min-height:0;
+    height:auto;
+    max-height:min(44dvh,420px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  .seats{grid-auto-rows:auto;align-content:start}
+  .seat{
+    min-height:0;
+    padding:5px 4px;
+    gap:3px;
+    grid-template-rows:24px auto;
+  }
+  .seatName{min-height:24px}
+  .seatName b{font-size:11px}
+  .seatName span{font-size:8px}
+  .seat label{font-size:8px;margin-bottom:2px}
+  .seat input{height:30px;font-size:12px}
+  /* Before the flop there is no board to choose: reclaim the space. */
+  .cardSection.preflopOnly .cardGroup:nth-child(2){display:none}
+  .cardSection.preflopOnly .cardsArea{display:block}
+  .cardSection.preflopOnly .cardsLine{justify-content:flex-start}
+  .cardSection.preflopOnly{padding-top:7px;padding-bottom:7px}
+  /* The main CTA remains reachable even when the seat list scrolls. */
+  .actionSection{flex-shrink:0;margin-top:auto}
+}
+@media(max-width:620px) and (max-height:740px){
+  .workspace{gap:5px;margin-top:5px}
+  .top{height:44px;min-height:44px}
+  .topSection{padding:6px}
+  .seg button{height:31px}
+  .quick{margin-top:5px}
+  .quick label{font-size:8px}
+  .quick input,.quick select{height:31px}
+  .slot{height:42px}
+  .seat{padding:3px;grid-template-rows:22px auto}
+  .seatName{min-height:22px}
+  .seat input{height:27px}
+  .seatSection h2{margin-bottom:4px}
+  .actionSection{padding:6px}
+  .analyze{height:44px}
+}
+
 </style>
 </head>
 <body>
@@ -205,7 +262,7 @@ select:focus,input:focus{border-color:var(--green)}
 </div>
 </section>
 
-<section class="section cardSection">
+<section class="section cardSection" id="cardSection">
 <h2>手牌與公牌</h2>
 <div class="cardsArea">
 <div class="cardGroup"><label>手牌</label><div class="cardsLine"><button class="slot active" data-slot="h0">＋</button><button class="slot" data-slot="h1">＋</button></div></div>
@@ -316,6 +373,7 @@ suits.forEach(s=>{const b=document.createElement("button");b.type="button";b.cla
 function streetLabel(s){return s==="preflop"?"翻牌前":s==="flop"?"Flop":s==="turn"?"Turn":"River"}
 function nextStreet(s){return s==="preflop"?"flop":s==="flop"?"turn":s==="turn"?"river":null}
 function setStreet(s,autoPick){
+ document.getElementById("cardSection").classList.toggle("preflopOnly",s==="preflop");
  if(street!==s){investedThisStreet={};waitingOnOpp=false;resetBetInputs();pendingDecision=null}
  street=s;
  document.querySelectorAll("#streets button").forEach(x=>x.classList.toggle("on",x.dataset.street===s));
