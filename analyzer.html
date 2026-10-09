@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07120d">
+<title>牌局分析器｜MTT LAB</title>
+<style>
+:root{--bg:#06100c;--panel:#0d1b15;--panel2:#11251c;--line:#1d3b2e;--text:#f2f7f4;--muted:#89a698;--green:#61f2a5;--red:#ff7878;--gold:#ffd071;--blue:#8cc8ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#153d2d 0,#07120d 42%,#040806 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif;min-height:100vh}
+.app{max-width:920px;margin:auto;padding:0 14px 52px}.top{min-height:70px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #ffffff0c}.back{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:20px}.brand small{display:block;color:var(--green);font-size:10px;font-weight:900;letter-spacing:.12em}.brand b{font-size:19px}
+.note{margin:14px 0 0;padding:12px 14px;border:1px solid #ffd07136;border-radius:14px;background:#ffd0710b;color:#d9c89b;font-size:12px;line-height:1.55}
+.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}.section h2{font-size:17px;margin:0 0 12px}.sub{font-size:12px;color:var(--muted);margin:-4px 0 12px;line-height:1.5}.row{display:flex;gap:8px;flex-wrap:wrap}.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.seg button,.chip{min-height:42px;border:1px solid #294838;background:#102119;color:#dceae3;border-radius:11px;font-weight:800}.seg button.on,.chip.on{background:#173b2a;border-color:var(--green);color:var(--green)}
+label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}select,input{width:100%;min-height:44px;border:1px solid #294838;background:#09150f;color:var(--text);border-radius:11px;padding:0 10px;font-size:16px;outline:none}input:focus,select:focus{border-color:var(--green)}
+.cardsLine{display:flex;gap:8px;flex-wrap:wrap}.slot{width:54px;height:72px;border-radius:10px;border:1px dashed #40614f;background:#0a1711;color:#799889;font-weight:900;font-size:18px}.slot.filled{background:#f7fbf8;color:#111;border-style:solid;border-color:#dce8e1}.slot.red{color:#ce3e3e}.slot.active{outline:2px solid var(--green);outline-offset:2px}.boardGap{width:8px}
+.picker{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff0d}.pickerTitle{font-size:11px;color:var(--muted);margin-bottom:8px}.ranks{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.suits{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}.rank,.suit{min-height:38px;border:1px solid #294838;background:#0b1a13;color:var(--text);border-radius:9px;font-weight:900}.rank.on,.suit.on{border-color:var(--green);color:var(--green);background:#143324}.suit.red{color:#ff8d8d}
+.seats{display:grid;gap:7px}.seat{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:end;padding:9px;border:1px solid #ffffff0c;border-radius:13px;background:#09150f}.seat.hero{border-color:#61f2a555;background:#0d2018}.seatName{display:flex;flex-direction:column;gap:4px;align-self:center}.seatName b{font-size:13px}.seatName span{font-size:10px;color:var(--muted)}.seat input{min-height:40px;font-size:15px}.seat label{margin:0 0 3px}.toggle{display:flex;align-items:center;gap:6px}.toggle input{width:18px;height:18px;min-height:0}.heroTag{color:var(--green)!important;font-weight:900}
+.analyze{width:100%;margin-top:14px;border:0;border-radius:14px;background:var(--green);color:#062316;min-height:52px;font-size:16px;font-weight:1000}.analyze:active{transform:translateY(1px)}
+.result{display:none;margin-top:14px}.result.show{display:block}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{padding:11px;border:1px solid var(--line);border-radius:13px;background:#09150f}.metric span{display:block;font-size:10px;color:var(--muted)}.metric b{display:block;margin-top:5px;font-size:14px}.recommend{margin-top:10px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-weight:900}.recommend h3{font-size:26px;margin:6px 0}.recommend .size{color:#e5f4eb;font-weight:900}.reason{margin-top:10px;display:grid;gap:7px}.reason div{padding:10px 12px;border-radius:11px;background:#08140f;color:#b5c9be;font-size:12px;line-height:1.55}.warn{color:#ffd6a0!important;background:#2b1c0b!important}.error{display:none;margin-top:10px;color:#ff9b9b;font-size:12px}.error.show{display:block}
+@media(max-width:620px){.section{padding:14px}.summary{grid-template-columns:1fr 1fr}.field3{grid-template-columns:1fr 1fr}.seat{grid-template-columns:68px 1fr 1fr}.ranks{grid-template-columns:repeat(7,1fr)}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器</b></div></header>
+<div class="note">這是訓練／賽後複盤工具。第一版使用規則引擎，不是 GTO Solver 精確解；它會把牌力、牌面、SPR、Pot Odds、位置與下注壓力整理成可讀建議。</div>
+
+<section class="section">
+<h2>1. 目前街數與底池</h2>
+<div class="seg" id="streets">
+<button type="button" data-street="preflop">翻牌前</button><button type="button" class="on" data-street="flop">Flop</button><button type="button" data-street="turn">Turn</button><button type="button" data-street="river">River</button>
+</div>
+<div class="field3" style="margin-top:10px">
+<div><label>目前底池 BB（含已投入）</label><input id="pot" type="number" min="0.1" step="0.1" value="5.5"></div>
+<div><label>你的座位</label><select id="heroPos"><option>UTG</option><option>HJ</option><option>CO</option><option selected>BTN</option><option>SB</option><option>BB</option></select></div>
+<div><label>翻牌前角色</label><select id="role"><option value="unknown">不確定</option><option value="aggressor" selected>主動方</option><option value="caller">跟注方</option></select></div>
+</div>
+</section>
+
+<section class="section">
+<h2>2. 點選你的手牌與公牌</h2>
+<p class="sub">先點一個卡槽，再選點數與花色。已使用的牌不能重複。</p>
+<div><label>你的手牌</label><div class="cardsLine"><button class="slot active" data-slot="h0">＋</button><button class="slot" data-slot="h1">＋</button></div></div>
+<div style="margin-top:12px"><label>公牌</label><div class="cardsLine" id="boardSlots"><button class="slot" data-slot="b0">＋</button><button class="slot" data-slot="b1">＋</button><button class="slot" data-slot="b2">＋</button><span class="boardGap"></span><button class="slot" data-slot="b3">＋</button><button class="slot" data-slot="b4">＋</button></div></div>
+<div class="picker">
+<div class="pickerTitle">目前選取：<b id="activeName">手牌 1</b></div>
+<div class="ranks" id="ranks"></div>
+<div class="suits" id="suits"></div>
+</div>
+</section>
+
+<section class="section">
+<h2>3. 每個位置的 BB 與本街下注</h2>
+<p class="sub">「剩餘 BB」填目前身後籌碼；「本街投入 BB」填這一街已經放進底池的量。沒參與這手牌的位置把「仍在牌局」取消。</p>
+<div class="seats" id="seats"></div>
+</section>
+
+<section class="section">
+<h2>4. 分析</h2>
+<div class="field">
+<div><label>賽事階段</label><select id="phase"><option value="normal">一般階段</option><option value="bubble">泡沫期</option><option value="ft">決賽桌</option></select></div>
+<div><label>玩家數</label><select id="players"><option>2</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
+</div>
+<button class="analyze" id="analyze">分析這手牌</button>
+<div class="error" id="error"></div>
+<div class="result" id="result">
+<div class="summary">
+<div class="metric"><span>目前牌力</span><b id="mHand">—</b></div>
+<div class="metric"><span>牌面類型</span><b id="mBoard">—</b></div>
+<div class="metric"><span>SPR</span><b id="mSpr">—</b></div>
+<div class="metric"><span>Pot Odds</span><b id="mOdds">—</b></div>
+</div>
+<div class="recommend">
+<small>訓練建議</small>
+<h3 id="recAction">—</h3>
+<div class="size" id="recSize"></div>
+<div class="reason" id="reasons"></div>
+</div>
+</div>
+</section>
+</div>
+
+<script>
+(function(){
+const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"], suits=["♠","♥","♦","♣"], pos=["UTG","HJ","CO","BTN","SB","BB"];
+let street="flop", activeSlot="h0", pickRank=null, pickSuit=null;
+const cards={h0:"A♠",h1:"Q♣",b0:"A♦",b1:"7♣",b2:"2♠",b3:null,b4:null};
+const app=document.getElementById("app");
+
+document.getElementById("back").addEventListener("click",()=>{location.href="./"});
+document.querySelectorAll("#streets button").forEach(b=>b.addEventListener("click",()=>{street=b.dataset.street;document.querySelectorAll("#streets button").forEach(x=>x.classList.toggle("on",x===b));updateSlots()}));
+document.getElementById("heroPos").addEventListener("change",renderSeats);
+
+const ranksBox=document.getElementById("ranks"), suitsBox=document.getElementById("suits");
+ranks.forEach(r=>{const b=document.createElement("button");b.type="button";b.className="rank";b.textContent=r;b.addEventListener("click",()=>{pickRank=r;document.querySelectorAll(".rank").forEach(x=>x.classList.toggle("on",x===b));commitPick()});ranksBox.appendChild(b)});
+suits.forEach(s=>{const b=document.createElement("button");b.type="button";b.className="suit"+(/[♥♦]/.test(s)?" red":"");b.textContent=s;b.addEventListener("click",()=>{pickSuit=s;document.querySelectorAll(".suit").forEach(x=>x.classList.toggle("on",x===b));commitPick()});suitsBox.appendChild(b)});
+
+function requiredBoard(){return street==="preflop"?0:street==="flop"?3:street==="turn"?4:5}
+function slotName(k){return k[0]==="h"?"手牌 "+(Number(k[1])+1):"公牌 "+(Number(k[1])+1)}
+function nextSlot(){
+ const order=["h0","h1","b0","b1","b2","b3","b4"], req=2+requiredBoard(), i=order.indexOf(activeSlot);
+ for(let n=i+1;n<req;n++){activeSlot=order[n];return}
+}
+function used(card,except){return Object.keys(cards).some(k=>k!==except&&cards[k]===card)}
+function commitPick(){if(!pickRank||!pickSuit)return;const c=pickRank+pickSuit;if(used(c,activeSlot)){showError("這張牌已經被使用。");return}cards[activeSlot]=c;pickRank=null;pickSuit=null;document.querySelectorAll(".rank,.suit").forEach(x=>x.classList.remove("on"));nextSlot();renderCardSlots()}
+function renderCardSlots(){
+ document.querySelectorAll(".slot").forEach(el=>{const k=el.dataset.slot, c=cards[k];el.classList.toggle("active",k===activeSlot);el.classList.toggle("filled",!!c);el.classList.toggle("red",!!c&&/[♥♦]/.test(c));el.textContent=c||"＋";el.onclick=()=>{activeSlot=k;renderCardSlots()}});
+ document.getElementById("activeName").textContent=slotName(activeSlot)
+}
+function updateSlots(){const need=requiredBoard();["b0","b1","b2","b3","b4"].forEach((k,i)=>{const el=document.querySelector('[data-slot="'+k+'"]');el.style.display=i<need?"":"none";if(i>=need)cards[k]=null});if(need===0&&activeSlot[0]==="b")activeSlot="h0";renderCardSlots()}
+
+const seatDefaults={UTG:{on:false,s:30,b:0},HJ:{on:false,s:28,b:0},CO:{on:false,s:30,b:0},BTN:{on:true,s:25,b:0},SB:{on:false,s:18,b:0},BB:{on:true,s:25,b:0}};
+function renderSeats(){
+ const hero=document.getElementById("heroPos").value, box=document.getElementById("seats");box.innerHTML="";
+ pos.forEach(p=>{const d=seatDefaults[p], row=document.createElement("div");row.className="seat"+(p===hero?" hero":"");row.dataset.pos=p;
+ row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span></div><div><label>剩餘 BB</label><input class="stackIn" type="number" min="0" step="0.1" value="'+d.s+'"></div><div><label>本街投入 BB</label><input class="betIn" type="number" min="0" step="0.1" value="'+d.b+'"></div>';
+ box.appendChild(row)
+ });
+ const bb=box.querySelector('[data-pos="BB"]'); if(bb&&hero!=="BB"){bb.querySelector(".seatOn").checked=true;bb.querySelector(".stackIn").value=25;bb.querySelector(".betIn").value=0}
+}
+function seatData(){
+ const hero=document.getElementById("heroPos").value;return Array.from(document.querySelectorAll(".seat")).map(r=>({pos:r.dataset.pos,on:r.querySelector(".seatOn").checked||r.dataset.pos===hero,stack:Math.max(0,Number(r.querySelector(".stackIn").value)||0),bet:Math.max(0,Number(r.querySelector(".betIn").value)||0),hero:r.dataset.pos===hero}))
+}
+
+function rv(r){return{"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"T":10,"J":11,"Q":12,"K":13,"A":14}[r]}
+function parse(c){return{r:c[0],v:rv(c[0]),s:c.slice(1)}}
+function combos(arr,k){const out=[];function rec(start,a){if(a.length===k){out.push(a.slice());return}for(let i=start;i<arr.length;i++){a.push(arr[i]);rec(i+1,a);a.pop()}}rec(0,[]);return out}
+function score5(cs){
+ const a=cs.map(parse), vals=a.map(x=>x.v).sort((x,y)=>y-x), counts={}, suitsC={};a.forEach(x=>{counts[x.v]=(counts[x.v]||0)+1;suitsC[x.s]=(suitsC[x.s]||0)+1});
+ const uniq=[...new Set(vals)];if(uniq.includes(14))uniq.push(1);uniq.sort((x,y)=>x-y);let straight=false;for(let i=0;i<=uniq.length-5;i++)if(uniq[i+4]-uniq[i]===4)straight=true;
+ const flush=Object.values(suitsC).some(n=>n===5), groups=Object.entries(counts).map(([v,n])=>({v:+v,n})).sort((x,y)=>y.n-x.n||y.v-x.v);
+ if(straight&&flush)return 8;if(groups[0].n===4)return 7;if(groups[0].n===3&&groups[1]&&groups[1].n===2)return 6;if(flush)return 5;if(straight)return 4;if(groups[0].n===3)return 3;if(groups[0].n===2&&groups[1]&&groups[1].n===2)return 2;if(groups[0].n===2)return 1;return 0
+}
+const handNames=["高牌","一對","兩對","三條","順子","同花","葫蘆","四條","同花順"];
+function madeHand(all){
+ if(all.length<5){const h=all.slice(0,2).map(parse);if(h.length===2&&h[0].v===h[1].v)return{score:1,name:"口袋對"};return{score:0,name:"高牌"}}
+ let best=-1;combos(all,5).forEach(c=>{best=Math.max(best,score5(c))});return{score:best,name:handNames[best]}
+}
+function pairQuality(hole,board,base){
+ if(base.score!==1||board.length<3)return base.name;
+ const h=hole.map(parse), b=board.map(parse), bv=[...new Set(b.map(x=>x.v))].sort((a,b)=>b-a);
+ if(h[0].v===h[1].v){if(h[0].v>Math.max(...bv))return"超對";return"口袋對"}
+ const matches=h.filter(x=>bv.includes(x.v)).map(x=>x.v);if(!matches.length)return base.name;const m=Math.max(...matches);if(m===bv[0])return"頂對";if(m===bv[1])return"中對";return"底對"
+}
+function drawInfo(all,hole,board){
+ if(board.length<3||board.length>=5)return{flush:false,oesd:false,gut:false,combo:false};
+ const pa=all.map(parse), suitCount={};pa.forEach(x=>suitCount[x.s]=(suitCount[x.s]||0)+1);let flush=Object.values(suitCount).some(n=>n===4);
+ const vals=[...new Set(pa.map(x=>x.v))];if(vals.includes(14))vals.push(1);vals.sort((a,b)=>a-b);let oesd=false,gut=false;
+ for(let start=1;start<=10;start++){let have=0;for(let v=start;v<start+5;v++)if(vals.includes(v))have++;if(have===4){const miss=[];for(let v=start;v<start+5;v++)if(!vals.includes(v))miss.push(v);if(miss.length===1){if(miss[0]===start||miss[0]===start+4)oesd=true;else gut=true}}}
+ return{flush,oesd,gut,combo:flush&&(oesd||gut)}
+}
+function boardTexture(board){
+ if(board.length<3)return{label:"翻牌前",wet:0,paired:false,mono:false,two:false,connected:false};
+ const a=board.map(parse), rc={}, sc={};a.forEach(x=>{rc[x.v]=(rc[x.v]||0)+1;sc[x.s]=(sc[x.s]||0)+1});const paired=Object.values(rc).some(n=>n>=2), maxSuit=Math.max(...Object.values(sc)), mono=maxSuit>=3, two=maxSuit===2;
+ const vals=[...new Set(a.map(x=>x.v))].sort((x,y)=>x-y);let connected=false;for(let i=0;i<vals.length;i++)for(let j=i+2;j<vals.length;j++)if(vals[j]-vals[i]<=4)connected=true;
+ let wet=0;if(two)wet++;if(mono)wet+=2;if(connected)wet+=2;if(paired)wet-=1;wet=Math.max(0,wet);
+ let parts=[];if(paired)parts.push("疊牌");if(mono)parts.push(maxSuit>=4?"四同花以上":"三同花");else if(two)parts.push("兩張同花");if(connected)parts.push("連接");if(!parts.length)parts.push("乾燥");return{label:parts.join("＋"),wet,paired,mono,two,connected}
+}
+function inPosition(hero,activeOpp){
+ const order={SB:0,BB:1,UTG:2,HJ:3,CO:4,BTN:5};if(!activeOpp.length)return true;return activeOpp.every(p=>order[hero]>order[p])
+}
+function estimateDrawEq(d,street){
+ let outs=d.combo?15:d.flush?9:d.oesd?8:d.gut?4:0;if(!outs)return 0;return Math.min(.65,outs*(street==="flop"?4:2)/100)
+}
+function fmt(n){return Number.isFinite(n)?n.toFixed(2):"—"}
+
+function analyze(){
+ hideError();const need=requiredBoard(), hole=[cards.h0,cards.h1], board=[cards.b0,cards.b1,cards.b2,cards.b3,cards.b4].slice(0,need);
+ if(hole.some(x=>!x)){showError("請先選完整兩張手牌。");return}
+ if(board.some(x=>!x)){showError("請先把目前街數需要的公牌選完整。");return}
+ const pot=Math.max(.1,Number(document.getElementById("pot").value)||0), heroPos=document.getElementById("heroPos").value, seats=seatData(), hero=seats.find(x=>x.hero);
+ const opp=seats.filter(x=>x.on&&!x.hero), activeOpp=opp.map(x=>x.pos);if(!opp.length){showError("至少要保留一位仍在牌局的對手。");return}
+ const maxBet=Math.max(...opp.map(x=>x.bet),0), call=Math.max(0,maxBet-hero.bet), bettor=opp.filter(x=>x.bet===maxBet&&maxBet>hero.bet).sort((a,b)=>a.stack-b.stack)[0]||opp[0];
+ const eff=Math.min(hero.stack,bettor.stack), spr=pot>0?eff/pot:0, odds=call>0?call/(pot+call):0, all=hole.concat(board), made=madeHand(all), handName=pairQuality(hole,board,made), draw=drawInfo(all,hole,board), tex=boardTexture(board), ip=inPosition(heroPos,activeOpp);
+ const phase=document.getElementById("phase").value, role=document.getElementById("role").value;
+ let action="",size="",why=[];
+ const pressure=call/pot, strong=made.score>=2, monster=made.score>=4, topish=["頂對","超對"].includes(handName), weakPair=made.score===1&&!topish;
+ if(street==="preflop"){
+   const h=hole.map(parse), pair=h[0].v===h[1].v, suited=h[0].s===h[1].s, hi=Math.max(h[0].v,h[1].v), lo=Math.min(h[0].v,h[1].v);
+   if(call>0){if(pair&&hi>=11||hi===14&&lo>=11){action=spr<2?"全下／再加注":"再加注";size=spr<2?"視有效籌碼全下":"約 2.5–3× 對手下注"}else if((hi===14&&lo>=9)||(suited&&hi>=12&&lo>=10)){action="跟注為主";size="面對小尺度可跟注；大尺度重新評估"}else{action="棄牌偏多";size="保留最強邊界牌跟注"}} else {if(pair&&hi>=9||hi===14&&lo>=10||suited&&hi>=11&&lo>=9){action="開池加注";size=heroPos==="SB"?"2.5–3BB":"2–2.3BB"}else{action="視位置混合";size="晚位可較寬，前位收緊"}}
+   why.push("翻牌前先由位置、有效籌碼與牌型決定範圍。")
+ } else if(call>0){
+   if(monster||made.score>=3){action=spr<=1.4?"全下／加注":"加注或跟注";size=spr<=1.4?"低 SPR 可直接投入":"濕面偏加注，乾面可保留跟注";why.push("你目前屬於強成手，面對下注不應輕易退出。")}
+   else if(made.score===2){action=pressure<=.75?"跟注／部分加注":"跟注偏多";size=tex.wet>=2?"濕面可加注保護":"乾面多保留較弱牌";why.push("兩對通常足以繼續，但尺度仍受牌面與 SPR 影響。")}
+   else if(topish){if(pressure<=.35){action="跟注";size="小注通常不需要把頂對變成大底池"}else if(pressure<=.8){action=tex.wet>=3?"跟注偏多／謹慎":"跟注";size="中尺度以跟注為主"}else{action=spr<=1.2?"跟注／全下評估":"跟注與棄牌混合";size="超大尺度需看踢腳、阻擋牌與對手範圍"}why.push(handName+"屬於中強牌，通常避免無理由把底池放大。")}
+   else if(draw.flush||draw.oesd||draw.gut){const eq=estimateDrawEq(draw,street);if(eq>=odds){action=draw.combo?"跟注／半詐唬加注":"跟注";size="Pot Odds 約 "+Math.round(odds*100)+"%，粗估抽牌權益約 "+Math.round(eq*100)+"%"}else{action="棄牌偏多";size="目前直接賠率不足";}why.push("抽牌決策要把 Pot Odds 與有效 outs 一起看。")}
+   else if(weakPair){action=pressure<=.3&&tex.wet<=1?"跟注":"棄牌偏多";size=pressure<=.3?"只對小尺度防守":"中大尺度避免過度跟注";why.push("弱一對對大尺度容易被價值牌壓制。")}
+   else{action="棄牌";size=pressure<=.2&&ip?"極小注可少量浮動":"沒有成手或可靠抽牌時避免硬跟";why.push("高牌且缺乏後門/抽牌時，繼續需要更強理由。")}
+ } else {
+   if(monster||made.score>=3){action="下注";size=tex.wet>=2?"50–75% 底池":"25–50% 底池";why.push("強成手在濕面提高尺度向抽牌收費；乾面可讓更弱範圍繼續。")}
+   else if(made.score===2){action="下注";size=tex.wet>=2?"50–75% 底池":"33–50% 底池";why.push("兩對多數能做價值下注，濕度越高越偏大。")}
+   else if(topish){action=tex.mono||tex.wet>=4?"過牌／小注混合":"下注為主";size=tex.wet<=1?"25–33% 底池":tex.wet<=3?"33–50% 底池":"過牌或 25–33%";why.push(handName+"在乾燥牌面適合小尺度取值，牌面越濕越需要控制底池。")}
+   else if(draw.combo){action="下注／半詐唬";size="50–66% 底池";why.push("強複合抽牌同時具備攤牌改善與棄牌率。")}
+   else if(draw.flush||draw.oesd){action=role==="aggressor"?"下注／過牌混合":"過牌為主";size=tex.wet>=2?"33–50% 底池":"25–33% 底池";why.push("抽牌可作半詐唬，但不需要每次都下注。")}
+   else if(weakPair){action="過牌為主";size=ip&&tex.wet<=1?"可少量 25–33%":"控制底池";why.push("中弱一對主要目標是實現攤牌價值。")}
+   else{action=role==="aggressor"&&tex.wet<=1?"小注或過牌":"過牌";size=role==="aggressor"&&tex.wet<=1?"25–33% 底池":"不必強行詐唬";why.push("空氣牌要依範圍優勢選擇性下注。")}
+ }
+ if(ip)why.push("你目前相對仍在牌局的對手有位置，較容易控制底池與實現權益。");else why.push("你目前位置較差，邊界牌與大型底池要更謹慎。");
+ if(spr<=1.5)why.push("SPR 很低，強一對以上的承諾度會提高。");else if(spr>=5)why.push("SPR 偏高，單一對牌不宜太早把大量籌碼放進底池。");
+ if(phase==="bubble"||phase==="ft")why.push("目前屬於 "+(phase==="bubble"?"泡沫期":"決賽桌")+"；真正 ICM 決策還需要獎金結構與全桌籌碼分布，本版只做提醒，不假裝精確計算。");
+ document.getElementById("mHand").textContent=handName+(draw.combo?"＋複合抽牌":draw.flush?"＋聽花":draw.oesd?"＋兩頭順":draw.gut?"＋卡順":"");
+ document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";
+ document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
+ document.getElementById("result").classList.add("show");document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"})
+}
+function showError(t){const e=document.getElementById("error");e.textContent=t;e.classList.add("show")}
+function hideError(){document.getElementById("error").classList.remove("show")}
+document.getElementById("analyze").addEventListener("click",analyze);
+renderSeats();updateSlots();
+})();
+</script>
+</body>
+</html>
