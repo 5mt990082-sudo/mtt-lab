@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07120d">
+<meta name="theme-color" content="#06100c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>牌局分析器｜MTT LAB</title>
 <style>
 :root{--panel:#0d1b15;--panel2:#09150f;--line:#1d3b2e;--text:#f2f7f4;--muted:#89a698;--green:#61f2a5;--red:#ff8585;--gold:#ffd071}
@@ -89,11 +91,106 @@ select:focus,input:focus{border-color:var(--green)}
   .top{height:42px}.topSection{flex-basis:72px}.cardSection{flex-basis:60px}.actionSection{flex-basis:92px}
   .slot{width:33px;height:41px}.seat input{height:24px}.seg button{height:28px}
 }
+
+/* 手機優先：緊湊座位、固定操作列、原生觸控尺寸 */
+.quickBet{display:flex;align-items:center;gap:5px;margin:0 0 6px;min-width:0}
+.quickBet[hidden]{display:none}
+.quickBet span{color:#c6e2d2;font-size:10px;flex:1;white-space:nowrap}
+.quickBet button{min-width:29px;height:32px;border:1px solid #407759;border-radius:8px;background:#183c2a;color:#c9f6dc;font-size:11px;font-weight:800}
+.seatQuick{border:1px solid #376449;border-radius:6px;background:#113121;color:#83eab3;min-width:22px;min-height:22px;padding:0;font-weight:900}
+.seat.editing{border-color:var(--gold);box-shadow:0 0 0 1px #ffd07155}
+.potPreview{padding:5px 2px 0;color:#9ed9b7;text-align:center;font-size:10px;font-weight:700}
+.sheetSub{font-size:10px;color:var(--muted);display:block;font-weight:500;margin-top:2px}
+.rangeDetails{margin:8px 0}.rangeDetails summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:9px 11px;background:#102131;border:1px solid #35516a;border-radius:10px;color:#aad1f7;font-size:11px;font-weight:800}
+.rangeDetails summary::-webkit-details-marker{display:none}.rangeDetails[open] summary span{transform:rotate(180deg)}
+.resultScroll{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:620px){
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  .app{height:100dvh;min-height:0;padding:0 9px max(8px,env(safe-area-inset-bottom,0px))}
+  .top{height:50px;gap:7px;flex:0 0 auto}
+  .brand b{font-size:15px}.brand small{font-size:9px}
+  .back{width:37px;height:37px}.newhand{height:35px;font-size:11px;padding:0 9px;flex-shrink:0}
+  .workspace{gap:7px;margin-top:7px;flex:1;min-height:0}
+  .section{padding:8px;border-radius:13px;min-width:0}
+  .topSection,.cardSection,.actionSection{flex:0 0 auto}
+  .seg{gap:5px}.seg button{height:35px;border-radius:9px;font-size:11px}
+  .quick{grid-template-columns:1fr .96fr 1.05fr;gap:6px;margin-top:7px}
+  .quick label{display:block;font-size:9px;margin-bottom:3px}
+  .quick select,.quick input{height:36px;min-width:0;font-size:12px;padding:0 7px}
+  #pot{color:var(--green);font-weight:900;background:#0a2216}
+  .cardsArea{grid-template-columns:auto minmax(0,1fr);gap:9px}
+  .cardGroup label{font-size:10px;margin-bottom:5px;color:#b5d4c3}
+  .cardsLine{gap:4px}.slot{width:clamp(30px,8.8vw,40px);height:49px;font-size:15px;border-radius:8px}
+  .seatSection{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+  .seatSection::-webkit-scrollbar{display:none}
+  .seatSection h2{display:block;font-size:11px;color:#b9dcc9;margin:0 0 6px}
+  .seats{height:auto;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:auto;align-content:start;gap:5px}
+  .seats[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .seat{min-width:0;min-height:88px;padding:6px 5px;gap:3px;border-radius:11px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .seat.hero{background:#122c20;border-color:#5cdb9a}
+  .seat:has(.seatOn:not(:checked)):not(.hero){opacity:.65}
+  .seat:focus-within{border-color:var(--gold)}
+  .seatName{gap:3px}.seatName .toggle{gap:3px;min-width:0}
+  .seatName b{font-size:12px;white-space:nowrap;letter-spacing:-.03em}
+  .seatName span{font-size:9px;margin-left:auto;white-space:nowrap}
+  .toggle input{width:16px;height:16px;flex:0 0 auto;accent-color:var(--green)}
+  .seat label{display:block;font-size:9px;color:#9db6a8;letter-spacing:-.02em;text-overflow:clip}
+  .seat input{height:34px;min-width:0;padding:0 4px;border-radius:8px;font-size:13px;font-weight:700;text-align:center}
+  .seatQuick{min-width:22px;min-height:24px}
+  .actionSection{padding:7px 8px 8px;margin-top:auto}
+  .advanced{gap:5px;grid-template-columns:1fr .74fr 1.24fr}
+  .advanced label{display:none}.advanced select{height:34px;padding:0 5px;font-size:11px}
+  .potPreview{padding:5px 0 1px;font-size:10px}
+  .actionsBar{margin-top:6px;display:block}
+  .analyze{height:48px;width:100%;font-size:16px;letter-spacing:.02em;border-radius:12px;box-shadow:0 6px 20px #37d6891a}
+  .analyze:disabled{opacity:.5}
+  .hint{display:none}.quickBet{gap:4px;margin-bottom:7px}
+  .quickBet span{font-size:10px;max-width:116px;overflow:hidden;text-overflow:ellipsis}
+  .quickBet button{height:34px;min-width:31px}
+  .waitingBar.show{margin:5px 0 0;padding:7px}
+  .waitingText{font-size:11px}.waitingActions button{min-height:34px}
+  .error{position:absolute;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:14px;right:14px;font-size:12px;box-shadow:0 6px 22px #0009}
+  .pickerModal,.result{padding:0 5px max(4px,env(safe-area-inset-bottom,0px))}
+  .pickerModal .sheet{border-radius:20px 20px 13px 13px;padding:13px 12px 16px}
+  .rank,.suit{min-height:45px;font-size:15px}
+  .result .sheet{width:100%;height:min(82dvh,730px);max-height:calc(100dvh - 12px - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;padding:12px 11px 10px;overflow:hidden;border-radius:20px 20px 12px 12px}
+  .result .sheetHead{flex:0 0 auto;margin:0 0 9px;padding:1px 1px 6px;border-bottom:1px solid #214636}
+  .result .sheetHead b{font-size:15px}.result .close{width:36px;height:36px;flex-shrink:0}
+  .resultScroll{flex:1 1 auto;min-height:0;overflow:auto;scrollbar-width:none;padding-right:2px}
+  .resultScroll::-webkit-scrollbar{display:none}
+  .summary{gap:4px}.metric{padding:7px 4px}.metric span{font-size:9px}.metric b{font-size:10px}
+  .flowInfo{font-size:11px;margin-top:7px;padding:7px 9px}
+  .recommend{margin-top:7px;padding:10px 11px;border-radius:12px}
+  .recommend h3{font-size:26px;margin:3px 0}.recommend .size{font-size:12px}
+  .reason{max-height:90px;gap:4px;margin-top:6px}.reason div{font-size:11px;padding:6px 8px}
+  .rangeDetails{margin:7px 0}.rangeDetails summary{min-height:36px}
+  .decision{flex:0 0 auto;position:relative;margin:8px 0 0;padding:10px;border-radius:13px;border:1px solid #5bcf91;background:linear-gradient(135deg,#153825,#0b2417);box-shadow:0 -8px 24px #0004}
+  .decisionTitle{font-size:14px;margin-bottom:4px}.decisionPrompt{font-size:11px;margin-bottom:7px;line-height:1.35}
+  .decisionChoices{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .move{min-height:43px;font-size:13px;padding:7px 2px}
+  .raiseEditor{margin-top:7px}.raiseEditor input{height:40px;font-size:16px}
+  .confirmMove{height:46px;font-size:15px;margin-top:7px;border-radius:10px}
+}
+@media(max-width:620px) and (max-height:710px){
+  .app{padding-left:7px;padding-right:7px}.workspace{gap:5px;margin-top:5px}
+  .top{height:43px}.seg button{height:30px}
+  .quick{margin-top:5px}.quick label{font-size:8px}.quick select,.quick input{height:30px}
+  .section{padding:6px}.slot{height:41px}.cardGroup label{margin-bottom:2px}
+  .seat{min-height:80px;padding:4px 3px}.seat input{height:30px;font-size:12px}
+  .seatSection h2{font-size:10px;margin-bottom:3px}
+  .advanced select{height:30px}.actionSection{padding:6px}.analyze{height:42px}
+  .potPreview{padding-top:4px}.quickBet button{height:30px}
+  .result .sheet{height:min(90dvh,650px)}.reason{max-height:65px}
+}
+@media(min-width:621px){
+  .result .sheet{max-height:calc(100dvh - 28px);display:flex;flex-direction:column;overflow:hidden}
+  .resultScroll{flex:1;min-height:0}.decision{flex:0 0 auto}
+}
 </style>
 </head>
 <body>
 <div class="app" id="app">
-<header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器・單螢幕版</b></div><button class="newhand" id="newHand">新的一局</button></header>
+<header class="top"><button class="back" id="back">←</button><div class="brand"><small>MTT LAB</small><b>牌局分析器</b></div><button class="newhand" id="newHand">新的一局</button></header>
 
 <div class="workspace">
 <section class="section topSection">
@@ -123,12 +220,14 @@ select:focus,input:focus{border-color:var(--green)}
 
 <section class="section actionSection">
 <h2>分析設定</h2>
+<div class="quickBet" id="quickBet" hidden><span id="quickBetTitle">快速設定新增 BB</span><button type="button" data-quick="2">2</button><button type="button" data-quick="3">3</button><button type="button" data-quick="6">6</button><button type="button" data-quick="10">10</button><button type="button" data-quick="0">清除</button></div>
 <div class="advanced">
 <div><label>賽事階段</label><select id="phase"><option value="normal">一般階段</option><option value="bubble">泡沫期</option><option value="ft">決賽桌</option></select></div>
 <div><label>玩家數</label><select id="players"><option>2</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
 <div><label>主要對手</label><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注</option><option value="aggressive">高侵略</option></select></div>
 </div>
-<div class="actionsBar"><button class="analyze" id="analyze">分析這手牌</button><div class="hint">輸入對手本次新增投入 BB，再分析；分析不會直接記帳。</div></div>
+<div class="potPreview" id="potPreview" aria-live="polite">目前已入池 2BB</div>
+<div class="actionsBar"><button class="analyze" id="analyze">分析我該怎麼做 →</button><div class="hint">輸入對手本次新增投入 BB，再分析；分析不會直接記帳。</div></div>
 <div id="waitingBar" class="waitingBar"><div id="waitingText" class="waitingText"></div><div class="waitingActions"><button type="button" id="oppCalls">對手跟注</button><button type="button" id="oppFolds">對手棄牌</button><button type="button" id="streetDone">確認本街結束</button></div></div>
 <div class="error" id="error"></div>
 </section>
@@ -145,7 +244,8 @@ select:focus,input:focus{border-color:var(--green)}
 
 <div class="result" id="result" role="dialog" aria-modal="true">
 <div class="sheet">
-<div class="sheetHead"><b>分析結果</b><button class="close" id="closeResult">×</button></div>
+<div class="sheetHead"><b>決策建議 <span class="sheetSub">先看建議，再確認你的實際動作</span></b><button class="close" id="closeResult" aria-label="關閉分析">×</button></div>
+<div class="resultScroll">
 <div class="summary">
 <div class="metric"><span>牌力</span><b id="mHand">—</b></div>
 <div class="metric"><span>牌面</span><b id="mBoard">—</b></div>
@@ -155,7 +255,8 @@ select:focus,input:focus{border-color:var(--green)}
 </div>
 <div class="flowInfo" id="flowInfo">尚未分析｜目前總底池 2BB</div>
 <div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
-<div class="decision" id="decision"><div class="decisionTitle">輪到你｜實際採取什麼動作？</div><div id="decisionPrompt" class="decisionPrompt"></div><div class="decisionChoices"><button type="button" class="move" data-move="fold">棄牌</button><button type="button" class="move" data-move="check">過牌</button><button type="button" class="move" data-move="call">跟注</button><button type="button" class="move" data-move="raise">下注／加注</button></div><div id="raiseEditor" class="raiseEditor" hidden><label for="raiseTo">下注／加注至本街累計 BB（不是再增加多少）</label><input type="number" id="raiseTo" min="0.1" step="0.1" inputmode="decimal"></div><div id="decisionError" class="decisionError" role="alert"></div><button type="button" class="confirmMove" id="confirmMove" disabled>確認我的實際動作</button></div>
+
+<details class="rangeDetails" id="rangeDetails"><summary>展開對手 Range 與進階資訊 <span>⌄</span></summary>
 <div class="rangeBox">
 <b>主要對手可能 Range｜啟發式估計</b>
 <div class="rangeText" id="oppRange">尚未分析</div>
@@ -164,6 +265,9 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="rangeTrail" id="rangeTrail">尚未建立逐街軌跡</div>
 <div class="rangeMeta"><span id="rangeNarrow">收窄程度 —</span><span>非 Solver 精確頻率</span></div>
 </div>
+</details>
+</div>
+<div class="decision" id="decision"><div class="decisionTitle">輪到你｜實際採取什麼動作？</div><div id="decisionPrompt" class="decisionPrompt"></div><div class="decisionChoices"><button type="button" class="move" data-move="fold">棄牌</button><button type="button" class="move" data-move="check">過牌</button><button type="button" class="move" data-move="call">跟注</button><button type="button" class="move" data-move="raise">下注／加注</button></div><div id="raiseEditor" class="raiseEditor" hidden><label for="raiseTo">下注／加注至本街累計 BB（不是再增加多少）</label><input type="number" id="raiseTo" min="0.1" step="0.1" inputmode="decimal"></div><div id="decisionError" class="decisionError" role="alert"></div><button type="button" class="confirmMove" id="confirmMove" disabled>確認我的實際動作</button></div>
 </div>
 </div>
 <script>
@@ -178,7 +282,7 @@ const tableLayouts={
 };
 function currentPositions(){return tableLayouts[Number(document.getElementById("players").value)]||tableLayouts[6]}
 let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=2, pendingPicker=false;
-let investedThisStreet={}, pendingDecision=null, selectedMove=null, waitingOnOpp=false, handFinished=false;
+let investedThisStreet={}, pendingDecision=null, selectedMove=null, waitingOnOpp=false, handFinished=false, selectedBetPos=null;
 let rangeMemory={villain:null,profile:null,history:[]};
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
@@ -222,7 +326,10 @@ function setStreet(s,autoPick){
  updateSlots();
  if(autoPick&&s!=="preflop")pendingPicker=true;
 }
-function resetBetInputs(){document.querySelectorAll(".betIn").forEach(i=>i.value="0")}
+function resetBetInputs(){document.querySelectorAll(".betIn").forEach(i=>i.value="0");updatePotPreview()}
+function updatePotPreview(){const el=document.getElementById("potPreview");if(!el)return;const pending=seatData().filter(x=>x.on).reduce((t,x)=>t+x.bet,0);el.textContent=pending>0?"已入池 "+fmtBb(runningPot)+"BB · 待確認 +"+fmtBb(pending)+"BB → 預覽 "+fmtBb(runningPot+pending)+"BB":"目前已入池 "+fmtBb(runningPot)+"BB"}
+function selectFastBet(pos){selectedBetPos=pos;const row=posRow(pos);if(!row)return;row.querySelector(".seatOn").checked=true;document.getElementById("quickBetTitle").textContent=pos+" 新增 BB";document.getElementById("quickBet").hidden=false;document.querySelectorAll(".seat").forEach(x=>x.classList.toggle("editing",x.dataset.pos===pos));updatePotPreview()}
+document.querySelectorAll("[data-quick]").forEach(b=>b.addEventListener("click",()=>{const row=posRow(selectedBetPos);if(!row)return;row.querySelector(".betIn").value=b.dataset.quick;updatePotPreview()}));
 function posRow(pos){return Array.from(document.querySelectorAll(".seat")).find(r=>r.dataset.pos===pos)}
 function fmtBb(n){return Number(n.toFixed(1)).toString()}
 function putPot(n){runningPot=Number(n.toFixed(2));document.getElementById("pot").value=fmtBb(runningPot)}
@@ -257,12 +364,18 @@ const seatDefaults={
  "BTN":{on:true,s:25,b:0},"SB":{on:false,s:18,b:0},"BB":{on:true,s:25,b:0}
 };
 function renderSeats(){
- const hero=document.getElementById("heroPos").value, box=document.getElementById("seats");box.innerHTML="";
+ const hero=document.getElementById("heroPos").value, box=document.getElementById("seats");box.innerHTML="";box.dataset.count=String(currentPositions().length);
  currentPositions().forEach(p=>{const d=seatDefaults[p]||{on:false,s:30,b:0}, row=document.createElement("div");row.className="seat"+(p===hero?" hero":"");row.dataset.pos=p;
- row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span></div><div><label>剩餘 BB</label><input class="stackIn" type="number" min="0" step="0.1" value="'+d.s+'"></div><div><label>本次新增 BB</label><input class="betIn" type="number" min="0" step="0.1" value="'+d.b+'"></div>';
- box.appendChild(row)
+ row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" aria-label="'+p+' 在局" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span><button type="button" class="seatQuick" aria-label="'+p+' 快速輸入 BB">＋</button></div><div><label>剩餘 BB</label><input class="stackIn" type="number" inputmode="decimal" aria-label="'+p+' 剩餘 BB" min="0" step="0.1" value="'+d.s+'"></div><div><label>本次新增</label><input class="betIn" type="number" inputmode="decimal" aria-label="'+p+' 本次新增 BB" min="0" step="0.1" value="'+d.b+'"></div>';
+ box.appendChild(row);
+ row.querySelector(".seatQuick").addEventListener("click",()=>selectFastBet(p));
+ row.querySelector(".betIn").addEventListener("input",updatePotPreview);
+ row.querySelector(".seatOn").addEventListener("change",updatePotPreview);
+ row.querySelectorAll(".stackIn,.betIn").forEach(i=>i.addEventListener("focus",()=>{if(i.select)i.select()}));
  });
+ document.getElementById("quickBet").hidden=true;selectedBetPos=null;
  const bb=box.querySelector('[data-pos="BB"]'); if(bb&&hero!=="BB"){bb.querySelector(".seatOn").checked=true;bb.querySelector(".stackIn").value=25;bb.querySelector(".betIn").value=0}
+ updatePotPreview()
 }
 function seatData(){
  const hero=document.getElementById("heroPos").value;return Array.from(document.querySelectorAll(".seat")).map(r=>({pos:r.dataset.pos,on:r.querySelector(".seatOn").checked||r.dataset.pos===hero,stack:Math.max(0,Number(r.querySelector(".stackIn").value)||0),bet:Math.max(0,Number(r.querySelector(".betIn").value)||0),hero:r.dataset.pos===hero}))
@@ -607,6 +720,7 @@ function analyze(){
  document.getElementById("raiseTo").value=fmtBb(Math.max(maxBet+1,maxBet*2,1));
  document.getElementById("decisionError").textContent="";
  document.getElementById("confirmMove").disabled=true;
+ document.getElementById("rangeDetails").open=false;
  document.getElementById("result").classList.add("show")
 }
 
