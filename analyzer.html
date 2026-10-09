@@ -50,6 +50,9 @@ select:focus,input:focus{border-color:var(--green)}
 .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.metric{padding:7px;border:1px solid var(--line);border-radius:10px;background:#08140f;min-width:0}.metric span{display:block;font-size:8px;color:var(--muted)}.metric b{display:block;margin-top:3px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .flowInfo{margin-top:8px;padding:8px 10px;border:1px solid #315843;border-radius:10px;background:#0b1c14;color:#cbe6d8;font-size:11px;line-height:1.5}
 .rangeBox{margin-top:6px;padding:9px 10px;border:1px solid #38506b;border-radius:10px;background:#0a1520;color:#c9def5;font-size:10px;line-height:1.45}.rangeBox b{color:#8cc8ff}
+.rangeText{margin:4px 0 7px;color:#b9cde1}
+.rangeBars{display:grid;gap:4px}.rangeRow{display:grid;grid-template-columns:62px 1fr 30px;gap:6px;align-items:center}.rangeRow span{font-size:9px;color:#a9bed1}.rangeTrack{height:6px;background:#122334;border-radius:99px;overflow:hidden}.rangeFill{height:100%;background:#8cc8ff;border-radius:99px}.rangePct{text-align:right;font-size:9px;color:#dbeaff}
+.rangeMeta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;padding-top:6px;border-top:1px solid #ffffff12;font-size:9px;color:#8fa8bc}.rangeExamples{margin-top:5px;color:#d8e7f6;font-size:9px}
 .recommend{margin-top:8px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-size:9px;font-weight:900}.recommend h3{font-size:24px;margin:4px 0}.recommend .size{font-size:12px;color:#e5f4eb;font-weight:900}.reason{margin-top:7px;display:grid;gap:5px;max-height:132px;overflow:auto}.reason div{padding:7px 9px;border-radius:9px;background:#08140f;color:#b5c9be;font-size:10px;line-height:1.4}.warn{color:#ffd6a0!important;background:#2b1c0b!important}
 @media(max-width:620px){
   html,body{height:100%;overflow:hidden}
@@ -136,7 +139,13 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="metric"><span>脈絡</span><b id="mContext">—</b></div>
 </div>
 <div class="flowInfo" id="flowInfo">本筆入池 +0BB｜目前總底池 2BB</div>
-<div class="rangeBox"><b>主要對手可能 Range</b><div id="oppRange">尚未分析</div></div>
+<div class="rangeBox">
+<b>主要對手可能 Range｜啟發式估計</b>
+<div class="rangeText" id="oppRange">尚未分析</div>
+<div class="rangeBars" id="rangeBars"></div>
+<div class="rangeExamples" id="rangeExamples"></div>
+<div class="rangeMeta"><span id="rangeNarrow">收窄程度 —</span><span>非 Solver 精確頻率</span></div>
+</div>
 <div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
 </div>
 </div>
@@ -333,6 +342,68 @@ function opponentRangeEstimate(o){
  return o.villainPos+"｜"+main+(note?"；"+note:"");
 }
 
+function opponentRangeProfile(o){
+ const tight=o.tendency==="tight"||o.tendency==="passive", aggro=o.tendency==="aggressive", loose=o.tendency==="loose";
+ let p={value:25,show:35,draw:20,bluff:20,narrow:30,examples:""};
+ if(o.street==="preflop"){
+   if(o.context==="面對 Open"){
+     p=o.villainPos==="UTG"||o.villainPos==="UTG+1"||o.villainPos==="UTG+2"
+       ?{value:30,show:45,draw:18,bluff:7,narrow:35,examples:"價值：TT+/AQ+｜中段：77–99、AJs/KQs｜投機：少量同花連張"}
+       :{value:20,show:40,draw:28,bluff:12,narrow:25,examples:"價值：99+/AQ+｜中段：Ax、Broadway｜投機：小口袋對、同花連張"};
+   } else if(o.context==="Open 後面對 3-bet"){
+     p={value:45,show:27,draw:13,bluff:15,narrow:58,examples:"價值：JJ+/AQs+/AK｜中段：TT/AQ/KQs｜Bluff 候選：A5s/A4s"};
+   } else if(o.context==="3-bet 後面對 4-bet"||o.context==="面對再加注"){
+     p={value:70,show:18,draw:4,bluff:8,narrow:78,examples:"價值核心：QQ+/AK｜邊界：JJ/AQs｜Bluff：少量 A5s/A4s"};
+   } else {
+     p={value:15,show:40,draw:35,bluff:10,narrow:18,examples:"尚未有明顯攻擊，範圍仍非常寬"};
+   }
+ } else if(o.context==="你下注後被 Raise"){
+   p=o.tex.wet>=2
+     ?{value:45,show:12,draw:33,bluff:10,narrow:o.street==="flop"?62:o.street==="turn"?75:88,examples:"價值：Set/兩對/強頂對｜半詐唬：強聽花、OESD、Combo Draw"}
+     :{value:52,show:22,draw:12,bluff:14,narrow:o.street==="flop"?65:o.street==="turn"?78:90,examples:"價值：Set/兩對/強頂對｜Bluff：Blocker/少量空氣"};
+ } else if(o.context==="面對下注"){
+   p=o.tex.wet>=2
+     ?{value:30,show:24,draw:31,bluff:15,narrow:o.street==="flop"?45:o.street==="turn"?62:80,examples:"頂對+、Pair+Draw、聽花、順子聽牌、部分 Bluff"}
+     :{value:27,show:40,draw:13,bluff:20,narrow:o.street==="flop"?40:o.street==="turn"?58:78,examples:"頂對/中對/口袋對、Set，加上範圍型小注 Bluff"};
+ } else {
+   p={value:18,show:42,draw:25,bluff:15,narrow:o.street==="flop"?28:o.street==="turn"?42:60,examples:"尚未受到攻擊，對手仍保留大量中等牌與空氣"};
+ }
+
+ if(tight){
+   const move=Math.min(10,p.bluff);p.bluff-=move;p.value+=Math.round(move*.65);p.show+=move-Math.round(move*.65);p.narrow=Math.min(95,p.narrow+7);
+ } else if(aggro){
+   const take=Math.min(10,p.value-10);p.value-=take;p.bluff+=Math.round(take*.7);p.draw+=take-Math.round(take*.7);p.narrow=Math.max(15,p.narrow-5);
+ } else if(loose){
+   const take=Math.min(7,p.value-10);p.value-=take;p.show+=Math.round(take*.6);p.draw+=take-Math.round(take*.6);p.narrow=Math.max(15,p.narrow-4);
+ }
+
+ if(o.street==="river"){
+   const moved=p.draw;p.draw=0;
+   p.value+=Math.round(moved*.45);p.bluff+=moved-Math.round(moved*.45);
+   p.examples += "｜River：原本未完成 Draw 會轉成放棄或 Bluff 候選";
+ }
+ const total=p.value+p.show+p.draw+p.bluff;
+ if(total!==100){p.show+=100-total}
+ return p;
+}
+
+function renderRangeProfile(p){
+ const rows=[
+   ["強價值",p.value],
+   ["攤牌價值",p.show],
+   ["Draw/半詐唬",p.draw],
+   ["Bluff",p.bluff]
+ ];
+ const box=document.getElementById("rangeBars");box.innerHTML="";
+ rows.forEach(([name,val])=>{
+   const row=document.createElement("div");row.className="rangeRow";
+   row.innerHTML='<span>'+name+'</span><div class="rangeTrack"><div class="rangeFill" style="width:'+val+'%"></div></div><div class="rangePct">'+val+'%</div>';
+   box.appendChild(row);
+ });
+ document.getElementById("rangeExamples").textContent=p.examples;
+ document.getElementById("rangeNarrow").textContent="Range 收窄程度 "+p.narrow+"%";
+}
+
 function practicalDecision(o){
  const p=preflopProfile(o.hole), late=["CO","BTN","SB"].includes(o.villainPos), early=["UTG","UTG+1","UTG+2","LJ","HJ"].includes(o.villainPos);
  const covered=o.villainStack>o.heroStack+0.5, icm=o.phase!=="normal", tight=o.tendency==="tight"||o.tendency==="passive", loose=o.tendency==="loose"||o.tendency==="aggressive";
@@ -435,7 +506,9 @@ function analyze(){
  if(phase==="bubble"||phase==="ft")why.push("目前屬於 "+(phase==="bubble"?"泡沫期":"決賽桌")+"；真正 ICM 決策還需要獎金結構與全桌籌碼分布，本版只做提醒，不假裝精確計算。");
  document.getElementById("mHand").textContent=handName+(draw.combo?"＋複合抽牌":draw.flush?"＋聽花":draw.oesd?"＋兩頭順":draw.gut?"＋卡順":"");
  document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";document.getElementById("mContext").textContent=context;
- document.getElementById("oppRange").textContent=opponentRangeEstimate({street,context,villainPos:bettor.pos,tendency,tex,eff});
+ const rangeInput={street,context,villainPos:bettor.pos,tendency,tex,eff};
+ document.getElementById("oppRange").textContent=opponentRangeEstimate(rangeInput);
+ renderRangeProfile(opponentRangeProfile(rangeInput));
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
  const analyzedStreet=street, nxt=nextStreet(analyzedStreet);
  runningPot=pot;document.getElementById("pot").value=runningPot.toFixed(1).replace(/\.0$/,"");
