@@ -282,7 +282,7 @@ const tableLayouts={
 };
 function currentPositions(){return tableLayouts[Number(document.getElementById("players").value)]||tableLayouts[6]}
 let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=2, pendingPicker=false;
-let investedThisStreet={}, pendingDecision=null, selectedMove=null, waitingOnOpp=false, handFinished=false;
+let investedThisStreet={}, pendingDecision=null, selectedMove=null, waitingOnOpp=false, handFinished=false, selectedBetPos=null;
 let rangeMemory={villain:null,profile:null,history:[]};
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
@@ -326,7 +326,10 @@ function setStreet(s,autoPick){
  updateSlots();
  if(autoPick&&s!=="preflop")pendingPicker=true;
 }
-function resetBetInputs(){document.querySelectorAll(".betIn").forEach(i=>i.value="0")}
+function resetBetInputs(){document.querySelectorAll(".betIn").forEach(i=>i.value="0");updatePotPreview()}
+function updatePotPreview(){const el=document.getElementById("potPreview");if(!el)return;const pending=seatData().filter(x=>x.on).reduce((t,x)=>t+x.bet,0);el.textContent=pending>0?"已入池 "+fmtBb(runningPot)+"BB · 待確認 +"+fmtBb(pending)+"BB → 預覽 "+fmtBb(runningPot+pending)+"BB":"目前已入池 "+fmtBb(runningPot)+"BB"}
+function selectFastBet(pos){selectedBetPos=pos;const row=posRow(pos);if(!row)return;row.querySelector(".seatOn").checked=true;document.getElementById("quickBetTitle").textContent=pos+" 新增 BB";document.getElementById("quickBet").hidden=false;document.querySelectorAll(".seat").forEach(x=>x.classList.toggle("editing",x.dataset.pos===pos));updatePotPreview()}
+document.querySelectorAll("[data-quick]").forEach(b=>b.addEventListener("click",()=>{const row=posRow(selectedBetPos);if(!row)return;row.querySelector(".betIn").value=b.dataset.quick;updatePotPreview()}));
 function posRow(pos){return Array.from(document.querySelectorAll(".seat")).find(r=>r.dataset.pos===pos)}
 function fmtBb(n){return Number(n.toFixed(1)).toString()}
 function putPot(n){runningPot=Number(n.toFixed(2));document.getElementById("pot").value=fmtBb(runningPot)}
@@ -361,12 +364,18 @@ const seatDefaults={
  "BTN":{on:true,s:25,b:0},"SB":{on:false,s:18,b:0},"BB":{on:true,s:25,b:0}
 };
 function renderSeats(){
- const hero=document.getElementById("heroPos").value, box=document.getElementById("seats");box.innerHTML="";
+ const hero=document.getElementById("heroPos").value, box=document.getElementById("seats");box.innerHTML="";box.dataset.count=String(currentPositions().length);
  currentPositions().forEach(p=>{const d=seatDefaults[p]||{on:false,s:30,b:0}, row=document.createElement("div");row.className="seat"+(p===hero?" hero":"");row.dataset.pos=p;
- row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span></div><div><label>剩餘 BB</label><input class="stackIn" type="number" min="0" step="0.1" value="'+d.s+'"></div><div><label>本次新增 BB</label><input class="betIn" type="number" min="0" step="0.1" value="'+d.b+'"></div>';
- box.appendChild(row)
+ row.innerHTML='<div class="seatName"><div class="toggle"><input class="seatOn" type="checkbox" aria-label="'+p+' 在局" '+(d.on||p===hero?'checked':'')+'><b>'+p+'</b></div><span class="'+(p===hero?'heroTag':'')+'">'+(p===hero?'你':'對手')+'</span><button type="button" class="seatQuick" aria-label="'+p+' 快速輸入 BB">＋</button></div><div><label>剩餘 BB</label><input class="stackIn" type="number" inputmode="decimal" aria-label="'+p+' 剩餘 BB" min="0" step="0.1" value="'+d.s+'"></div><div><label>本次新增</label><input class="betIn" type="number" inputmode="decimal" aria-label="'+p+' 本次新增 BB" min="0" step="0.1" value="'+d.b+'"></div>';
+ box.appendChild(row);
+ row.querySelector(".seatQuick").addEventListener("click",()=>selectFastBet(p));
+ row.querySelector(".betIn").addEventListener("input",updatePotPreview);
+ row.querySelector(".seatOn").addEventListener("change",updatePotPreview);
+ row.querySelectorAll(".stackIn,.betIn").forEach(i=>i.addEventListener("focus",()=>{if(i.select)i.select()}));
  });
+ document.getElementById("quickBet").hidden=true;selectedBetPos=null;
  const bb=box.querySelector('[data-pos="BB"]'); if(bb&&hero!=="BB"){bb.querySelector(".seatOn").checked=true;bb.querySelector(".stackIn").value=25;bb.querySelector(".betIn").value=0}
+ updatePotPreview()
 }
 function seatData(){
  const hero=document.getElementById("heroPos").value;return Array.from(document.querySelectorAll(".seat")).map(r=>({pos:r.dataset.pos,on:r.querySelector(".seatOn").checked||r.dataset.pos===hero,stack:Math.max(0,Number(r.querySelector(".stackIn").value)||0),bet:Math.max(0,Number(r.querySelector(".betIn").value)||0),hero:r.dataset.pos===hero}))
@@ -711,6 +720,7 @@ function analyze(){
  document.getElementById("raiseTo").value=fmtBb(Math.max(maxBet+1,maxBet*2,1));
  document.getElementById("decisionError").textContent="";
  document.getElementById("confirmMove").disabled=true;
+ document.getElementById("rangeDetails").open=false;
  document.getElementById("result").classList.add("show")
 }
 
