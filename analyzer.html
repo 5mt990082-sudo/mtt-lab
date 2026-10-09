@@ -53,7 +53,21 @@ select:focus,input:focus{border-color:var(--green)}
 .rangeText{margin:4px 0 7px;color:#b9cde1}
 .rangeBars{display:grid;gap:4px}.rangeRow{display:grid;grid-template-columns:62px 1fr 30px;gap:6px;align-items:center}.rangeRow span{font-size:9px;color:#a9bed1}.rangeTrack{height:6px;background:#122334;border-radius:99px;overflow:hidden}.rangeFill{height:100%;background:#8cc8ff;border-radius:99px}.rangePct{text-align:right;font-size:9px;color:#dbeaff}
 .rangeMeta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;padding-top:6px;border-top:1px solid #ffffff12;font-size:9px;color:#8fa8bc}.rangeExamples{margin-top:5px;color:#d8e7f6;font-size:9px}.rangeTrail{margin-top:6px;padding:6px 8px;border-radius:8px;background:#0d2030;color:#9fc4e6;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.recommend{margin-top:8px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-size:9px;font-weight:900}.recommend h3{font-size:24px;margin:4px 0}.recommend .size{font-size:12px;color:#e5f4eb;font-weight:900}.reason{margin-top:7px;display:grid;gap:5px;max-height:132px;overflow:auto}.reason div{padding:7px 9px;border-radius:9px;background:#08140f;color:#b5c9be;font-size:10px;line-height:1.4}.warn{color:#ffd6a0!important;background:#2b1c0b!important}
+ .result .sheet{max-height:calc(100dvh - 22px);overflow-y:auto;overscroll-behavior:contain}
+.recommend{margin-top:8px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-size:9px;font-weight:900}.recommend h3{font-size:24px;margin:4px 0}.recommend .size{font-size:12px;color:#e5f4eb;font-weight:900}.reason{margin-top:7px;display:grid;gap:5px;max-height:132px;overflow:auto}.reason div{padding:7px 9px;border-radius:9px;background:#08140f;color:#b5c9be;font-size:10px;line-height:1.4}
+.decision{margin-top:8px;padding:11px;border:1px solid #56c58c99;border-radius:13px;background:#0d2519}
+.decisionTitle{font-size:13px;font-weight:900;margin-bottom:5px}.decisionPrompt{color:#c7ddd1;font-size:11px;line-height:1.45;margin-bottom:9px}
+.decisionChoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.move{background:#0b1812;border:1px solid #3a5c49;border-radius:9px;color:#e6f8ec;font-size:12px;font-weight:900;padding:10px 3px}
+.move.on{background:#164832;border-color:var(--green);color:var(--green)}.move[hidden],.raiseEditor[hidden]{display:none}
+.raiseEditor{margin-top:7px}.raiseEditor label{font-size:10px}.raiseEditor input{height:36px}
+.confirmMove{width:100%;margin-top:8px;height:39px;border:0;border-radius:10px;background:var(--green);color:#062316;font-weight:900}
+.confirmMove:disabled{opacity:.42}.decisionError{color:#ff9b9b;font-size:11px;margin-top:5px}
+.waitingBar{display:none;margin-top:7px;padding:7px;border:1px solid #c6ac6280;border-radius:10px;background:#2b2411}
+.waitingBar.show{display:block}.waitingText{font-size:10px;color:#f0e2bd;line-height:1.35}
+.waitingActions{display:flex;gap:5px;margin-top:6px}.waitingActions button{flex:1;padding:7px 3px;border:1px solid #816b3b;border-radius:8px;color:#fff;background:#382d18;font-weight:800;font-size:10px}
+.waitingActions button[hidden]{display:none}
+.warn{color:#ffd6a0!important;background:#2b1c0b!important}
 @media(max-width:620px){
   html,body{height:100%;overflow:hidden}
   .app{height:100dvh;display:flex;flex-direction:column;padding:0 8px 6px}
@@ -114,7 +128,8 @@ select:focus,input:focus{border-color:var(--green)}
 <div><label>玩家數</label><select id="players"><option>2</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
 <div><label>主要對手</label><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注</option><option value="aggressive">高侵略</option></select></div>
 </div>
-<div class="actionsBar"><button class="analyze" id="analyze">分析這手牌</button><div class="hint">點牌面開選牌器；取消勾選可排除已棄牌位置。</div></div>
+<div class="actionsBar"><button class="analyze" id="analyze">分析這手牌</button><div class="hint">輸入對手本次新增投入 BB，再分析；分析不會直接記帳。</div></div>
+<div id="waitingBar" class="waitingBar"><div id="waitingText" class="waitingText"></div><div class="waitingActions"><button type="button" id="oppCalls">對手跟注</button><button type="button" id="oppFolds">對手棄牌</button><button type="button" id="streetDone">確認本街結束</button></div></div>
 <div class="error" id="error"></div>
 </section>
 </div>
@@ -138,7 +153,9 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="metric"><span>Pot Odds</span><b id="mOdds">—</b></div>
 <div class="metric"><span>脈絡</span><b id="mContext">—</b></div>
 </div>
-<div class="flowInfo" id="flowInfo">本筆入池 +0BB｜目前總底池 2BB</div>
+<div class="flowInfo" id="flowInfo">尚未分析｜目前總底池 2BB</div>
+<div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
+<div class="decision" id="decision"><div class="decisionTitle">輪到你｜實際採取什麼動作？</div><div id="decisionPrompt" class="decisionPrompt"></div><div class="decisionChoices"><button type="button" class="move" data-move="fold">棄牌</button><button type="button" class="move" data-move="check">過牌</button><button type="button" class="move" data-move="call">跟注</button><button type="button" class="move" data-move="raise">下注／加注</button></div><div id="raiseEditor" class="raiseEditor" hidden><label for="raiseTo">下注／加注至本街累計 BB（不是再增加多少）</label><input type="number" id="raiseTo" min="0.1" step="0.1" inputmode="decimal"></div><div id="decisionError" class="decisionError" role="alert"></div><button type="button" class="confirmMove" id="confirmMove" disabled>確認我的實際動作</button></div>
 <div class="rangeBox">
 <b>主要對手可能 Range｜啟發式估計</b>
 <div class="rangeText" id="oppRange">尚未分析</div>
@@ -147,7 +164,6 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="rangeTrail" id="rangeTrail">尚未建立逐街軌跡</div>
 <div class="rangeMeta"><span id="rangeNarrow">收窄程度 —</span><span>非 Solver 精確頻率</span></div>
 </div>
-<div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
 </div>
 </div>
 <script>
@@ -162,14 +178,15 @@ const tableLayouts={
 };
 function currentPositions(){return tableLayouts[Number(document.getElementById("players").value)]||tableLayouts[6]}
 let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=2, pendingPicker=false;
+let investedThisStreet={}, pendingDecision=null, selectedMove=null, waitingOnOpp=false, handFinished=false;
 let rangeMemory={villain:null,profile:null,history:[]};
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
 
 document.getElementById("back").addEventListener("click",()=>{location.href="./"});
-document.querySelectorAll("#streets button").forEach(b=>b.addEventListener("click",()=>setStreet(b.dataset.street,false)));
-document.getElementById("heroPos").addEventListener("change",renderSeats);
-document.getElementById("players").addEventListener("change",()=>{syncHeroPositions();renderSeats()});
+document.querySelectorAll("#streets button").forEach(b=>b.addEventListener("click",()=>{if(document.querySelectorAll(".betIn").length&&Array.from(document.querySelectorAll(".betIn")).some(i=>Number(i.value)>0)&&!confirm("目前尚有未確認的投入，切換街段將捨棄這些輸入。確定切換？"))return;setStreet(b.dataset.street,false)}));
+document.getElementById("heroPos").addEventListener("change",()=>{investedThisStreet={};waitingOnOpp=false;renderSeats();updateFlowBar()});
+document.getElementById("players").addEventListener("change",()=>{investedThisStreet={};waitingOnOpp=false;syncHeroPositions();renderSeats();updateFlowBar()});
 function syncHeroPositions(){
  const sel=document.getElementById("heroPos"), current=sel.value, positions=currentPositions();
  sel.innerHTML="";
@@ -181,10 +198,12 @@ function openPicker(){pickerModal.classList.add("show");document.getElementById(
 function closePicker(){pickerModal.classList.remove("show")}
 document.getElementById("closePicker").addEventListener("click",closePicker);
 pickerModal.addEventListener("click",e=>{if(e.target===pickerModal)closePicker()});
-document.getElementById("closeResult").addEventListener("click",()=>{
+function closeResultSheet(){
  document.getElementById("result").classList.remove("show");
+ pendingDecision=null;selectedMove=null;
  if(pendingPicker){pendingPicker=false;openPicker()}
-});
+}
+document.getElementById("closeResult").addEventListener("click",closeResultSheet);
 
 const ranksBox=document.getElementById("ranks"), suitsBox=document.getElementById("suits");
 ranks.forEach(r=>{const b=document.createElement("button");b.type="button";b.className="rank";b.textContent=r;b.addEventListener("click",()=>{pickRank=r;document.querySelectorAll(".rank").forEach(x=>x.classList.toggle("on",x===b));commitPick()});ranksBox.appendChild(b)});
@@ -193,6 +212,7 @@ suits.forEach(s=>{const b=document.createElement("button");b.type="button";b.cla
 function streetLabel(s){return s==="preflop"?"翻牌前":s==="flop"?"Flop":s==="turn"?"Turn":"River"}
 function nextStreet(s){return s==="preflop"?"flop":s==="flop"?"turn":s==="turn"?"river":null}
 function setStreet(s,autoPick){
+ if(street!==s){investedThisStreet={};waitingOnOpp=false;resetBetInputs();pendingDecision=null}
  street=s;
  document.querySelectorAll("#streets button").forEach(x=>x.classList.toggle("on",x.dataset.street===s));
  if(s==="preflop")activeSlot="h0";
@@ -203,13 +223,17 @@ function setStreet(s,autoPick){
  if(autoPick&&s!=="preflop")pendingPicker=true;
 }
 function resetBetInputs(){document.querySelectorAll(".betIn").forEach(i=>i.value="0")}
+function posRow(pos){return Array.from(document.querySelectorAll(".seat")).find(r=>r.dataset.pos===pos)}
+function fmtBb(n){return Number(n.toFixed(1)).toString()}
+function putPot(n){runningPot=Number(n.toFixed(2));document.getElementById("pot").value=fmtBb(runningPot)}
 function newHand(){
- runningPot=2;document.getElementById("pot").value="2";
+ runningPot=2;investedThisStreet={};pendingDecision=null;selectedMove=null;waitingOnOpp=false;handFinished=false;pendingPicker=false;
+ document.getElementById("analyze").disabled=false;document.getElementById("pot").value="2";
  Object.keys(cards).forEach(k=>cards[k]=null);
  rangeMemory={villain:null,profile:null,history:[]};
  document.getElementById("rangeTrail").textContent="尚未建立逐街軌跡";
  resetBetInputs();setStreet("preflop",false);activeSlot="h0";renderCardSlots();
- document.getElementById("result").classList.remove("show");hideError();
+ document.getElementById("result").classList.remove("show");hideError();updateFlowBar();
 }
 document.getElementById("newHand").addEventListener("click",()=>{if(confirm("開始新的一局？總底池會重置為 2BB。"))newHand()});
 
@@ -513,12 +537,16 @@ function analyze(){
  if(hole.some(x=>!x)){showError("請先選完整兩張手牌。");return}
  if(board.some(x=>!x)){showError("請先把目前街數需要的公牌選完整。");return}
  const basePot=runningPot, heroPos=document.getElementById("heroPos").value, seats=seatData(), hero=seats.find(x=>x.hero);
+ if(handFinished){showError("本局已結束，請按「新的一局」。");return}
+ if(seats.some(x=>x.on&&x.bet>x.stack+0.001)){showError("本筆投入不能超過該位置的剩餘 BB。");return}
  const addedThisStep=seats.filter(x=>x.on).reduce((sum,x)=>sum+x.bet,0);
+ if(waitingOnOpp&&!addedThisStep){showError("正在等待對手回應：請輸入其新增投入，或使用下方回應按鈕。");return}
  const pot=Math.max(.1,basePot+addedThisStep);
  const opp=seats.filter(x=>x.on&&!x.hero), activeOpp=opp.map(x=>x.pos);if(!opp.length){showError("至少要保留一位仍在牌局的對手。");return}
- const maxBet=Math.max(...opp.map(x=>x.bet),0), call=Math.max(0,maxBet-hero.bet), bettor=opp.filter(x=>x.bet===maxBet&&maxBet>hero.bet).sort((a,b)=>a.stack-b.stack)[0]||opp[0];
+ const maxBet=Math.max(...opp.map(x=>(investedThisStreet[x.pos]||0)+x.bet),0), heroBet=(investedThisStreet[heroPos]||0)+hero.bet;
+ const call=Math.max(0,maxBet-heroBet), bettor=opp.filter(x=>(investedThisStreet[x.pos]||0)+x.bet===maxBet&&maxBet>heroBet).sort((a,b)=>a.stack-b.stack)[0]||opp[0];
  const eff=Math.min(hero.stack,bettor.stack), spr=pot>0?eff/pot:0, odds=call>0?call/(pot+call):0, all=hole.concat(board), made=madeHand(all), handName=pairQuality(hole,board,made), draw=drawInfo(all,hole,board), tex=boardTexture(board), ip=inPosition(heroPos,activeOpp);
- const phase=document.getElementById("phase").value, role=document.getElementById("role").value, tendency=document.getElementById("tendency").value, context=inferContext(street,hero.bet,maxBet);
+ const phase=document.getElementById("phase").value, role=document.getElementById("role").value, tendency=document.getElementById("tendency").value, context=inferContext(street,heroBet,maxBet);
  let action="",size="",why=[];
  const pressure=call/pot, strong=made.score>=2, monster=made.score>=4, topish=["頂對","超對"].includes(handName), weakPair=made.score===1&&!topish;
  if(street==="preflop"){
@@ -555,16 +583,110 @@ function analyze(){
  document.getElementById("mBoard").textContent=tex.label;document.getElementById("mSpr").textContent=fmt(spr);document.getElementById("mOdds").textContent=call>0?Math.round(odds*100)+"%":"無需跟注";document.getElementById("mContext").textContent=context;
  const rangeInput={street,context,villainPos:bettor.pos,tendency,tex,eff};
  document.getElementById("oppRange").textContent=opponentRangeEstimate(rangeInput);
+ const beforeRange=JSON.parse(JSON.stringify(rangeMemory));
  const evolvedProfile=evolveRangeProfile(opponentRangeProfile(rangeInput),bettor.pos,street,context);
- renderRangeProfile(evolvedProfile);
+ const nextRange=JSON.parse(JSON.stringify(rangeMemory));
+ rangeMemory=beforeRange;renderRangeProfile(evolvedProfile);
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
- const analyzedStreet=street, nxt=nextStreet(analyzedStreet);
- runningPot=pot;document.getElementById("pot").value=runningPot.toFixed(1).replace(/\.0$/,"");
- document.getElementById("flowInfo").textContent="本筆入池 +"+addedThisStep.toFixed(1).replace(/\.0$/,"")+"BB｜目前總底池 "+document.getElementById("pot").value+"BB"+(nxt?"｜下一環節："+streetLabel(nxt):"｜已到 River");
- resetBetInputs();
- if(nxt)setStreet(nxt,true);
+ pendingDecision={street,heroPos,seats,call,pot,basePot,addedThisStep,maxBet,heroBet,heroStack:hero.stack,opponentCount:opp.length,bettorPos:bettor.pos,ip,rangeNext:nextRange};
+ selectedMove=null;
+ document.getElementById("flowInfo").textContent="對手本次輸入 +"+fmtBb(addedThisStep)+"BB｜目前底池預覽 "+fmtBb(pot)+"BB（尚未記帳）";
+ document.getElementById("decisionPrompt").textContent=(call>0?"目前 "+bettor.pos+" 本街累計下注 "+fmtBb(maxBet)+"BB，輪到 "+heroPos+"，需再投入 "+fmtBb(call)+"BB。":"目前沒有需跟注的金額，請記錄 "+heroPos+" 的實際動作。")+" 系統不會代替你執行建議。";
+ document.querySelectorAll("[data-move]").forEach(b=>{const move=b.dataset.move;b.hidden=(call>0&&move==="check")||(call<=0&&(move==="call"||move==="fold"));b.classList.remove("on");b.textContent=move==="call"?"跟注 "+fmtBb(call)+"BB":move==="raise"?(call>0?"加注":"下注"):move==="fold"?"棄牌":"過牌"});
+ document.getElementById("raiseEditor").hidden=true;
+ document.getElementById("raiseTo").value=fmtBb(Math.max(maxBet+1,maxBet*2,1));
+ document.getElementById("decisionError").textContent="";
+ document.getElementById("confirmMove").disabled=true;
  document.getElementById("result").classList.add("show")
 }
+
+// 分析只建立預覽；直到使用者確認真實動作才寫入籌碼與底池。
+document.querySelectorAll("[data-move]").forEach(b=>b.addEventListener("click",()=>{
+ selectedMove=b.dataset.move;
+ document.querySelectorAll("[data-move]").forEach(x=>x.classList.toggle("on",x===b));
+ document.getElementById("raiseEditor").hidden=selectedMove!=="raise";
+ document.getElementById("decisionError").textContent="";
+ document.getElementById("confirmMove").disabled=false;
+}));
+function updateFlowBar(message){
+ const bar=document.getElementById("waitingBar"),t=document.getElementById("waitingText"),btnCall=document.getElementById("oppCalls"),btnFold=document.getElementById("oppFolds"),btnDone=document.getElementById("streetDone");
+ const heroPos=document.getElementById("heroPos").value,opp=seatData().filter(x=>x.on&&!x.hero);
+ bar.classList.toggle("show",!!(waitingOnOpp||handFinished||message));
+ if(message)t.textContent=message;
+ else if(handFinished)t.textContent="本手牌已結束。按「新的一局」重新開始。";
+ else t.textContent="還在 "+streetLabel(street)+"：等待對手回應。若對手再加注，請在該位置填入『這次新增』BB，再按分析。";
+ const canAnswer=waitingOnOpp&&opp.length===1&&(investedThisStreet[heroPos]||0)>(investedThisStreet[opp[0].pos]||0)+0.01;
+ btnCall.hidden=!canAnswer;btnFold.hidden=!canAnswer;
+ btnDone.hidden=!waitingOnOpp;
+}
+function markEnd(){
+ handFinished=true;waitingOnOpp=false;
+ document.getElementById("analyze").disabled=true;
+ updateFlowBar();
+}
+function advanceAfterRound(){
+ waitingOnOpp=false;
+ const n=nextStreet(street);
+ if(!n){markEnd();return}
+ setStreet(n,true);updateFlowBar();
+}
+function deductSeat(pos,amount){
+ if(amount<=0)return;
+ const row=posRow(pos);
+ if(!row)return;
+ const stack=row.querySelector(".stackIn");
+ stack.value=fmtBb(Math.max(0,Number(stack.value)-amount));
+ investedThisStreet[pos]=(investedThisStreet[pos]||0)+amount;
+ runningPot=Number((runningPot+amount).toFixed(2));
+}
+function syncPot(){document.getElementById("pot").value=fmtBb(runningPot)}
+document.getElementById("confirmMove").addEventListener("click",()=>{
+ const d=pendingDecision,m=selectedMove,err=document.getElementById("decisionError");
+ if(!d||!m||street!==d.street)return;
+ const available=d.heroStack-d.seats.find(x=>x.hero).bet;
+ let extra=0;
+ if(m==="check"&&d.call>0){err.textContent="面對下注不能過牌，請選跟注、加注或棄牌。";return}
+ if(m==="call"){extra=d.call;if(extra>available+0.001){err.textContent="籌碼不足以完整跟注；側池／不足額全下尚不支援，請檢查籌碼。";return}}
+ if(m==="raise"){
+   const to=Number(document.getElementById("raiseTo").value);
+   if(!Number.isFinite(to)||to<=Math.max(d.maxBet,d.heroBet)+0.001){err.textContent="下注／加注至必須高於目前本街最高投入。";return}
+   extra=to-d.heroBet;
+   if(extra>available+0.001){err.textContent="加注金額超過你的可用 BB。";return}
+ }
+ // 先記錄對手與自行手動輸入的本筆投入，再記錄這次確認的動作；每筆只入池一次。
+ d.seats.filter(x=>x.on&&x.bet>0).forEach(x=>deductSeat(x.pos,x.bet));
+ if(extra>0)deductSeat(d.heroPos,extra);
+ syncPot();resetBetInputs();
+ rangeMemory=d.rangeNext;
+ const record=m==="call"?"跟注 "+fmtBb(extra)+"BB":m==="raise"?"下注／加注至 "+fmtBb(investedThisStreet[d.heroPos])+"BB":m==="fold"?"棄牌":"過牌";
+ document.getElementById("flowInfo").textContent="已確認："+record+"｜目前總底池 "+fmtBb(runningPot)+"BB";
+ if(m==="fold"){markEnd()}
+ else if(m==="raise"){waitingOnOpp=true;updateFlowBar("你已"+record+"。請等待對手：可輸入其再加注的新增 BB，或按下方『對手跟注／棄牌』。")}
+ else if(m==="call"&&d.opponentCount===1){advanceAfterRound()}
+ else {waitingOnOpp=true;updateFlowBar("已記錄你"+record+"。尚需確認其他玩家行動，本街未結束；若沒有更多行動，按『確認本街結束』。")}
+ closeResultSheet();
+});
+document.getElementById("oppCalls").addEventListener("click",()=>{
+ const hero=document.getElementById("heroPos").value, opp=seatData().filter(x=>x.on&&!x.hero);
+ if(!waitingOnOpp||opp.length!==1)return;
+ const amount=Math.max(0,(investedThisStreet[hero]||0)-(investedThisStreet[opp[0].pos]||0));
+ if(amount>opp[0].stack+.001){showError("對手籌碼不足，需處理不足額全下／側池，不能直接視為完整跟注。");return}
+ deductSeat(opp[0].pos,amount);syncPot();advanceAfterRound();
+ if(pendingPicker){pendingPicker=false;openPicker()}
+});
+document.getElementById("oppFolds").addEventListener("click",()=>{
+ const opp=seatData().filter(x=>x.on&&!x.hero);
+ if(!waitingOnOpp||opp.length!==1)return;
+ const row=posRow(opp[0].pos);if(row)row.querySelector(".seatOn").checked=false;
+ markEnd();
+});
+document.getElementById("streetDone").addEventListener("click",()=>{
+ if(!waitingOnOpp)return;
+ if(Array.from(document.querySelectorAll(".betIn")).some(x=>Number(x.value)>0)){showError("仍有未入帳的下注，請先分析／記錄。");return}
+ if(!confirm("確定本街所有在局玩家的動作都已完成？"))return;
+ advanceAfterRound();
+ if(pendingPicker){pendingPicker=false;openPicker()}
+});
 function showError(t){const e=document.getElementById("error");e.textContent=t;e.classList.add("show")}
 function hideError(){document.getElementById("error").classList.remove("show")}
 document.getElementById("analyze").addEventListener("click",analyze);
