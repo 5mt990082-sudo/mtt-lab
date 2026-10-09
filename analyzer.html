@@ -84,7 +84,7 @@ select:focus,input:focus{border-color:var(--green)}
 <button type="button" class="on" data-street="preflop">翻牌前</button><button type="button" data-street="flop">Flop</button><button type="button" data-street="turn">Turn</button><button type="button" data-street="river">River</button>
 </div>
 <div class="quick">
-<div><label>總底池 BB</label><input id="pot" type="number" value="5.5" readonly aria-label="總底池 BB"></div>
+<div><label>總底池 BB</label><input id="pot" type="number" value="2" readonly aria-label="總底池 BB"></div>
 <div><label>你的位置</label><select id="heroPos" aria-label="你的位置"><option>UTG</option><option>HJ</option><option>CO</option><option selected>BTN</option><option>SB</option><option>BB</option></select></div>
 <div><label>翻牌前角色</label><select id="role" aria-label="翻牌前角色"><option value="unknown">不確定</option><option value="aggressor" selected>主動方</option><option value="caller">跟注方</option></select></div>
 </div>
@@ -134,14 +134,14 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="metric"><span>Pot Odds</span><b id="mOdds">—</b></div>
 <div class="metric"><span>脈絡</span><b id="mContext">—</b></div>
 </div>
-<div class="flowInfo" id="flowInfo">本筆入池 +0BB｜目前總底池 5.5BB</div>
+<div class="flowInfo" id="flowInfo">本筆入池 +0BB｜目前總底池 2BB</div>
 <div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
 </div>
 </div>
 <script>
 (function(){
 const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"], suits=["♠","♥","♦","♣"], pos=["UTG","HJ","CO","BTN","SB","BB"];
-let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=5.5, pendingPicker=false;
+let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=2, pendingPicker=false;
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
 
@@ -176,12 +176,12 @@ function setStreet(s,autoPick){
 }
 function resetBetInputs(){document.querySelectorAll(".betIn").forEach(i=>i.value="0")}
 function newHand(){
- runningPot=5.5;document.getElementById("pot").value="5.5";
+ runningPot=2;document.getElementById("pot").value="2";
  Object.keys(cards).forEach(k=>cards[k]=null);
  resetBetInputs();setStreet("preflop",false);activeSlot="h0";renderCardSlots();
  document.getElementById("result").classList.remove("show");hideError();
 }
-document.getElementById("newHand").addEventListener("click",()=>{if(confirm("開始新的一局？總底池會重置為 5.5BB。"))newHand()});
+document.getElementById("newHand").addEventListener("click",()=>{if(confirm("開始新的一局？總底池會重置為 2BB。"))newHand()});
 
 function requiredBoard(){return street==="preflop"?0:street==="flop"?3:street==="turn"?4:5}
 function slotName(k){return k[0]==="h"?"手牌 "+(Number(k[1])+1):"公牌 "+(Number(k[1])+1)}
@@ -390,7 +390,7 @@ function analyze(){
 function showError(t){const e=document.getElementById("error");e.textContent=t;e.classList.add("show")}
 function hideError(){document.getElementById("error").classList.remove("show")}
 document.getElementById("analyze").addEventListener("click",analyze);
-renderSeats();setStreet("preflop",false);document.getElementById("pot").value="5.5";
+renderSeats();setStreet("preflop",false);document.getElementById("pot").value="2";
 })();
 </script>
 </body>
