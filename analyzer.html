@@ -55,6 +55,9 @@ select:focus,input:focus{border-color:var(--green)}
 .rangeText{margin:4px 0 7px;color:#b9cde1}
 .rangeBars{display:grid;gap:4px}.rangeRow{display:grid;grid-template-columns:62px 1fr 30px;gap:6px;align-items:center}.rangeRow span{font-size:9px;color:#a9bed1}.rangeTrack{height:6px;background:#122334;border-radius:99px;overflow:hidden}.rangeFill{height:100%;background:#8cc8ff;border-radius:99px}.rangePct{text-align:right;font-size:9px;color:#dbeaff}
 .rangeMeta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;padding-top:6px;border-top:1px solid #ffffff12;font-size:9px;color:#8fa8bc}.rangeExamples{margin-top:5px;color:#d8e7f6;font-size:9px}.rangeTrail{margin-top:6px;padding:6px 8px;border-radius:8px;background:#0d2030;color:#9fc4e6;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.behaviorBox{margin-top:7px;padding:9px 10px;border:1px solid #6b5333;border-radius:10px;background:#21170c;color:#f0dfbd;font-size:10px;line-height:1.45}
+.behaviorBox b{color:#ffd071}.behaviorHeadline{margin:4px 0 6px;font-size:12px;font-weight:900;color:#fff2d2}.behaviorGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.behaviorItem{padding:6px 7px;border-radius:8px;background:#2a1e10;border:1px solid #ffffff10}.behaviorItem span{display:block;font-size:8px;color:#bda883}.behaviorItem strong{display:block;margin-top:2px;font-size:10px;color:#f6e6c6}.behaviorFoot{margin-top:6px;color:#c8b58f;font-size:9px}
  .result .sheet{max-height:calc(100dvh - 22px);overflow-y:auto;overscroll-behavior:contain}
 .recommend{margin-top:8px;padding:12px;border-radius:14px;background:linear-gradient(135deg,#153725,#0a1a12);border:1px solid #61f2a54d}.recommend small{color:var(--green);font-size:9px;font-weight:900}.recommend h3{font-size:24px;margin:4px 0}.recommend .size{font-size:12px;color:#e5f4eb;font-weight:900}.reason{margin-top:7px;display:grid;gap:5px;max-height:132px;overflow:auto}.reason div{padding:7px 9px;border-radius:9px;background:#08140f;color:#b5c9be;font-size:10px;line-height:1.4}
 .decision{margin-top:8px;padding:11px;border:1px solid #56c58c99;border-radius:13px;background:#0d2519}
@@ -322,6 +325,17 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="metric"><span>脈絡</span><b id="mContext">—</b></div>
 </div>
 <div class="flowInfo" id="flowInfo">尚未分析｜目前總底池 2BB</div>
+<div class="behaviorBox">
+<b>行為／心理線路分析</b>
+<div class="behaviorHeadline" id="behaviorLine">尚未分析</div>
+<div class="behaviorGrid">
+  <div class="behaviorItem"><span>較可能動機</span><strong id="behaviorPrimary">—</strong></div>
+  <div class="behaviorItem"><span>次要可能</span><strong id="behaviorSecondary">—</strong></div>
+  <div class="behaviorItem"><span>極化程度</span><strong id="behaviorPolar">—</strong></div>
+  <div class="behaviorItem"><span>可信度</span><strong id="behaviorConfidence">—</strong></div>
+</div>
+<div class="behaviorFoot" id="behaviorNote">這裡分析的是下注行為，不是讀心；只作為 Range / Pot Odds / SPR 之外的 exploit 修正。</div>
+</div>
 <div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
 
 <details class="rangeDetails" id="rangeDetails"><summary>展開對手 Range 與進階資訊 <span>⌄</span></summary>
@@ -657,6 +671,86 @@ function renderRangeProfile(p){
  renderRangeTrail();
 }
 
+function behaviorLineAnalysis(o){
+ const tight=o.tendency==="tight"||o.tendency==="passive";
+ const aggro=o.tendency==="aggressive";
+ const loose=o.tendency==="loose";
+ const isRaise=o.context==="你下注後被 Raise";
+ const isBet=o.context==="面對下注";
+ const heroSmall=o.heroBet>0 && o.basePot>0 && o.heroBet/o.basePot<=.36;
+ const oppCommit=o.villainStack>0?o.newVillainBet/o.villainStack:0;
+ const jam=o.newVillainBet>0 && (oppCommit>=.82 || o.maxBet>=o.villainStack*.85 || o.spr<=1.05);
+ const huge=o.call>0 && o.call/o.basePot>=.75;
+ const flushHeavy=o.tex.mono||o.tex.two;
+ let primary="一般價值／施壓", secondary="混合 Range", polar="中", confidence="低";
+ let headline="目前沒有特別異常的下注線路。";
+ let note="單一下注動作不足以推斷心理；優先看位置、Range、Pot Odds、SPR。";
+
+ if(isRaise && jam){
+   polar="很高";confidence="中";
+   headline="小尺寸之後遭到突然 All-in：這通常是高度極化訊號。";
+   primary="強價值／保護型快打";
+   secondary="強 Draw 或高槓桿 Bluff";
+   note="不要把『突然 All-in』直接解讀成心虛；先確認他的價值牌與自然 Bluff 是否都存在。";
+
+   if(flushHeavy && heroSmall){
+     headline=(o.tex.mono?"三同花":"聽花")+"牌面，小注後遭 All-in：要特別區分「怕被反超的價值牌」與「用最大壓力打掉你的中等牌」。";
+     if(o.street==="flop"){
+       primary="成手＋保護／強 Draw";
+       secondary="Combo Draw 半詐唬";
+       confidence="中高";
+       note="Flop 還有兩張牌未發，強聽花／順花複合 Draw 具備足夠 equity，實戰中確實可能用全下換棄牌率。";
+     } else if(o.street==="turn"){
+       primary=o.tex.mono?"成花／Set＋保護":"強價值／強 Draw";
+       secondary="高張花阻擋牌 Bluff";
+       confidence="中高";
+       note="Turn 的大幅加速比 Flop 更偏向價值或高 equity 半詐唬；偏緊玩家尤其要提高 Value 權重。";
+     } else if(o.street==="river"){
+       primary="成花／更強價值";
+       secondary="Missed draw 轉 Bluff";
+       confidence="高";
+       note="River 已沒有『還在抽』這件事，All-in 更接近純 Value vs 純 Bluff 的極化。";
+     }
+   }
+ } else if(isRaise && huge){
+   polar="高";confidence="中";
+   headline="你的下注後遭到大型 Raise：對手正在用尺寸把中等牌逼進困難區。";
+   primary=flushHeavy?"價值＋保護":"強價值";
+   secondary=aggro?"高槓桿 Bluff":"半詐唬";
+   note="大型 Raise 的心理效果是製造棄牌壓力，但策略上仍要回到他有哪些自然 Value / Bluff 組合。";
+ } else if(isRaise){
+   polar="中";confidence="中";
+   headline="被 Raise 本身就是範圍收窄訊號，但還不到必然極化。";
+   primary="價值牌";
+   secondary=flushHeavy?"Draw／半詐唬":"少量 Bluff";
+ } else if(isBet && jam){
+   polar="很高";confidence="中";
+   headline="對手直接 All-in：通常代表他把決策壓縮成 Value / Bluff 兩端。";
+   primary="強價值";
+   secondary=flushHeavy&&o.street!=="river"?"強 Draw 半詐唬":"Bluff";
+ }
+
+ if(tight){
+   primary=primary.replace("強 Draw 或高槓桿 Bluff","強價值");
+   note+=" 對手偏緊／被動，應把 Value 權重再往上調。";
+   confidence=confidence==="低"?"中":confidence;
+ } else if(aggro){
+   note+=" 對手高侵略，不能把超大尺寸自動視為超強牌，Bluff／半詐唬權重要保留。";
+ } else if(loose){
+   note+=" 對手偏鬆，弱價值牌與過度保護型 All-in 的比例可能提高。";
+ }
+
+ return{headline,primary,secondary,polar,confidence,note,jam,heroSmall,flushHeavy};
+}
+function renderBehaviorLine(x){
+ document.getElementById("behaviorLine").textContent=x.headline;
+ document.getElementById("behaviorPrimary").textContent=x.primary;
+ document.getElementById("behaviorSecondary").textContent=x.secondary;
+ document.getElementById("behaviorPolar").textContent=x.polar;
+ document.getElementById("behaviorConfidence").textContent=x.confidence;
+ document.getElementById("behaviorNote").textContent=x.note;
+}
+
 function practicalDecision(o){
  const p=preflopProfile(o.hole), late=["CO","BTN","SB"].includes(o.villainPos), early=["UTG","UTG+1","UTG+2","LJ","HJ"].includes(o.villainPos);
  const covered=o.villainStack>o.heroStack+0.5, icm=o.phase!=="normal", tight=o.tendency==="tight"||o.tendency==="passive", loose=o.tendency==="loose"||o.tendency==="aggressive";
@@ -779,6 +873,12 @@ function analyze(){
  const evolvedProfile=evolveRangeProfile(opponentRangeProfile(rangeInput),bettor.pos,street,context);
  const nextRange=JSON.parse(JSON.stringify(rangeMemory));
  rangeMemory=beforeRange;renderRangeProfile(evolvedProfile);document.getElementById("rangeTrail").textContent=nextRange.history.length?"Range 軌跡｜"+nextRange.history.map(x=>x.label).join(" → "):"尚未建立逐街軌跡";
+ const behaviorInput={street,context,tex,tendency,heroBet,maxBet,call,basePot,pot,spr,villainStack:bettor.stack,newVillainBet:bettor.bet};
+ const behavior=behaviorLineAnalysis(behaviorInput);
+ renderBehaviorLine(behavior);
+ if(behavior.jam&&behavior.heroSmall&&behavior.flushHeavy){
+   why.unshift("行為線路提醒：花面小注後遭突然 All-in，這是高度極化 spot；先區分強價值／保護型快打與自然半詐唬，再用 Pot Odds、blocker 與對手傾向決定是否 bluff-catch。");
+ }
  document.getElementById("recAction").textContent=action;document.getElementById("recSize").textContent=size;const rb=document.getElementById("reasons");rb.innerHTML="";why.forEach((w,i)=>{const d=document.createElement("div");d.textContent=w;if(i===why.length-1&&(phase==="bubble"||phase==="ft"))d.className="warn";rb.appendChild(d)});
  pendingDecision={street,heroPos,seats,call,pot,basePot,addedThisStep,maxBet,heroBet,heroStack:hero.stack,opponentCount:opp.length,bettorPos:bettor.pos,ip,rangeNext:nextRange};
  selectedMove=null;
