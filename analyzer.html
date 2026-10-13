@@ -577,6 +577,7 @@ document.getElementById("applyShot").addEventListener("click",()=>{
  if(!shotInput.files||!shotInput.files[0]){alert("請先選擇一張牌桌截圖。");return}
  if(Boolean(form.c1)!==Boolean(form.c2)){alert("請將兩張手牌都選好，或先都留白。");return}
  if(form.c1&&form.c1===form.c2){alert("兩張手牌不能是同一張牌。");return}
+ if((form.stack!==""||form.c1)&&!form.heroPos){alert("要套用自己的籌碼或手牌，請先確認你的位置，避免把資料寫到其他玩家的座位。");return}
  if((form.stack!==""&&(!Number.isFinite(Number(form.stack))||Number(form.stack)<0||Number(form.stack)>5000))||
     (form.pot!==""&&(!Number.isFinite(Number(form.pot))||Number(form.pot)<=0||Number(form.pot)>50000))){
    alert("BB 數字不合理，請檢查是不是誤把玩家名稱、下注額或底池讀成籌碼。");return;
@@ -617,6 +618,7 @@ document.getElementById("applyShot").addEventListener("click",()=>{
  if(form.c1){cards.h0=form.c1;cards.h1=form.c2;renderCardSlots()}
  updatePotPreview();
  document.getElementById("flowInfo").textContent="截圖欄位已人工確認並套用；請再檢查剩餘 BB、位置與下注動作，才開始分析。";
+ document.getElementById("shotBtn").textContent="✓ 已匯入";
  shotStatus.className="shotStatus ok";shotStatus.textContent="已套用人工確認的欄位。";shotModal.classList.remove("show");
 });
 
@@ -668,6 +670,7 @@ function posRow(pos){return Array.from(document.querySelectorAll(".seat")).find(
 function fmtBb(n){return Number(n.toFixed(1)).toString()}
 function putPot(n){runningPot=Number(n.toFixed(2));document.getElementById("pot").value=fmtBb(runningPot)}
 function newHand(){
+ document.getElementById("shotBtn").textContent="📷 截圖";
  runningPot=2;investedThisStreet={};pendingDecision=null;selectedMove=null;waitingOnOpp=false;handFinished=false;pendingPicker=false;
  document.getElementById("analyze").disabled=false;document.getElementById("pot").value="2";
  Object.keys(cards).forEach(k=>cards[k]=null);
