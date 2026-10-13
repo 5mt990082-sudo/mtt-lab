@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07120d"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>撲克學院｜MTT LAB</title>
+<style>
+:root{--bg:#06100c;--panel:#0e1c16;--panel2:#13281e;--line:#284737;--text:#eef8f1;--muted:#9ab5a5;--accent:#61f2a5;--gold:#ffd681;--red:#ff9292}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 60% -130px,#1d4b33 0,#091710 370px,#06100c 800px);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;line-height:1.65}button,textarea,input{font:inherit}button,a{touch-action:manipulation}a{color:var(--accent);text-decoration:none}button{cursor:pointer}.shell{max-width:1040px;margin:auto;padding:0 15px 98px}.top{height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #ffffff17}.brand{font-size:16px;font-weight:1000;letter-spacing:.03em}.brand small{display:block;color:var(--accent);font-size:9px;letter-spacing:.18em}.topright{display:flex;gap:7px}.ghost{border:1px solid var(--line);border-radius:11px;background:#11241a;color:#eaf7ee;padding:9px 12px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}.eyebrow{color:var(--accent);font-size:11px;font-weight:900;letter-spacing:.11em}.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:19px}.hero{margin:22px 0 14px;border:1px solid #4b8966;border-radius:24px;background:linear-gradient(135deg,#153925,#0b2117 64%,#0a1610);padding:25px}.hero h1{font-size:clamp(29px,6vw,42px);line-height:1.2;margin:9px 0}.hero p{color:#b2cabb;margin:6px 0 16px;font-size:14px}.pill{display:inline-flex;align-items:center;border-radius:100px;background:#61f2a51a;border:1px solid #61f2a542;color:#a2f9c7;padding:4px 9px;font-size:11px;font-weight:900}.primary{border:0;border-radius:12px;padding:12px 17px;background:var(--accent);color:#062416;font-weight:1000}.primary:disabled{opacity:.5}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:13px}.stat small{font-size:11px;color:var(--muted)}.stat b{display:block;font-size:24px;line-height:1.3;margin-top:4px}.progress{height:9px;background:#264136;border-radius:99px;overflow:hidden}.progress>i{height:100%;display:block;width:0;background:linear-gradient(90deg,#31bc78,#91f5bd);border-radius:99px}.cols{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-top:14px}.mainTitle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}.mainTitle h2{margin:0;font-size:22px}.tabs{display:flex;gap:7px;overflow:auto;padding:2px 0 10px}.tab{border:1px solid var(--line);color:#bbd1c3;background:#0e2017;border-radius:100px;white-space:nowrap;padding:8px 12px;font-weight:800;font-size:12px}.tab.on{background:#1e4b34;color:var(--accent);border-color:#61f2a5}.chapter{display:flex;gap:12px;align-items:center;text-align:left;width:100%;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:16px;padding:13px;margin:8px 0;min-height:76px}.chapter:focus-visible,.choice:focus-visible,.tab:focus-visible{outline:2px solid var(--accent)}.chapter .num{width:38px;height:43px;border-radius:10px;background:#193c29;color:var(--accent);display:grid;place-items:center;font-weight:1000;flex-shrink:0}.chapter .info{flex:1;min-width:0}.chapter b{display:block;font-size:14px}.chapter small{display:block;color:var(--muted);line-height:1.45;margin-top:3px}.chapter .right{font-size:12px;text-align:right;color:var(--muted);min-width:40px}.chapter.done{border-color:#3c8662}.sideHead{font-weight:900;font-size:16px;margin:0 0 12px}.sideTip{background:#07170f;border-radius:12px;padding:12px;font-size:13px;color:#c9e1d1;margin:8px 0}.sideTip b{color:var(--gold)}.sideTip a{display:block;margin-top:7px;font-weight:900}.muted{color:var(--muted);font-size:13px}.subNav{display:flex;align-items:center;gap:10px;margin:20px 0}.subNav h1{margin:0;font-size:24px;line-height:1.3}.back{width:43px;height:43px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);font-size:20px;flex-shrink:0}.reading{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:14px}.reading .panel{margin-bottom:12px}.reading h2{font-size:19px;margin:0 0 10px}.reading h3{font-size:16px;color:#def9e8;margin:22px 0 6px}.reading p{color:#bfd3c6;margin:0 0 10px;font-size:14px}.callout{border-left:3px solid var(--accent);background:#0b2a1b;border-radius:0 12px 12px 0;padding:13px 14px;margin:12px 0;color:#d5f8df;font-size:14px}.example{background:#1b271a;border:1px solid #62583a;border-radius:13px;padding:13px;color:#f4e6c6;font-size:14px}.tag{color:var(--gold);font-size:11px;font-weight:900;letter-spacing:.08em}.sectionList{position:sticky;top:10px}.sectionList a{display:block;border-bottom:1px solid #ffffff12;padding:8px 0;font-size:13px;color:#c4d7c8}.noteInput{width:100%;min-height:105px;padding:12px;background:#081810;border:1px solid var(--line);border-radius:12px;color:white;resize:vertical;font-size:14px}.quizHead{display:flex;align-items:center;justify-content:space-between;gap:8px}.question{font-size:17px;font-weight:850;margin:14px 0}.choices{display:grid;gap:8px}.choice{border:1px solid #3a604a;border-radius:12px;padding:13px;text-align:left;background:#11251a;color:#f2faf4;font-size:14px;line-height:1.5}.choice:disabled{cursor:default;opacity:.95}.choice.selected{border-color:var(--gold);background:#2a2c1a}.choice.good{border-color:var(--accent);background:#17442e}.choice.bad{border-color:var(--red);background:#40211f}.feedback{background:#0a2317;border:1px solid #3a7551;border-radius:13px;padding:13px;margin:12px 0;color:#d5eadd;font-size:14px}.feedback strong{color:var(--accent)}.caseBox{border:1px solid #3b5f4c;border-radius:14px;padding:13px;margin:10px 0;background:#102419}.caseBox b{display:block;color:#effaf2}.caseBox p{font-size:13px;color:#c3d7c8;margin:7px 0}.caseBox button{padding:6px 10px;border:1px solid #528668;border-radius:9px;background:#1d3d2b;color:#baf9d3;font-weight:800}.caseAnswer{display:none;margin-top:9px;border-top:1px solid #ffffff1b;padding-top:9px}.caseBox.open .caseAnswer{display:block}.errorCard{padding:13px;border:1px solid var(--line);border-radius:13px;background:#101f18;margin-bottom:8px}.errorCard b{display:block;font-size:13px}.errorCard p{color:#c6d5c9;font-size:12px;margin:6px 0}.errorCard a{font-size:12px;font-weight:900}.week{padding:13px;background:#101f18;border:1px solid var(--line);border-radius:13px;margin:8px 0}.week label{display:flex;align-items:flex-start;gap:12px;font-size:14px}.week input{width:19px;height:19px;accent-color:#61f2a5;flex-shrink:0;margin-top:3px}.footerNav{position:fixed;z-index:5;bottom:0;left:0;right:0;background:#07140ff2;backdrop-filter:blur(12px);border-top:1px solid #294b39;display:flex;justify-content:center;gap:8px;padding:10px 12px max(10px,env(safe-area-inset-bottom))}.footerNav button{border:0;background:transparent;color:#91b3a0;font-size:12px;font-weight:850;padding:7px 17px;border-radius:10px}.footerNav button.on{background:#204733;color:var(--accent)}.footerNav span{display:block;font-size:19px}.hidden{display:none!important}.tools{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.small{font-size:12px}.footnote{font-size:12px;color:#8ca89a}.banner{font-size:12px;color:#cfdecf;line-height:1.7;margin:16px 0}.center{text-align:center}.shade{color:var(--muted)}
+@media(max-width:750px){.cols,.reading{grid-template-columns:1fr}.reading .sectionList{position:static}.side{order:-1}.hero{padding:20px}.shell{padding:0 12px 100px}.panel{padding:16px}.topright .ghost{padding:8px;font-size:11px}.stats{gap:7px}.stat{padding:10px}.stat b{font-size:21px}.footerNav button{padding:6px 12px}}
+</style></head><body>
+<div class="shell"><header class="top"><div class="brand"><small>MTT LAB · LEARNING</small>♠ 撲克學院</div><div class="topright"><a class="ghost" href="./index.html">訓練首頁</a><a class="ghost" href="./analyzer.html">牌局分析器</a></div></header>
+<section id="dashboard">
+<div class="hero"><span class="pill">MTT · 完整繁體中文課程</span><h1>懂得決策理由，<br>才是真的學會。</h1><p>15 章系統化教學、章節測驗、16 道情境思考題。課程不把邊界牌硬分成唯一正解；會記錄你學過的內容與真正容易出錯的觀念。</p><button class="primary" id="continue">繼續我的課程 →</button></div>
+<div class="stats"><div class="stat"><small>完成章節</small><b id="statDone">0 / 15</b></div><div class="stat"><small>測驗平均</small><b id="statScore">—</b></div><div class="stat"><small>待複習</small><b id="statWrong">0 題</b></div></div>
+<div style="margin:16px 0"><div class="progress"><i id="totalProgress"></i></div><p id="progressText" class="muted">每章完成測驗，就會記錄學習進度。</p></div>
+<div class="cols"><div><div class="mainTitle"><h2>課程章節</h2><span class="muted">全部可直接學習</span></div><div class="tabs" id="filters"></div><div id="chapters"></div></div><aside class="side"><div class="panel"><h3 class="sideHead">你的重點弱項</h3><div id="legacy"></div></div><div class="panel" style="margin-top:12px"><h3 class="sideHead">學習原則</h3><div class="sideTip">① 先讀章節，自己想過範例</div><div class="sideTip">② 測驗先選再看解析</div><div class="sideTip">③ 錯誤依觀念分類回頭補強</div><div class="sideTip">④ 學習後再去情境訓練實作</div><p class="footnote">現有 MTT LAB 示範題為教學基準，不是經賽事參數驗證的 Solver 最佳解。</p></div></aside></div>
+</section>
+<section id="lesson" class="hidden"><div class="subNav"><button class="back" id="backToList" aria-label="返回課程列表">←</button><div><div class="eyebrow" id="lessonNum"></div><h1 id="lessonTitle"></h1></div></div><div class="reading"><main><div class="panel"><p id="lessonIntro"></p><div id="lessonBody"></div><div class="callout" id="lessonKey"></div><div class="example"><span class="tag">實戰例子</span><div id="lessonExample"></div></div><h3>本章練習</h3><p id="lessonPractice"></p></div><div id="casePanel" class="panel hidden"><h2>16 道 MTT 情境思考卡</h2><p class="muted">先在心中列出必要資訊與可能選項，再展開參考解析。這些是方向性複盤，不是固定 Solver 頻率。</p><div id="cases"></div></div><div class="panel"><h2>章節測驗</h2><p class="muted">回答概念問題；題目會記錄你的第一個答案。若答錯請讀解析再繼續。</p><div id="quiz"></div></div><div class="panel"><h2>我的複盤筆記</h2><textarea class="noteInput" id="notes" placeholder="例如：我常把 CO 和 BTN 的防守範圍混淆……"></textarea><p class="footnote">筆記自動儲存在目前這個瀏覽器。</p></div><div class="tools"><button class="ghost" id="prevLesson">← 上一章</button><button class="primary" id="nextLesson">下一章 →</button></div></main><aside><div class="panel sectionList"><h3 class="sideHead">學習資訊</h3><div class="pill" id="lessonStatus">未完成</div><p id="lessonCategory" class="muted"></p><div class="progress"><i id="lessonProgress"></i></div><p class="muted" id="quizScoreHelp"></p><a href="./index.html">前往情境訓練 →</a><a href="./analyzer.html">前往牌局分析器 →</a><a href="#" id="goReview">複習錯題 →</a></div></aside></div></section>
+<section id="review" class="hidden"><div class="subNav"><button class="back" data-view="dashboard">←</button><h1>錯題回顧與能力補強</h1></div><div class="panel"><h2>需要補強的觀念</h2><p class="muted">每題第一次答錯會進入複習清單；按「重新練習」可回到對應章節測驗。下方也會顯示原本情境訓練系統的弱項。</p><div id="reviewList"></div></div><div class="panel" style="margin-top:12px"><h2>原本 MTT LAB 情境訓練紀錄</h2><div id="reviewLegacy"></div></div></section>
+<section id="plan" class="hidden"><div class="subNav"><button class="back" data-view="dashboard">←</button><h1>五週訓練計畫</h1></div><div class="panel"><p>每天約 25 分鐘：<b>5 分鐘複習錯題、10 分鐘盲測、5 分鐘查證、5 分鐘記錄原因</b>。重點是穩定減少同一類決策錯誤，而不是每天的輸贏。</p><div id="weeks"></div><div class="tools"><button id="exportData" class="ghost">匯出學習紀錄 JSON</button><label class="ghost" style="cursor:pointer">匯入備份<input type="file" accept="application/json,.json" id="importData" style="display:none"></label></div><p class="footnote">網站目前使用裝置本機儲存；Safari、加入主畫面的 Web App，或清除網站資料，紀錄可能不會互通。建議定期匯出備份。匯入只會更新學院紀錄，不會覆蓋舊版練習器。</p></div></section>
+<p class="banner">課程範例以一般 8 人桌、BBA、無限注 MTT 為預設。實際範圍會隨有效籌碼、賽制、對手、下注大小與 ICM 變化。這是複盤訓練工具，不代表即時賽局指令或獲利保證。</p></div>
+<nav class="footerNav" aria-label="學院功能導覽"><button id="navDashboard" data-view="dashboard" class="on"><span>⌂</span>課程</button><button id="navReview" data-view="review"><span>↺</span>錯題</button><button id="navPlan" data-view="plan"><span>▤</span>計畫</button></nav>
+<script>
+"use strict";
+var C=[
+{id:1,g:"基礎",title:"MTT 翻前決策的七問框架",sub:"先還原情境，再比較選項",intro:"好的翻前策略不是「拿到 AJo 就 Call」；你要先知道自己在哪裡、對誰、什麼價格、輸了會失去多少。",s:[["先問七個問題","賽事階段 → 有效籌碼 → 雙方位置 → 翻前動作與下注大小 → 對手範圍 → 各選項的預期價值 → ICM／賞金。缺一個重要變數，就應承認需要補充資訊。"],["決策品質不等於單手輸贏","AA 被逆轉不表示翻前選擇錯誤；弱牌碰巧中牌也不能證明跟注合理。應比較當下可掌握資訊下的長期平均表現。"],["建立標準牌譜","最少記錄桌型、BBA、BB 數、位置、行動順序、下注尺寸與賽事階段。先確認牌譜符合行動順序，再做策略推論。"]],key:"先問『這是什麼情境？』，不要只問『我的牌強不強？』",ex:"你在 BTN 拿 AJo，HJ Open 2.2BB；光這些仍不足以確定 Call 或 3-Bet，還要補有效籌碼、對手範圍、盲位玩家與獎金壓力。",drill:"挑 5 手牌，只寫七問的答案，不急著選動作。"},
+{id:2,g:"基礎",title:"位置與行動順序",sub:"後位有優勢，但不能忽視開池位置",intro:"位置影響你收到的資訊、翻牌後最後行動的機會，以及前方還剩多少玩家。",s:[["8 人桌順序","常見為 UTG、UTG+1、LJ、HJ、CO、BTN、SB、BB。越早行動，後面越多人可能有強牌；不同平台名稱可有差異。"],["位置如何增加可玩性","BTN 翻牌後通常在最後行動，可更容易控制底池、取價與實現原始 Equity；SB 即使拿到同樣兩張牌，翻後往往沒有這項優勢。"],["兩種完全不同的情況","前面全部棄牌，你在 BTN 的 RFI，與 UTG 已開池、你在 BTN 的防守，是不同的範圍。不能用一張開池表回答所有情境。"]],key:"看自己的位置，也要看第一個行動者的位置和後面未行動的玩家。",ex:"CO 和 BTN 都拿 98s。前面都棄牌時，兩者可能開得較寬；但 UTG 已開池，不能因為你是 BTN 就忽視 UTG 的強範圍。",drill:"在 8 人桌畫出每個座位順序；逐一找出哪個位置的玩家先行動。"},
+{id:3,g:"基礎",title:"有效籌碼與 SPR",sub:"看能輸贏多少，不只看自己有多少",intro:"有效籌碼決定一手牌可投入的上限，也會影響投機跟注、3-Bet 與 Jam 的選擇。",s:[["有效籌碼","你有 60BB、對手 15BB，單挑時有效籌碼就是 15BB。多人底池要分別評估每個對手，不能用全桌最短值取代全部有效深度。"],["籌碼深度地圖","40BB+ 有更多翻後空間；25–40BB 開始要認真規劃 3-Bet 底池；15–25BB 可能出現 Rejam 與小開池；10–15BB 需要學習 Push/Fold，但不代表所有手一律全下。"],["SPR 的意思","SPR＝翻牌時剩餘有效籌碼 ÷ 翻牌時底池。例如翻牌前留下 20BB，翻牌底池 10BB，SPR＝2。低 SPR 會改變頂對與籌碼承諾的價值。"]],key:"口袋對拿來 Set Mine 時，能贏的上限取決於有效籌碼，不是自己的總籌碼。",ex:"Hero 55 有 60BB，對手只剩 15BB、Open 2.5BB；不能拿『我有 60BB 很深』為理由，自動合理化投機 Call。",drill:"計算 60BB 對 15BB、28BB 對 40BB、25BB 對 25BB 的有效籌碼。"},
+{id:4,g:"翻前",title:"RFI：第一個開池如何選牌",sub:"位置、BBA、深度與後方籌碼",intro:"RFI 指前面沒人入池時，你第一個以加注進池。它兼具牌力與直接奪取盲注、Ante 的價值。",s:[["為什麼位置越晚通常越寬","不是後位可以亂玩，而是還沒行動的玩家較少，且有較多翻後位置優勢。UTG 一般比 BTN 更需要緊的開池範圍。"],["用牌群建立骨架","大對子、強 Ax 常是核心；中對子、同花 Ax、同花連張的價值隨位置、深度、對手變化；弱 offsuit Ax/Kx 易被主導。先把明顯 Open 和明顯 Fold 分開，再處理邊界。"],["別把 BB 深度規則當死法","有 BBA 時底池死錢增加，偷盲價值較高；但後面若有 10–15BB 能 Rejam 的人，要調整開池範圍和後續計畫。"]],key:"RFI 的範圍與『面對別人 Open』的防守範圍不能混用。",ex:"BTN 30BB、前面全 Fold，你拿 K9s，通常是值得研究的開池候選；但盲位若存在強烈 ICM／短碼 Rejam 壓力，精確策略要重新確認。",drill:"用同一個 30BB、8 人桌、BBA 條件，對照 UTG、HJ、CO、BTN 的開池範圍差別。"},
+{id:5,g:"翻前",title:"面對 Open：Fold／Call／3-Bet",sub:"對手位置、價格與後手玩家",intro:"別先愛上自己的手牌。先問開池者的範圍，才比較跟注成本、3-Bet 的棄牌價值及身後可能的擠壓。",s:[["先辨認對手開池範圍","UTG 2.2BB 與 BTN 2.2BB 尺寸相同，通常不代表相同範圍。面對早位，要留意 AJo／KQo 被強 Ax 主導。"],["Call 前的四道門","位置有利嗎？價格合理嗎？籌碼深度能實現勝率嗎？後面有人可能 Squeeze 嗎？只要一項明顯差，跟注的吸引力就可能快速下降。"],["面對異常 6BB Open","先確認那是 Open 到 6BB，還是前面有人 Open、現在 3-Bet 到 6BB。兩者代表完全不同的情況；再看有效籌碼、玩家類型、桌況、底池大小。"]],key:"前位大尺寸 Open + 中等牌力，不應只因『我在後位』就自動 Cold Call。",ex:"Hero BTN 22BB AJo，UTG Open 3BB。需要比一般 BTN 對 CO 的小開池更謹慎，尤其要檢查主導風險和盲位短碼。",drill:"把你曾遇到的 6BB 加注各寫成完整牌譜：誰先 Open？有效籌碼？誰還未行動？"},
+{id:6,g:"翻前",title:"3-Bet：價值、半詐唬與形狀",sub:"Linear、Polarized 與 A5s 阻擋牌",intro:"3-Bet 指對初始 Open 再加注。目的可能是讓較差牌付費、直接奪池，或降低進入不利翻後場景的頻率。",s:[["價值型與半詐唬型","AA／KK／AK 等常有偏價值的 3-Bet 功能；部分同花 Ax 可在適合位置、對手及深度下承擔有 Fold Equity 的加注。"],["Linear 與 Polarized","Linear 是從強到次強較連續的加注組合；Polarized 會包含明顯強牌、部分適合詐唬的牌，另把部分中段牌留在 Call 範圍。使用哪種結構要看位置與可否合理 Call。"],["A5s 是原理示例不是公式","它含 A 阻擋牌，且有同花、順子潛力；但對極緊 UTG、短碼或高 ICM 情況，不代表永遠能 3-Bet。大小也依 IP／OOP、籌碼深度與桌型調整。"]],key:"先說出 3-Bet 要完成的目標，再挑合適手牌和下注尺寸。",ex:"BTN 40BB AQs，CO 開 2.1BB：AQs 可以是偏價值的 3-Bet 候選，但若對手只用極緊範圍繼續、又有高 ICM，就不能照抄。",drill:"對三組牌各寫一次為何可能 3-Bet：AKo、A5s、KQo；辨別其目的是否相同。"},
+{id:7,g:"翻前",title:"BB 防守與底池賠率",sub:"Pot Odds ≠ 真正可實現的 Equity",intro:"BB 已投入 1BB，一般面對小 Open 的跟注價格比較便宜；但便宜並不等於任何牌都能防守。",s:[["算清楚額外要跟多少","假設盲注 0.5/1、有 1BB BBA（BB 已付）、BTN Open 到 2.2BB、SB Fold，BB 還要補 1.2BB；最終底池為 5.9BB，純底池賠率需要約 20.3%（1.2÷5.9）。"],["價格不是最終答案","原始 Equity 假定都打到攤牌，但無位置、翻後被壓迫、逆向隱含賠率等，都讓實現率不同；ICM 也會改變實際所需的價值。"],["對 SB 的盲戰例外","SB 首個加注的範圍通常更寬，BB 又有翻後位置，因此不能使用『BB 對 UTG』的同一張防守表。"]],key:"Pot Odds 是必要的起點，卻不能單獨決定跟注。",ex:"35BB，BB J8s 面對 BTN Open 2BB，可優先研究 Call；改成對 UTG Open 4BB、BB Q7o，價格與對手範圍就完全不同。",drill:"在 0.5/1+BBA 1 的指定條件，自己重算 2.2BB 開池時 BB 要補多少、底池最後多少。"},
+{id:8,g:"短碼",title:"10–25BB：Jam、Rejam 與小開池",sub:"短碼仍然需要分辨行動類型",intro:"短碼時，每一筆加注佔總籌碼的比例升高；Fold Equity、阻擋牌與後面玩家的籌碼更關鍵。",s:[["依有效深度選武器","25BB 左右仍常有正常 Open／3-Bet；15–20BB 可能更重視 3-Bet Jam；10BB 左右 Push/Fold 權重增加，但仍可能有小開池分支。"],["Open Jam 與 Rejam 不相同","前面全 Fold 的全下，與有人先 Open 你再全下，面對的對手範圍和棄牌條件不同，不能用同一張表。"],["Call Jam 比先 Jam 更需要精確理由","自己 Jam 可能同時靠對方 Fold 和被 Call 時的 Equity；Call 對方 Jam 已沒有把對手逼棄牌的機會，還要計算 ICM 風險。"]],key:"15BB 不是『任何可玩牌都必須全下』，也不是『永遠不能小開池』。",ex:"BTN 14BB QJs、前面全 Fold：Jam 與小 Open 都可能是研究方向，仍須看兩盲有效籌碼、賽事階段和整體策略。",drill:"把 10／15／20／25BB 的同一 BTN 手牌分別列出可考慮的 Open 尺寸及對 Rejam 的計畫。"},
+{id:9,g:"短碼",title:"面對 3-Bet、4-Bet 與 Squeeze",sub:"先看整個行動樹，不只是牌力",intro:"你先開池、對手 3-Bet；或別人 Open + Call、有人 Squeeze，都是新的範圍問題。",s:[["開池後遭遇 3-Bet","先估自己原本 Open 的範圍、對手 3-Bet 範圍、尺寸、IP/OOP、有效籌碼。原本能 Open 的牌並不代表必須繼續。"],["Squeeze 的額外死錢","Open + Caller 後另一玩家再加注稱為 Squeeze。底池多了 Caller 的錢，但多人範圍和行動順序也更複雜。"],["不要把不可能的牌譜硬算下去","CO 必須在 BTN 之前行動；若文字說『HJ Open、BTN 3-Bet、CO 現在第一次決策』，一般正常翻前順序不成立，要先核對紀錄。"]],key:"判斷是誰先加、誰跟、誰再加；不確定順序時先停下驗證。",ex:"Hero SB 36BB JJ，HJ Open 2BB、BTN 3-Bet 到 7BB，尚有原始開池者：不能直接拿單挑 BTN 3-Bet 表當答案。",drill:"畫出 Open→Call→Squeeze 和 Open→3-Bet→4-Bet 兩棵簡單行動樹。"},
+{id:10,g:"賽事",title:"ICM 與泡沫期",sub:"Chip EV 不等於獎金 EV",intro:"MTT 的每一單位籌碼未必轉換成等量的名次獎金；越接近獎金跳級，風險與存活價值越需要評估。",s:[["ICM 不是『進錢圈就縮』","泡沫、決賽桌、獎金結構與其餘玩家籌碼都會決定調整方向。覆蓋別人的大籌碼，可能能對中籌碼施加壓力；被覆蓋的中籌碼要注意淘汰風險。"],["Risk Premium 風險溢價","在某些 ICM 情況，跟對手全下所需的最低 Equity，比純 cEV 模型高。多出來的風險門檻不是固定百分比，而是依局面估算。"],["為何跟 All-in 特別敏感","跟注全下通常不能再靠讓對手 Fold 獲得額外收益；相對之下主動 Jam 可能有 Fold Equity。兩者在 ICM 下的差距值得特別研究。"]],key:"高 ICM 的重點是重新計算，而不是一律 Fold。",ex:"錢圈泡沫，Hero 22BB BB A9o，被 70BB BTN 開到 2BB；要考慮自己是否被覆蓋，以及別桌極短碼與獎金結構，而不只照平時 BB 表跟。",drill:"記錄一個泡沫期牌局，列出桌上誰覆蓋誰、極短碼和最接近的獎金跳級。"},
+{id:11,g:"賽事",title:"PKO 賞金賽與覆蓋關係",sub:"淘汰賞金改變可承受的風險",intro:"PKO／獵人賽除了名次獎金還有 Bounty；同一個 Call Jam，在 Classic 和 PKO 可能不同。",s:[["兩條價值同時存在","名次獎金帶來 ICM，淘汰對手可能取得賞金。不能只看名次 EV，也不能只看賞金而忽略出局成本。"],["你能不能真的拿到賞金","若你沒有覆蓋全下玩家，通常無法在這手直接淘汰他拿到完整賞金。必須核對雙方籌碼與平台獎勵細則。"],["賞金不等於無限制鬆跟","賞金價值、對手範圍、其他玩家及賽事階段需要一起計算。賞金可能放寬部分跟注，但沒有『見賞金就 Call』的規則。"]],key:"PKO 比 Classic 多一個賞金變數，也多一個覆蓋關係檢查。",ex:"Hero 26BB 面對 12BB 高賞金玩家 Jam。先核對可拿的賞金、對手位置、Jam 範圍與是否還有其他玩家未行動。",drill:"找一手 Classic 與 PKO 相同的 20BB 場景，寫出額外需要記錄的獎金條件。"},
+{id:12,g:"賽事",title:"翻牌後銜接：別讓翻前計畫中斷",sub:"SPR、Range Advantage 與位置",intro:"翻前不是孤立一回合；你選 Call 或 3-Bet 時，就該有翻牌後的底池與範圍計畫。",s:[["Range Advantage 不等於必須下注","某玩家在某個公共牌面可能擁有整體範圍優勢，但仍要考慮自己具體組合、下注大小、對手防守與籌碼深度。"],["有位置／無位置的計畫","IP 較易掌握資訊與底池節奏；OOP 面對多街壓力時，部分看似高原始勝率的牌可能難以實現價值。"],["翻前先思考之後的 SPR","3-Bet 後形成低 SPR 時，你是否能用自己的範圍應對常見翻牌？不要為了『想試試看』而做出翻後無計畫的大尺寸加注。"]],key:"翻前選一個動作之前，先想翻牌後剩多少籌碼、誰先行動。",ex:"用 87s 在 SB Cold Call UTG，可能面對 OOP、BB Squeeze、淺 SPR 等困難；牌型可玩不代表 Call 值得。",drill:"把 3 手牌寫出『如果翻牌沒中、中了弱對、中了強聽牌，各怎麼繼續』。"},
+{id:13,g:"實戰",title:"16 道 MTT 情境思考",sub:"不是死記單一答案，而是先列條件",intro:"這一章用具體牌例訓練你找出關鍵變數。每張卡先自己作答，再展開方向解析。",s:[["每題至少說出四件事","我的位置和有效籌碼、對手的前序動作、範圍寬緊、哪些選項值得比較。可以承認資料不足。"],["混合策略的讀法","對接近邊界的牌，合理策略可能在 Call、3-Bet、Fold 間混合。不要把『對某個例子可優先研究 Call』誤會成永遠只能 Call。"],["先抓牌譜矛盾","如果座位與行動順序不一致，必須先修正牌譜，不能靠假設強行給出精確答案。"]],key:"最有價值的不是猜中答案，而是說清楚你為什麼做這個選擇。",ex:"BB J8s 對 BTN Open 2BB vs BB Q7o 對 UTG Open 4BB：牌力、價格、對手位置都不同，不能用同一個大盲防守口訣。",drill:"完成下方 16 道情境卡，遇到邊界牌先列出需要查證的條件。"},
+{id:14,g:"實戰",title:"答案解析與錯誤分類",sub:"找出你真正的觀念漏洞",intro:"複盤時把錯誤分成 P／S／A／R／O／F／I／D，而不是把所有錯誤都寫成『運氣不好』。",s:[["八種錯誤代碼","P=Position 位置；S=Stack 籌碼；A=Action 行動；R=Range 範圍；O=Odds 賠率；F=Fold Equity 棄牌率；I=ICM；D=Data 資料品質。"],["不要被單手結果誤導","複盤只保留當下已知資料；切勿在看到對手最後亮出什麼牌後，倒過來相信自己翻前一定應該作另一個動作。"],["建立可重複修正的習慣","每手只寫一個最重要漏洞與下次提醒：例如『UTG 大尺寸 Open 時，先重估對方範圍，別因我是 BTN 就自動 Call』。"]],key:"錯誤要能被分類、複習和再測驗，才有改善的機會。",ex:"『HJ Open → BTN 3-Bet → CO 現在還沒行動』的時間順序不成立，錯誤應先記 D（資料問題），而非亂選一個策略。",drill:"到「錯題」頁檢視每題解析；幫最近三手牌各標一個 P/S/A/R/O/F/I/D 代碼。"},
+{id:15,g:"實戰",title:"五週訓練計畫與日常複盤",sub:"把知識變成穩定決策能力",intro:"每天固定短時間練同類型情境，比一次背大量互不相干的牌表更有幫助。",s:[["五週安排","Week 1：位置／有效籌碼／RFI；Week 2：面對 Open、3-Bet；Week 3：BB／Odds／Squeeze；Week 4：短碼／Rejam／面對 3-Bet；Week 5：ICM／PKO／綜合複盤。"],["每日 25 分鐘循環","5 分鐘複習 3 題錯題；10 分鐘盲測同類型題；5 分鐘查工具或模型；5 分鐘用自己的話總結。"],["如何衡量成長","觀察同類型情境的正確率、決策一致性、能否說出理由、資訊不足時是否懂得停止亂猜。不以短期輸贏當主要成效指標。"]],key:"先穩定學會判斷流程，再逐步追求精確的頻率和範圍。",ex:"這週針對 BB Facing BTN 2.2BB 開池練 20 題，不要同時混入泡沫、PKO、100BB 深籌碼的另一套規則。",drill:"使用「計畫」頁勾選五週任務；每週回顧一次錯題類別。"}
+];
+var Q=[
+[1,"要開始分析一手牌，最合適的第一步是？",["只看自己的兩張牌","確認賽事、有效籌碼、位置、前序動作","先猜對手拿 AA"],1,"翻前決策依賴完整情境，不能單看牌面。"],
+[1,"AA 翻前合理 All-in 卻被逆轉，代表什麼？",["翻前一定錯","結果有變異，決策仍可合理","以後 AA 一律 Fold"],1,"要把決策品質與單手輸贏分開。"],
+[2,"一般 8 人桌的 CO 和 BTN 誰先翻前行動？",["CO","BTN","同時"],0,"CO 在 BTN 前面行動。"],
+[2,"BTN 對 UTG Open，該直接用 BTN RFI 表嗎？",["應該，因為都是 BTN","不應該，Facing Open 是不同範圍","只要是同花牌都能跟"],1,"後位的 Open 和後位的防守是不同情境。"],
+[3,"你 60BB、對手 15BB，單挑有效籌碼是？",["60BB","15BB","75BB"],1,"有效籌碼取雙方能互相贏輸的較短者。"],
+[3,"翻牌底池 10BB、翻牌時剩餘有效 20BB，SPR 為？",["0.5","2","30"],1,"20 ÷ 10 = 2。"],
+[4,"前面全棄牌，你第一次加注稱為？",["Cold Call","RFI","Squeeze"],1,"RFI = Raise First In。"],
+[4,"下列哪個因素可能使 BTN 的 RFI 策略調整？",["盲位短碼 Rejam 壓力","牌套顏色","座位的背景圖"],0,"後面玩家的有效籌碼和策略會影響你開池。"],
+[5,"面對 UTG 開 6BB，最優先做什麼？",["先分辨是 Open 還是 3-Bet 並檢查籌碼","任何 A 都 Call","一定 All-in"],0,"行動類型與尺寸是關鍵條件。"],
+[5,"SB Cold Call UTG 的潛在風險不包含下列哪項？",["翻後無位置","後面 BB 可能 Squeeze","自動取得翻後位置優勢"],2,"SB 通常沒有位置優勢。"],
+[6,"A5s 在部分 3-Bet 策略受重視的原因之一？",["持有 A 阻擋牌且具同花潛力","永遠贏 AA","每個情境都要加注"],0,"A 阻擋牌是加分項，不是自動指令。"],
+[6,"Polarized 3-Bet 的典型構成？",["只有最強牌","強牌加部分適合詐唬的牌","只有中等牌力"],1,"Polarized 不只是線性的次強牌加注。"],
+[7,"假設 0.5/1BB、BBA 1BB，BTN Open 2.2BB、SB Fold，BB 跟注額外需補？",["1.2BB","2.2BB","3.2BB"],0,"BB 已放 1BB，跟至 2.2BB 再補 1.2BB。"],
+[7,"只靠 Pot Odds 就可決定 BB 全部跟注範圍嗎？",["可以","不行，還要看 Equity Realization 和情境","只看自己有沒有 A"],1,"位置、深度、對手策略與 ICM 都會改變真實 EV。"],
+[8,"15BB BTN QJs、前面全棄，哪個說法正確？",["只能 Jam","Jam 與小 Open 都可能值得研究","只能 Fold"],1,"短碼也可能有混合分支，不能一律機械化。"],
+[8,"Open Jam 與 Rejam 最大差別之一？",["一樣，完全沒差","Rejam 前已有人 Open，對手範圍不同","Rejam 永遠是最強牌"],1,"前序行動改變了範圍、死錢及 Fold Equity。"],
+[9,"對手 Open、有玩家 Call，第三人再大幅加注稱為？",["RFI","Squeeze","Check"],1,"Squeeze 指 Open 和至少一位 Caller 之後的再加注。"],
+[9,"HJ Open、BTN 3-Bet，CO 尚未行動的敘述？",["完全合理","正常翻前順序不成立，先核對資料","代表 CO 一定要 All-in"],1,"CO 在 BTN 前面行動；先驗證牌譜。"],
+[10,"ICM 下為什麼 Call Jam 常需要更高的 Equity？",["因為籌碼直接等於獎金","因為淘汰風險與獎金跳級帶來 Risk Premium","因為翻牌不重要"],1,"$EV 不是單純籌碼線性轉換。"],
+[10,"泡沫期是否一律應該 Fold？",["是","不是，還要看誰覆蓋誰、籌碼與獎金結構","任何牌都 Jam"],1,"ICM 是重新計算風險與收益，不是無條件收緊。"],
+[11,"在 PKO 面對對手 Jam，Classic 以外要多考慮？",["Bounty 價值及覆蓋關係","按鈕顏色","對手暱稱字數"],0,"賞金與可否淘汰對手會改變 EV。"],
+[11,"沒有覆蓋全下對手，能直接假設會拿到完整淘汰賞金嗎？",["不應這樣假設","一定可以","賞金不影響策略"],0,"必須核對平台賞金規則與是否能實際淘汰。"],
+[12,"3-Bet 前先想翻牌後剩多少籌碼，主要在看？",["SPR 與後續計畫","開牌速度","籌碼顏色"],0,"3-Bet 會直接影響翻牌底池與 SPR。"],
+[12,"具有 Range Advantage 就意味著每次都必須下注嗎？",["對","不對，還要考慮實際組合、尺度與對手","只要翻出 A 就 All-in"],1,"範圍優勢不等於每一手都下注。"],
+[13,"某題條件不足以唯一判斷 Call 或 3-Bet，合理做法？",["直接猜 Solver 唯一解","列出缺失條件與可能分支","永遠 Call"],1,"實戰邊界牌可能混合，應明確說出模型假設。"],
+[13,"哪個更像有效複盤？",["記住這次贏了就對","記錄位置、有效籌碼、尺寸、範圍及 ICM","只看最終亮牌"],1,"可重複的思考步驟比單手結果可靠。"],
+[14,"P／S／A／R／O／F／I／D 裡 D 代表？",["資料品質","詐唬頻率","同花機率"],0,"D = Data，包含不可能的行動順序。"],
+[14,"中了牌卻做了壞的 Cold Call，應如何記錄？",["因為中牌所以這手一定正確","仍檢查當下 Call 的 EV 與風險","只看最後贏幾 BB"],1,"結果不應改寫原本決策的品質。"],
+[15,"每天 25 分鐘建議順序？",["盲測、查證、錯題、總結隨便亂跳","先回顧、盲測、校正、總結","只看自己打贏的手牌"],1,"固定節奏便於觀察錯誤是否下降。"],
+[15,"改善成果應先觀察？",["一天盈虧","同類型題目的思考品質和一致性","連續中幾手同花"],1,"短期盈虧波動不代表判斷進步。"]
+];
+var CASES=[
+["BTN 30BB K9s，前面全 Fold","先考慮 RFI；留意盲位籌碼和 ICM。後位開池與面對 Open 不同。"],
+["UTG 40BB 72o，前面全 Fold","Fold 是清楚的基礎方向：早位後面玩家多、弱牌可玩性差。"],
+["BB 35BB J8s，BTN Open 2BB","可優先研究 Call；價格、同花可玩性和 BTN 較寬範圍是原因；可含其他分支。"],
+["BB 35BB Q7o，UTG Open 4BB","Fold 是自然基準：早位強範圍加大尺寸使防守價值下降。"],
+["BTN 22BB AJo，UTG Open 3BB","注意受主導及剩餘籌碼；不能只因後位與兩張高張就 Call。"],
+["BTN 40BB AQs，CO Open 2.1BB","偏價值 3-Bet 候選；對手極緊或強 ICM 時仍需重新驗證。"],
+["SB 40BB 87s，UTG Open 2.5BB","OOP、BB 尚未行動、Squeeze 風險讓 Cold Call 的處境較差。"],
+["BTN 15BB QJs，前面全 Fold","Jam 值得研究，但不能假設唯一；小開池分支可能成立。"],
+["BTN 30BB A5s，HJ Open 2BB","有 A 阻擋牌、同花及連張性；不是永遠要 3-Bet。"],
+["CO 28BB KQo，UTG Open 2.5BB","考慮被強 Ax 主導、Squeeze、有效籌碼與後手玩家。"],
+["BB 20BB 98s，BTN Open 2BB","除了 Pot Odds 還要看實現率、對手風格與 ICM。"],
+["CO 36BB JJ：HJ Open、BTN 3-Bet，輪到 CO？","正常翻前順序不可能；CO 必須在 BTN 前先動。先修正紀錄再分析。"],
+["泡沫期 BB 22BB A9o，70BB BTN Open 2BB","ICM 及覆蓋關係很重要，但不能把所有面對小開池情境都當成 Call Jam。"],
+["決賽桌六人、2BB 超短碼，25BB 對 80BB 全下","要評估獎金跳級、誰覆蓋誰、淘汰成本；cEV 和 $EV 不同。"],
+["Hero 60BB 55，對手 15BB Open 2.5BB","Set Mine 必須以 15BB 有效籌碼衡量，並看翻中後可再贏多少。"],
+["PKO Hero 26BB，12BB 高賞金玩家 Jam","多看 Bounty 和覆蓋關係，也要估對手範圍與賽事獎金。"]
+];
+var W=[
+["第一週｜位置、有效籌碼、RFI","完成第 1～4 章，練 30 題開池與 10 手七問記錄。"],
+["第二週｜Facing Open、3-Bet","完成第 5～6 章，練 30 題面對加注。"],
+["第三週｜BB、Pot Odds、Squeeze","完成第 7 與 9 章，練 25 題大盲與異常尺寸。"],
+["第四週｜短碼與 Rejam","完成第 8 章，練 30 題 10–25BB 決策。"],
+["第五週｜ICM、PKO、整合複盤","完成第 10～15 章，練 20 題 ICM 與 10 手完整複盤。"]
+];
+var KEY="mttAcademyV1",D={done:{},best:{},wrong:{},notes:{},weeks:{},trials:{}};
+function load(){try{var o=JSON.parse(localStorage.getItem(KEY)||"null");if(o&&typeof o==="object"&&!Array.isArray(o)){Object.keys(D).forEach(function(k){if(o[k]&&typeof o[k]==="object")D[k]=o[k]})}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+load();
+var active=1,attempt=[],pos=0,pick=null,filter="全部";
+function el(id){return document.getElementById(id)}
+function esc(x){return String(x).replace(/[&<>"']/g,function(s){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]})}
+function qs(ch){return Q.map(function(v,i){return{v:v,i:i}}).filter(function(x){return x.v[0]===ch})}
+function lastChapter(){for(var i=1;i<=15;i++)if(!D.done[i])return i;return 15}
+function old(){try{return JSON.parse(localStorage.getItem("mttLabZhV1")||"null")||{}}catch(e){return {}}}
+function toChapter(cat){if(cat.indexOf("ICM")>=0||cat.indexOf("泡沫")>=0)return 10;if(cat.indexOf("短碼")>=0||cat.indexOf("10BB")>=0)return 8;if(cat.indexOf("20BB")>=0||cat.indexOf("30BB")>=0)return 5;return 1}
+function show(name,chapter){
+ document.querySelectorAll("#dashboard,#lesson,#review,#plan").forEach(function(n){n.classList.toggle("hidden",n.id!==name)});
+ document.querySelectorAll(".footerNav button").forEach(function(n){n.classList.toggle("on",n.dataset.view===(name==="lesson"?"dashboard":name))});
+ if(name==="lesson"){active=Math.min(15,Math.max(1,Number(chapter)||1));renderLesson();history.replaceState(null,"","?chapter="+active)}
+ else{history.replaceState(null,"",location.pathname+(name==="dashboard"?"":"#"+name));if(name==="dashboard")renderDashboard();if(name==="review")renderReview();if(name==="plan")renderPlan()}
+ window.scrollTo(0,0);
+}
+function renderDashboard(){
+ var n=Object.keys(D.done).filter(function(k){return D.done[k]}).length,bs=Object.values(D.best);
+ el("statDone").textContent=n+" / 15";el("statScore").textContent=bs.length?Math.round(bs.reduce(function(a,b){return a+Number(b)},0)/bs.length)+"%":"—";
+ el("statWrong").textContent=Object.keys(D.wrong).length+" 題";el("totalProgress").style.width=(n/15*100)+"%";
+ el("progressText").textContent=n?"已完成 "+n+" 章。可隨時重新複習，最佳測驗成績不會被較差的新成績覆蓋。":"每章完成一次測驗，就會記錄章節進度。";
+ var all=["全部","基礎","翻前","短碼","賽事","實戰"];el("filters").innerHTML=all.map(function(x){return '<button class="tab '+(filter===x?"on":"")+'" data-filter="'+x+'">'+x+"</button>"}).join("");
+ document.querySelectorAll("[data-filter]").forEach(function(b){b.onclick=function(){filter=b.dataset.filter;renderDashboard()}});
+ el("chapters").innerHTML=C.filter(function(c){return filter==="全部"||filter===c.g}).map(function(c){var done=D.done[c.id],score=D.best[c.id];return '<button class="chapter '+(done?"done":"")+'" data-ch="'+c.id+'"><span class="num">'+String(c.id).padStart(2,"0")+'</span><span class="info"><b>'+esc(c.title)+'</b><small>'+esc(c.sub)+'</small></span><span class="right">'+(done?"✓ 完成":"開始")+(score!==undefined?"<br>"+score+"%":"")+"</span></button>"}).join("");
+ document.querySelectorAll("[data-ch]").forEach(function(b){b.onclick=function(){show("lesson",b.dataset.ch)}});
+ var l=old(),cats=l.cats||{},arr=Object.keys(cats).filter(function(k){return cats[k].a>0}).sort(function(a,b){return cats[a].c/cats[a].a-cats[b].c/cats[b].a});
+ el("legacy").innerHTML=arr.length?arr.slice(0,3).map(function(k){return '<div class="sideTip"><b>'+esc(k)+'</b><div class="small">原訓練正確率 '+Math.round(cats[k].c/cats[k].a*100)+'%（'+cats[k].a+' 題）</div><a href="?chapter='+toChapter(k)+'">補強相關課程 →</a></div>'}).join(""):'<p class="muted">完成原本的情境訓練後，這裡會顯示對應的弱項與複習入口。</p>';
+}
+function renderLesson(){
+ var c=C[active-1];el("lessonNum").textContent="CHAPTER "+String(c.id).padStart(2,"0")+" · "+c.g;
+ el("lessonTitle").textContent=c.title;el("lessonIntro").textContent=c.intro;
+ el("lessonBody").innerHTML=c.s.map(function(x,i){return "<h3>"+(i+1)+". "+esc(x[0])+"</h3><p>"+esc(x[1])+"</p>"}).join("");
+ el("lessonKey").textContent="本章重點｜"+c.key;el("lessonExample").textContent=c.ex;el("lessonPractice").textContent=c.drill;
+ el("lessonStatus").textContent=D.done[active]?"✓ 已完成":"尚未完成";el("lessonCategory").textContent="系列："+c.g+"｜可隨時重測";el("lessonProgress").style.width=D.done[active]?"100%":"0%";
+ el("quizScoreHelp").textContent=D.best[active]===undefined?"本章尚未測驗":"本章最佳成績："+D.best[active]+"%";
+ el("notes").value=D.notes[active]||"";el("prevLesson").disabled=active===1;el("nextLesson").textContent=active===15?"返回課程列表":"下一章 →";
+ el("casePanel").classList.toggle("hidden",active!==13);
+ if(active===13){el("cases").innerHTML=CASES.map(function(x,i){return '<div class="caseBox"><b>'+(i+1)+'. '+esc(x[0])+'</b><button data-case="'+i+'">展開思考方向</button><p class="caseAnswer">'+esc(x[1])+"</p></div>"}).join("");document.querySelectorAll("[data-case]").forEach(function(b){b.onclick=function(){var box=b.closest(".caseBox"),v=box.classList.toggle("open");b.textContent=v?"收起解析":"展開思考方向"}})}
+ attempt=[];pos=0;pick=null;renderQ();
+}
+function renderQ(){
+ var list=qs(active),node=el("quiz");
+ if(pos>=list.length){var right=attempt.filter(function(x){return x.ok}).length,pct=Math.round(right/list.length*100);D.done[active]=true;D.best[active]=Math.max(Number(D.best[active])||0,pct);D.trials[active]=(Number(D.trials[active])||0)+1;save();
+ el("lessonStatus").textContent="✓ 已完成";el("lessonProgress").style.width="100%";el("quizScoreHelp").textContent="最佳成績："+D.best[active]+"%";
+ node.innerHTML='<div class="center"><h2>本章測驗完成</h2><div style="font-size:36px;font-weight:1000;color:var(--accent)">'+pct+'%</div><p class="muted">這次答對 '+right+' / '+list.length+' 題。'+(pct<80?"建議閱讀解析後再練一次。":"可以繼續下一章，也可隨時重新測驗。")+'</p><div class="tools" style="justify-content:center"><button class="ghost" id="retry">重新測驗</button><button class="primary" id="finishNext">下一章 →</button></div></div>';
+ el("retry").onclick=function(){attempt=[];pos=0;pick=null;renderQ()};
+ el("finishNext").onclick=function(){if(active<15)show("lesson",active+1);else show("dashboard")};return;
+ }
+ var item=list[pos],q=item.v;var html='<div class="quizHead"><span class="eyebrow">CONCEPT CHECK</span><b class="muted">'+(pos+1)+' / '+list.length+'</b></div><div class="progress" style="margin:9px 0"><i style="width:'+(pos/list.length*100)+'%"></i></div><div class="question">'+esc(q[1])+'</div><div class="choices">';
+ q[2].forEach(function(x,i){html+='<button class="choice" data-answer="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(x)+'</button>'});
+ html+='</div><div id="quizFeedback"></div>';node.innerHTML=html;
+ node.querySelectorAll("[data-answer]").forEach(function(b){b.onclick=function(){choose(item,Number(b.dataset.answer))}});
+}
+function choose(item,a){
+ if(pick!==null)return;pick=a;var q=item.v,ok=a===q[3],id=String(item.i);
+ attempt.push({ok:ok,id:id});
+ if(!ok)D.wrong[id]={id:item.i,chapter:active,question:q[1],selected:a,answer:q[3],why:q[4]};else delete D.wrong[id];
+ save();
+ el("quiz").querySelectorAll("[data-answer]").forEach(function(b){var x=Number(b.dataset.answer);b.disabled=true;if(x===q[3])b.classList.add("good");if(x===a&&x!==q[3])b.classList.add("bad")});
+ el("quizFeedback").innerHTML='<div class="feedback"><strong>'+(ok?"✓ 觀念正確":"需要補強")+'</strong><div>'+esc(q[4])+'</div></div><button class="primary" id="quizNext">'+(pos===qs(active).length-1?"完成本章":"下一題 →")+'</button>';
+ el("quizNext").onclick=function(){pos++;pick=null;renderQ()};
+}
+function renderReview(){
+ var errors=Object.keys(D.wrong).map(function(k){return D.wrong[k]}).filter(function(x){return Q[x.id]});
+ el("reviewList").innerHTML=errors.length?errors.map(function(w){return '<div class="errorCard"><span class="tag">第 '+w.chapter+' 章</span><b>'+esc(w.question)+'</b><p>上次選：'+esc(Q[w.id][2][w.selected]||"—")+'<br>參考：'+esc(Q[w.id][2][w.answer])+'<br>'+esc(w.why)+'</p><a href="?chapter='+w.chapter+'">重新學習／測驗 →</a></div>'}).join(""):'<p class="muted">目前沒有待複習的學院測驗題。答錯的題目會自動加入這裡，重測答對後會移除。</p>';
+ var l=old(),cats=l.cats||{},items=Object.keys(cats).filter(function(k){return cats[k].a>0});
+ el("reviewLegacy").innerHTML=items.length?items.map(function(k){var x=cats[k];return '<div class="errorCard"><b>'+esc(k)+'</b><p>已答 '+x.a+' 題，答對 '+x.c+' 題，正確率 '+Math.round(x.c/x.a*100)+'%。</p><a href="?chapter='+toChapter(k)+'">前往相關章節 →</a></div>'}).join(""):'<p class="muted">原本情境訓練尚無分類作答紀錄。<a href="./index.html">開始原訓練 →</a></p>';
+}
+function renderPlan(){
+ el("weeks").innerHTML=W.map(function(w,i){return '<div class="week"><label><input type="checkbox" data-week="'+i+'" '+(D.weeks[i]?"checked":"")+'><span><b>'+esc(w[0])+'</b><br><span class="muted">'+esc(w[1])+'</span></span></label></div>'}).join("");
+ document.querySelectorAll("[data-week]").forEach(function(x){x.onchange=function(){D.weeks[x.dataset.week]=x.checked;save()}});
+}
+el("continue").onclick=function(){show("lesson",lastChapter())};el("backToList").onclick=function(){show("dashboard")};el("prevLesson").onclick=function(){if(active>1)show("lesson",active-1)};
+el("nextLesson").onclick=function(){active<15?show("lesson",active+1):show("dashboard")};
+el("goReview").onclick=function(e){e.preventDefault();show("review")};
+el("notes").addEventListener("input",function(){D.notes[active]=el("notes").value;save()});
+document.querySelectorAll("[data-view]").forEach(function(b){b.onclick=function(){show(b.dataset.view)}});
+el("exportData").onclick=function(){var blob=new Blob([JSON.stringify({version:1,exported:new Date().toISOString(),academy:D},null,2)],{type:"application/json"}),u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="MTT-LAB-學習紀錄.json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+el("importData").onchange=function(e){var file=e.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(){try{var p=JSON.parse(r.result),v=p.academy;if(p.version!==1||!v||!v.done||!v.best||!v.wrong||!v.notes||!v.weeks)throw Error("格式不符");if(!confirm("匯入將取代這個瀏覽器目前的『學院』進度與筆記（不影響舊情境訓練）。繼續嗎？"))return;["done","best","wrong","notes","weeks","trials"].forEach(function(k){D[k]=v[k]&&typeof v[k]==="object"?v[k]:{}});save();show("plan");alert("學院資料匯入完成")}catch(err){alert("無法匯入：請選擇學院匯出的 JSON 備份。")}};r.readAsText(file);e.target.value=""};
+var urlCh=Number(new URLSearchParams(location.search).get("chapter"));
+if(urlCh>=1&&urlCh<=15)show("lesson",urlCh);else if(location.hash==="#review")show("review");else if(location.hash==="#plan")show("plan");else show("dashboard");
+</script></body></html>
