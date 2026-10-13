@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07120d"><meta name="apple-mobile-web-app-capable" content="yes"><title>169 格互動式 RFI 表｜MTT LAB</title>
+<style>
+:root{--bg:#06100c;--card:#0d2016;--panel:#10271b;--border:#28533a;--green:#61f2a5;--gold:#f5cf74;--gray:#8aa594;--text:#f4fbf6;--red:#ff9292}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% -160px,#1d4e32,#091911 430px,#06100c 980px);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;line-height:1.55}button,select{font:inherit}button{cursor:pointer}a{color:var(--green);text-decoration:none}.shell{max-width:1120px;margin:auto;padding:0 12px 82px}.top{min-height:60px;display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid #ffffff16}.brand b{font-size:17px;display:block;letter-spacing:.02em}.brand small{color:var(--green);letter-spacing:.13em;font-size:9px;font-weight:900}.links{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.linkBtn,.soft{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);background:#10271a;color:#e6f8ec;font-size:12px;font-weight:850;border-radius:11px;padding:9px 12px}.hero{margin:20px 0 15px;padding:21px;border:1px solid #3d8d5e;border-radius:22px;background:linear-gradient(130deg,#153d29,#10291e 70%,#0b1a13)}.hero h1{font-size:clamp(25px,4.3vw,36px);line-height:1.2;margin:8px 0}.eyebrow{color:var(--green);font-size:11px;font-weight:900;letter-spacing:.1em}.hero p{color:#b5d0c0;font-size:13px;margin:7px 0 0}.main{display:grid;grid-template-columns:minmax(0,1fr) 315px;gap:14px}.panel{background:var(--card);border:1px solid var(--border);border-radius:19px;padding:16px;margin-bottom:12px}.panel h2{font-size:18px;margin:0 0 8px}.hint{color:#a4c0ae;font-size:12px;line-height:1.7}.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.filters label{color:var(--gray);display:block;font-size:11px;font-weight:850;margin-bottom:5px}.filters select{width:100%;border-radius:10px;color:var(--text);background:#07190e;border:1px solid #346446;padding:10px;font-size:15px;font-weight:900}.toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:#b7d7c2;padding:6px 0}.toggle input{width:17px;height:17px;accent-color:var(--green)}.legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:10px 0;font-size:11px;color:#c7decf}.dot{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:4px}.dot.open{background:#2f9664}.dot.borderline{background:#9c7e38}.dot.fold{background:#24362c}.matrix{display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:3px;width:100%;max-width:690px;margin:0 auto}.cell{min-width:0;aspect-ratio:1/1;border:1px solid #47614f;background:#17281e;color:#b2cabc;border-radius:6px;padding:0;display:flex;align-items:center;justify-content:center;font-size:clamp(9px,1.8vw,13px);font-weight:850;letter-spacing:-.035em;position:relative}.cell.open{background:#225d3e;border-color:#3eb67d;color:#e0ffec}.cell.borderline{background:#574927;border-color:#a58a45;color:#ffedbb}.cell.fold{background:#192921;color:#95ac9b;border-color:#2b4436}.cell.selected{outline:3px solid #f1f6f0;outline-offset:0;z-index:1;box-shadow:0 0 0 2px #2c9462}.cell:focus-visible{outline:3px solid #ffffff;z-index:2}.cell .thin{font-size:8px;opacity:.7}.matrixLegend{display:flex;justify-content:space-between;color:#7fae91;gap:8px;font-size:10px;margin:10px 0}.badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.badge{font-size:11px;font-weight:900;border:1px solid #478361;border-radius:30px;padding:4px 9px;background:#1e452f;color:#c9fbdc}.badge.amber{color:#ffe6ad;background:#3a311b;border-color:#9e7b36}.badge.neutral{color:#b9cdbf;background:#1a2b20;border-color:#46614c}.handTitle{font-size:34px;font-weight:1000;line-height:1.3}.miniStat{display:grid;grid-template-columns:1fr 1fr;gap:7px}.miniStat>div{padding:9px;border-radius:11px;background:#10291c}.miniStat small{display:block;color:#91aa97;font-size:10px}.miniStat b{font-size:18px}.reasons{list-style:none;margin:10px 0;padding:0}.reasons li{font-size:13px;color:#cfdfd4;padding:8px 0;border-bottom:1px solid #ffffff10}.callout{background:#162b1e;border-left:3px solid var(--gold);padding:11px 12px;color:#f3e4be;border-radius:0 10px 10px 0;font-size:12px;line-height:1.65}.action{border:0;background:var(--green);border-radius:11px;color:#062319;padding:11px 15px;font-weight:950}.action:disabled{opacity:.5}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.stat{padding:10px;background:#10271b;border-radius:11px}.stat small{display:block;color:#9ab5a5;font-size:10px}.stat b{font-size:23px}.practiceHead{display:flex;gap:8px;justify-content:space-between;align-items:center}.practiceQuestion{font-size:16px;font-weight:900;margin:10px 0}.answers{display:grid;gap:7px}.answer{border:1px solid #396b4c;background:#112a1b;color:#eaf8ee;text-align:left;padding:12px 14px;border-radius:10px;font-size:14px;font-weight:800}.answer.correct{background:#174c30;border-color:var(--green)}.answer.wrong{background:#432922;border-color:var(--red)}.answer:disabled{opacity:1}.answer:focus-visible{outline:2px solid white}.explain{background:#162b1c;border:1px solid #4f855f;border-radius:11px;padding:12px;color:#d4efdd;font-size:13px;margin:10px 0}.warn{color:#f6dfaa;font-size:12px}.learnList{padding-left:18px;color:#c2d9cc;font-size:13px}.learnList li{margin:7px 0}.small{font-size:12px}.hidden{display:none!important}.progress{height:7px;background:#1b3c2a;border-radius:99px;overflow:hidden}.progress>i{display:block;background:var(--green);height:100%;width:0}.historyRow{display:flex;justify-content:space-between;gap:10px;border-top:1px solid #ffffff15;padding:9px 0;color:#c3dacb;font-size:12px}.footer{margin:16px 0;font-size:11px;line-height:1.8;color:#91b4a1}.nav{position:fixed;z-index:10;bottom:0;left:0;right:0;display:flex;gap:8px;justify-content:center;background:#06120ded;border-top:1px solid #28503a;backdrop-filter:blur(12px);padding:9px 10px max(9px,env(safe-area-inset-bottom))}.nav a{padding:7px 15px;font-size:12px;font-weight:900;color:#b6d7c2;border-radius:10px}.nav a.active{color:var(--green);background:#1b432d}
+@media(max-width:820px){.main{grid-template-columns:1fr}.matrix{max-width:650px}.panel{padding:13px}.hero{padding:16px}.shell{padding-bottom:92px}}
+@media(max-width:440px){.matrix{gap:2px}.cell{border-radius:3px;font-size:clamp(9px,2.45vw,11px)}.top{gap:5px}.brand b{font-size:14px}.linkBtn{padding:7px;font-size:10px}.hero h1{font-size:28px}.legend{gap:9px}}
+</style></head>
+<body><div class="shell">
+<header class="top"><div class="brand"><small>MTT LAB · PREFLOP</small><b>♠ RFI 開池範圍實驗室</b></div><div class="links"><a class="linkBtn" href="./academy.html?chapter=4">中文課程第 4 章</a><a class="linkBtn" href="./index.html">訓練首頁</a></div></header>
+<div class="hero"><div class="eyebrow">169-HAND INTERACTIVE TRAINER</div><h1>不同位置、不同 BB，<br>究竟哪些牌能開？</h1><p>自己切換位置與籌碼，點擊 169 格的任何手牌，了解為什麼可能 Open、Fold，或需要更多條件判斷。再用隨機題反覆練熟。</p></div>
+<div class="main"><div>
+<section class="panel"><h2>① 設定你的 MTT 情境</h2><div class="filters">
+<div><label for="position">位置（8 人桌）</label><select id="position"><option value="UTG">UTG 槍口位</option><option value="UTG+1">UTG+1</option><option value="LJ">LJ 前中位</option><option value="HJ">HJ 劫持位</option><option value="CO">CO 關煞位</option><option value="BTN" selected>BTN 莊家位</option><option value="SB">SB 小盲位</option><option value="BB">BB 大盲位（非 RFI）</option></select></div>
+<div><label for="stack">有效籌碼深度</label><select id="stack"><option value="10">10BB 短碼</option><option value="15">15BB 短碼</option><option value="20">20BB</option><option value="30" selected>30BB</option><option value="40">40BB+</option></select></div>
+</div><label class="toggle"><input type="checkbox" id="ante" checked>一般階段 · 1BB 大盲 Ante（BBA）</label>
+<div class="callout"><b>使用前提：</b>前面所有人 Fold、一般 Chip EV 教學情境。這不是 Solver 的實際混合頻率；ICM、PKO、玩家傾向與不同盲注結構需要獨立處理。SB 的 Limp 尚未包含；BB 面對 SB Limp 不是 RFI。</div></section>
+<section class="panel"><div class="practiceHead"><h2>② 169 格起手牌矩陣</h2><span id="rangeShare" class="eyebrow">BTN · 30BB</span></div>
+<div class="legend"><span><i class="dot open"></i>開池候選</span><span><i class="dot borderline"></i>邊界待驗證</span><span><i class="dot fold"></i>偏向棄牌</span></div>
+<div id="matrix" class="matrix" role="group" aria-label="169 格起手牌矩陣"></div>
+<div class="matrixLegend"><span>上三角：同花 s</span><span>對角線：對子</span><span>下三角：不同花 o</span></div>
+<div class="miniStat"><div><small>本模型開池候選（不含邊界）</small><b id="coverage">—</b></div><div><small>邊界手牌種類</small><b id="marginal">—</b></div></div>
+<p class="hint">綠色＝值得優先研究的 RFI 手；金色＝因位置、深度與牌群接近本教學模型邊界，應用真實範圍工具比對；深色＝在目前設定較不鼓勵開池。顏色由原創啟發式模型產生，不是經 Solver 驗證的 GTO 頻率。</p></section>
+<section class="panel" id="handDetail"><div class="practiceHead"><h2>③ 點牌學原因</h2><span class="badge neutral" id="handClass">等待選牌</span></div><div class="handTitle" id="handName">AJs</div><div class="badges" id="handBadges"></div><ul class="reasons" id="handReasons"></ul><div class="callout" id="handCaution">先點一張手牌。</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><button id="selectRandom" class="soft">換一張隨機手牌</button><button id="copySpot" class="soft">複製此情境</button><a href="./academy.html?chapter=4" class="soft">複習 RFI 章節</a></div></section>
+</div>
+<aside><section class="panel" id="training"><div class="practiceHead"><h2>④ RFI 盲測練習</h2><span class="eyebrow">10 題 / 回</span></div><p class="hint">練習辨認「目前教學圖表」的顏色類別，不會把這些答案冒充 Solver 的唯一正解。學會比較位置和深度的差異才是目的。</p>
+<div class="stats"><div class="stat"><small>累積作答</small><b id="total">0</b></div><div class="stat"><small>累積正確率</small><b id="accuracy">—</b></div><div class="stat"><small>待複習</small><b id="wrongCount">0</b></div></div>
+<div id="drillIntro"><button class="action" id="startDrill" style="width:100%">開始這個情境的 10 題訓練 →</button><p class="hint">本回合固定使用目前位置、籌碼與 Ante 設定。答題中可回頭查表，但重新開始才會套用新選項。</p></div>
+<div id="drillBody" class="hidden"><div class="practiceHead"><b id="drillCount" class="small">第 1 / 10 題</b><button class="soft" id="stopDrill">結束此回合</button></div><div class="progress" style="margin:10px 0"><i id="drillProgress"></i></div><div class="practiceQuestion" id="drillQuestion"></div><div class="answers" id="drillOptions"></div><div id="drillFeedback"></div></div>
+<div id="drillFinish" class="hidden"><div class="handTitle" id="finishScore">—</div><p class="hint" id="finishText"></p><div style="display:flex;gap:7px"><button id="retryDrill" class="action">再練一回</button><button id="finishReview" class="soft">看錯題</button></div></div>
+</section>
+<section class="panel"><h2>⑤ 我的 RFI 錯題</h2><div id="wrongList"></div><button id="clearWrong" class="soft" style="margin-top:8px">只清除 RFI 錯題</button></section>
+<section class="panel"><h2>閱讀圖表三個關鍵</h2><ol class="learnList"><li>**s**＝同花、**o**＝不同花，AKs 與 AKo 的組合數和打法會不同。</li><li>越後位通常可加寬，但短碼不能只用「越短越緊」簡化所有情況。</li><li>10～15BB 同一手牌可能有小 Open、Jam、Fold 的混合；金色邊界請查 Solver。</li></ol>
+<p class="hint">深入研究與比對：<a href="https://next.pokercoaching.com/gto-charts/" target="_blank" rel="noopener noreferrer">PokerCoaching GTO Charts ↗</a>、<a href="https://simplegto.com/features/tournament-preflop-charts" target="_blank" rel="noopener noreferrer">Simple GTO MTT ↗</a>。本表沒有擷取或複製這些平台的求解數據。</p></section>
+</aside></div><p class="footer">訓練用途｜8 人桌、前面全棄、一般 ChipEV 推演。模型只做策略結構示意，不能作為實際賽事的精確建議。數據儲存於這台裝置目前瀏覽器，與 Safari 主畫面 Web App 不保證共用；原本 MTT LAB 的紀錄不會被覆蓋。</p></div>
+<nav class="nav"><a href="./index.html">⌂ 首頁</a><a href="./academy.html?chapter=4">▤ 學院</a><a href="./rfi.html" class="active">▦ RFI</a><a href="./analyzer.html">♠ 分析器</a></nav>
+<script>
+"use strict";
+const RANKS="AKQJT98765432".split("");
+const POSITIONS=["UTG","UTG+1","LJ","HJ","CO","BTN","SB","BB"];
+const TARGETS={10:[.15,.17,.20,.24,.30,.41,.54],15:[.16,.18,.21,.26,.33,.44,.48],20:[.16,.19,.23,.27,.35,.46,.41],30:[.16,.19,.23,.28,.36,.49,.38],40:[.17,.20,.24,.29,.37,.51,.39]};
+const KEY="mttRfiV1";
+let S={total:0,correct:0,wrong:{},history:[]},spot={pos:"BTN",bb:30,ante:true},chosen="AJs",map={},running=null,focus="";
+try{const old=JSON.parse(localStorage.getItem(KEY)||"null");if(old&&typeof old==="object"){S.total=Math.max(0,Number(old.total)||0);S.correct=Math.max(0,Number(old.correct)||0);S.wrong=old.wrong&&typeof old.wrong==="object"?old.wrong:{};S.history=Array.isArray(old.history)?old.history.slice(0,20):[]}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function $(id){return document.getElementById(id)}
+function getHand(row,col){return row===col?RANKS[row]+RANKS[col]:row<col?RANKS[row]+RANKS[col]+"s":RANKS[col]+RANKS[row]+"o"}
+const hands=[];for(let i=0;i<13;i++)for(let j=0;j<13;j++){let hand=getHand(i,j);hands.push({hand,i,j,weight:i===j?6:(i<j?4:12),score:0})}
+function parseHand(h){return {high:RANKS.indexOf(h[0]),low:RANKS.indexOf(h[1]),suited:h.endsWith("s"),pair:h.length===2}}
+function handWeight(h){return h.length===2?6:h.endsWith("s")?4:12}
+function scoreHand(h,bb){
+ const x=parseHand(h),a=14-x.high,b=14-x.low;
+ if(x.pair)return 49+a*2.45+(a>=8?12:a>=5?5:bb<=20?-1:2);
+ let v=a*2.5+b*1.85+(x.suited?13:0)+(a===14?9:0)+(a===13?3:0)+(b>=10?7:0);
+ if(a===13&&b===12&&!x.suited)v+=10;
+ if(a===14&&b<=8&&!x.suited)v-=5;
+ if(x.suited&&a===14&&b<=5)v+=8;
+ if(x.suited&&a<=11&&a-b===1)v+=8;
+ if(x.suited&&a<=11&&a-b===2)v+=4;
+ if(bb<=20){if(a===14)v+=3;if(x.pair&&a<=5)v-=3;if(x.suited&&a<=10&&a-b<=2)v-=4}
+ return v;
+}
+function classify(pos,bb,ante){
+ const index=POSITIONS.indexOf(pos);
+ if(index===7)return Object.fromEntries(hands.map(h=>[h.hand,{state:"none",score:0,weight:h.weight}]));
+ const target=Math.max(.05,TARGETS[bb][index]-(ante?0:(index>=4?.045:.03)));
+ const all=hands.map(h=>({hand:h.hand,weight:h.weight,score:scoreHand(h.hand,bb)}));
+ all.sort((a,b)=>b.score-a.score||a.hand.localeCompare(b.hand));
+ let total=0,limit=all[all.length-1].score;
+ for(const h of all){total+=h.weight;limit=h.score;if(total>=1326*target)break}
+ let result={};
+ for(const h of all){
+   let diff=h.score-limit;
+   const state=diff>2.75?"open":diff>=-2.75?"borderline":"fold";
+   result[h.hand]={state,score:h.score,weight:h.weight};
+ }
+ return result;
+}
+function typeName(h){if(h.length===2)return"口袋對子（Pocket Pair）";if(h.endsWith("s"))return"同花牌（Suited）";return"不同花牌（Offsuit）"}
+function handReasons(h){
+ const x=parseHand(h),a=14-x.high,b=14-x.low,gap=a-b,res=[];
+ if(x.pair){res.push("這是口袋對子，起手時至少具備成對牌力。");res.push(a>=10?"高對子通常是價值開池的重要骨幹。":"中小口袋對子要看深度、位置及翻後價值，不能一律開池。")}
+ else {
+ if(a===14)res.push("有 A 阻擋牌，降低其他玩家拿強 Ax／AA 的部分組合數，但不能保證對手會棄牌。");
+ else if(a>=12)res.push("包含高張，較可能在某些公共牌組成可持續的頂對。");
+ else res.push("不包含 A／K 頂級高張；要更加重視翻後實現勝率與位置。");
+ if(x.suited)res.push("同花提高成花潛力，但只有同花不等於值得無條件進池。");
+ else res.push("不同花牌的成花潛力較低，邊界牌更依賴高張與位置優勢。");
+ if(gap===1)res.push("兩張連張，具有較佳順子連接性。");
+ else if(gap>=5&&a!==14)res.push("兩張牌距離較大，順子連接性較弱。");
+ if(a>=10&&b>=10)res.push("兩張都屬於 Broadway（T 以上）牌群，較可能形成較強的高對或高順子。");
+ }
+ res.push(spot.pos==="BTN"?"莊家位通常擁有翻後位置優勢，可以研究比早位更多的開池牌。":spot.pos==="SB"?"SB 沒有翻後位置，且可能使用 Limp；本圖只展示加注候選的簡化版本。":"你在 "+spot.pos+"；前方全 Fold 只決定能否 RFI，還需要看後面有多少玩家未行動。");
+ if(spot.bb<=15)res.push(spot.bb+"BB 已進入短碼區，是否 Jam、Min-open 或 Fold，不能只靠這張示意表決定。");
+ return res;
+}
+function setSpot(){
+ spot.pos=$("position").value;spot.bb=Number($("stack").value);spot.ante=$("ante").checked;
+ map=classify(spot.pos,spot.bb,spot.ante);
+ $("rangeShare").textContent=spot.pos+" · "+spot.bb+"BB"+(spot.ante?" · BBA":" · 無 Ante");
+ let html="";for(const h of hands){const v=map[h.hand],cls=v.state==="none"?"fold":v.state;html+='<button type="button" class="cell '+cls+(chosen===h.hand?" selected":"")+'" data-hand="'+h.hand+'" aria-label="'+h.hand+'，'+(v.state==="open"?"開池候選":v.state==="borderline"?"邊界":v.state==="fold"?"偏向棄牌":"非 RFI")+'" title="'+h.hand+'">'+h.hand+"</button>"}
+ $("matrix").innerHTML=html;
+ $("matrix").querySelectorAll("[data-hand]").forEach(b=>b.onclick=()=>selectHand(b.dataset.hand,true));
+ let count=0,border=0;for(const h of hands){if(map[h.hand].state==="open")count+=h.weight;if(map[h.hand].state==="borderline")border++}
+ $("coverage").textContent=spot.pos==="BB"?"不適用":(count/1326*100).toFixed(1)+"%";
+ $("marginal").textContent=spot.pos==="BB"?"不適用":border+" / 169";
+ selectHand(chosen,false);try{history.replaceState(null,"",location.pathname+"?pos="+encodeURIComponent(spot.pos)+"&bb="+spot.bb+"&ante="+(spot.ante?"1":"0")+"&hand="+chosen)}catch(e){}
+}
+function selectHand(hand,update){
+ if(!map[hand])return;chosen=hand;
+ $("matrix").querySelectorAll(".cell").forEach(b=>b.classList.toggle("selected",b.dataset.hand===chosen));
+ $("handName").textContent=hand;
+ const v=map[hand],state=v.state;
+ const title=state==="open"?"開池候選":state==="borderline"?"邊界：需要驗證":state==="fold"?"較不建議開池":"大盲位不適用 RFI";
+ $("handClass").textContent=title;$("handClass").className="badge "+(state==="borderline"?"amber":state==="open"?"":"neutral");
+ $("handBadges").innerHTML="<span class='badge neutral'>"+typeName(hand)+"</span><span class='badge neutral'>"+handWeight(hand)+" 種實際組合</span>";
+ $("handReasons").innerHTML=handReasons(hand).map(x=>"<li>"+x+"</li>").join("");
+ $("handCaution").textContent=state==="none"?"BB 面對 SB Limp 或 SB Open 是反應動作，不能用這張『前面都 Fold』的 RFI 圖判斷。":
+ state==="open"?"這是此模型下的開池學習候選，不代表一定要加注到固定大小。"+(spot.bb<=15?"短碼請再研究 Jam／小 Open 分支。":"若接近泡沫或決賽桌，請檢查 ICM。"):
+ state==="borderline"?"這手接近示意邊界，Solver 與賽事條件可能讓它在 Raise／Jam／Fold 間混合；不可當成固定頻率。":
+ "此位置與深度的示意模型偏向 Fold；若玩家極端偏弱、賽事條件改變，應另行驗證。";
+ if(update){try{history.replaceState(null,"",location.pathname+"?pos="+encodeURIComponent(spot.pos)+"&bb="+spot.bb+"&ante="+(spot.ante?"1":"0")+"&hand="+chosen)}catch(e){}}
+}
+function shuffle(items){for(let i=items.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]]}return items}
+function drillBank(){const grouped={open:[],borderline:[],fold:[]};for(const h of hands)if(grouped[map[h.hand].state])grouped[map[h.hand].state].push(h.hand);const out=[];for(const status of ["open","borderline","fold"]){const n=status==="open"?4:3;out.push(...shuffle(grouped[status]).slice(0,n))}
+ if(out.length<10)out.push(...shuffle(hands.map(x=>x.hand).filter(x=>!out.includes(x))).slice(0,10-out.length));
+ return shuffle(out).slice(0,10);
+}
+function start(){
+ if(spot.pos==="BB"){alert("BB 不存在此情境下的 RFI；請選擇 UTG 到 SB。");return}
+ const questions=drillBank();
+ if(!questions.length){alert("沒有可用題目，請更換情境。");return}
+ running={spot:{...spot},questions,index:0,correct:0,answered:false,history:[]};
+ $("drillIntro").classList.add("hidden");$("drillFinish").classList.add("hidden");$("drillBody").classList.remove("hidden");renderDrill();
+}
+function renderDrill(){
+ if(!running)return;
+ const i=running.index;if(i>=running.questions.length){finish();return}
+ const h=running.questions[i];
+ $("drillCount").textContent="第 "+(i+1)+" / "+running.questions.length+" 題";$("drillProgress").style.width=(100*i/running.questions.length)+"%";
+ $("drillQuestion").textContent=running.spot.pos+" · "+running.spot.bb+"BB · "+(running.spot.ante?"有 BBA":"無 Ante")+"："+h+" 在這張教學 RFI 圖中的類別是？";
+ $("drillOptions").innerHTML=[["open","開池候選"],["borderline","邊界待驗證"],["fold","偏向棄牌"]].map(a=>'<button class="answer" data-status="'+a[0]+'">'+a[1]+"</button>").join("");
+ $("drillFeedback").innerHTML="";
+ $("drillOptions").querySelectorAll("button").forEach(b=>b.onclick=()=>answer(b.dataset.status));
+}
+function answer(choice){
+ if(!running||running.answered)return;
+ const hand=running.questions[running.index],expected=classify(running.spot.pos,running.spot.bb,running.spot.ante)[hand].state,ok=choice===expected;
+ running.answered=true;running.correct+=ok?1:0;running.history.push({hand,choice,expected,ok});
+ S.total++;if(ok){S.correct++;delete S.wrong[running.spot.pos+"|"+running.spot.bb+"|"+(running.spot.ante?1:0)+"|"+hand]}
+ else S.wrong[running.spot.pos+"|"+running.spot.bb+"|"+(running.spot.ante?1:0)+"|"+hand]={hand,choice,expected,pos:running.spot.pos,bb:running.spot.bb,ante:running.spot.ante,t:new Date().toISOString()};
+ save();renderTotals();
+ $("drillOptions").querySelectorAll("button").forEach(b=>{b.disabled=true;b.classList.toggle("correct",b.dataset.status===expected);b.classList.toggle("wrong",b.dataset.status===choice&&!ok)});
+ const names={open:"開池候選",borderline:"邊界待驗證",fold:"偏向棄牌"};
+ $("drillFeedback").innerHTML='<div class="explain"><b>'+(ok?"✓ 辨識正確":"需要複習")+"</b><div>這張示意圖將 "+hand+" 分為："+names[expected]+"。</div><div>請點上方矩陣的 "+hand+"，閱讀理由；精確混合策略仍應查 Solver。</div></div><button class='action' id='nextQuiz'>"+(running.index===running.questions.length-1?"完成本回合":"下一題 →")+"</button>";
+ $("nextQuiz").onclick=()=>{running.index++;running.answered=false;renderDrill()};
+}
+function finish(){
+ const pct=Math.round(running.correct/running.questions.length*100);
+ S.history.unshift({pos:running.spot.pos,bb:running.spot.bb,ante:running.spot.ante,correct:running.correct,total:running.questions.length,at:new Date().toISOString()});S.history=S.history.slice(0,20);save();
+ $("drillBody").classList.add("hidden");$("drillFinish").classList.remove("hidden");$("finishScore").textContent=pct+"%";$("finishText").textContent="答對 "+running.correct+" / "+running.questions.length+" 題。這是對本頁教學模型的辨識熟練度，不是你在實戰中的 GTO 正確率。";
+ running=null;renderTotals();
+}
+function renderTotals(){
+ $("total").textContent=S.total;$("accuracy").textContent=S.total?Math.round(S.correct/S.total*100)+"%":"—";
+ const wrongs=Object.values(S.wrong);$("wrongCount").textContent=wrongs.length;
+ $("wrongList").innerHTML=wrongs.length?wrongs.slice(-10).reverse().map(w=>'<div class="historyRow"><span>'+w.pos+" "+w.bb+"BB　<b>"+w.hand+'</b></span><a href="?pos='+encodeURIComponent(w.pos)+"&bb="+w.bb+"&ante="+(w.ante?1:0)+"&hand="+w.hand+'">重看 →</a></div>').join(""):'<p class="hint">還沒有錯題。做完第一回合後，錯誤會出現在這裡。</p>';
+}
+$("position").onchange=setSpot;$("stack").onchange=setSpot;$("ante").onchange=setSpot;
+$("selectRandom").onclick=()=>selectHand(hands[Math.floor(Math.random()*hands.length)].hand,true);
+$("copySpot").onclick=()=>{const t=spot.pos+" "+spot.bb+"BB "+(spot.ante?"1BB BBA":"無 Ante")+"，前面全部 Fold，起手牌 "+chosen+"。請分析 RFI 是否值得開池及可能分支。";if(navigator.clipboard?.writeText)navigator.clipboard.writeText(t).then(()=>alert("已複製情境")).catch(()=>window.prompt("請複製情境",t));else window.prompt("請複製情境",t)};
+$("startDrill").onclick=start;$("retryDrill").onclick=start;$("stopDrill").onclick=()=>{if(confirm("要結束這一回合嗎？本回合作答已保存，但不記入完成回合紀錄。")){running=null;$("drillBody").classList.add("hidden");$("drillIntro").classList.remove("hidden")}};
+$("finishReview").onclick=()=>{document.querySelector("#wrongList").scrollIntoView({behavior:"smooth",block:"start"})};
+$("clearWrong").onclick=()=>{if(confirm("只清除 RFI 錯題？累積題數與歷史保留。")){S.wrong={};save();renderTotals()}};
+try{const p=new URLSearchParams(location.search),pos=p.get("pos"),bb=Number(p.get("bb")),ante=p.get("ante"),hand=p.get("hand");
+ if(POSITIONS.includes(pos))$("position").value=pos;
+ if([10,15,20,30,40].includes(bb))$("stack").value=bb;
+ if(ante==="0")$("ante").checked=false;
+ if(hands.some(h=>h.hand===hand))chosen=hand;
+}catch(e){}
+setSpot();renderTotals();
+</script></body></html>
