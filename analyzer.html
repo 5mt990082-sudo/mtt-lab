@@ -336,7 +336,7 @@ select:focus,input:focus{border-color:var(--green)}
 <p>OCR 只會提供可能的數字；座位、莊家 D、花色與手牌必須由你確認。空白欄位代表不要自動改動該資訊。</p>
 <div id="shotClues" class="statusLine">等待截圖。尚無任何資料會自動寫進分析器。</div>
 <div class="shotFieldRow">
-<div class="field"><label for="shotTableSize">牌桌人數</label><select id="shotTableSize"><option value="2">2 人</option><option value="6">6 人</option><option value="7">7 人</option><option value="8">8 人</option><option value="9">9 人</option></select></div>
+<div class="field"><label for="shotTableSize">牌桌人數</label><select id="shotTableSize"><option value="">沿用目前桌型</option><option value="2">2 人</option><option value="6">6 人</option><option value="7">7 人</option><option value="8">8 人</option><option value="9">9 人</option></select></div>
 <div class="field"><label for="shotHeroPos">你的位置（依 D 判斷）</label><select id="shotHeroPos"><option value="">請手動確認位置</option></select></div>
 <div class="field"><label for="shotHeroStack">你的剩餘籌碼 BB</label><input id="shotHeroStack" type="number" min="0" step="0.1" inputmode="decimal" placeholder="例如 81.4"></div>
 <div class="field"><label for="shotPot">目前總底池 BB</label><input id="shotPot" type="number" min="0" step="0.1" inputmode="decimal" placeholder="例如 4.3"></div>
@@ -430,38 +430,194 @@ const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
 const shotModal=document.getElementById("shotModal"),shotInput=document.getElementById("shotInput"),shotPreview=document.getElementById("shotPreview"),shotStatus=document.getElementById("shotStatus"),ocrRaw=document.getElementById("ocrRaw");
 let shotObjectUrl=null;
+let shotRequestId=0;
+let shotProcessing=false;
+const shotCardFields=["shotCard1","shotCard2"];
+const shotTableSize=document.getElementById("shotTableSize");
+const shotHeroPos=document.getElementById("shotHeroPos");
+const shotClues=document.getElementById("shotClues");
+function updateShotPositions(){
+ const old=shotHeroPos.value;
+ shotHeroPos.innerHTML='<option value="">請手動確認位置</option>';
+ const layout=tableLayouts[Number(shotTableSize.value)]||currentPositions();
+ layout.forEach(pos=>{const option=document.createElement("option");option.value=pos;option.textContent=pos;shotHeroPos.appendChild(option)});
+ shotHeroPos.value=layout.includes(old)?old:"";
+}
+shotTableSize.addEventListener("change",updateShotPositions);
+const rankLabels=["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
+shotCardFields.forEach(id=>{
+ const sel=document.getElementById(id);
+ for(const rank of rankLabels)for(const suit of ["♠","♥","♦","♣"]){
+   const opt=document.createElement("option");opt.value=rank+suit;opt.textContent=rank+suit;sel.appendChild(opt);
+ }
+});
+function resetShotForm(){
+ shotTableSize.value="";
+ updateShotPositions();
+ document.getElementById("shotHeroStack").value="";
+ document.getElementById("shotPot").value="";
+ shotCardFields.forEach(id=>document.getElementById(id).value="");
+ shotClues.textContent="尚未辨識。所有欄位需要核對後才會套用，不會自動更改底池或位置。";
+ ocrRaw.textContent="尚未辨識";
+ document.getElementById("shotDetails").open=false;
+}
+resetShotForm();
 document.getElementById("shotBtn").addEventListener("click",()=>shotModal.classList.add("show"));
 document.getElementById("closeShot").addEventListener("click",()=>shotModal.classList.remove("show"));
 shotModal.addEventListener("click",e=>{if(e.target===shotModal)shotModal.classList.remove("show")});
 document.getElementById("pickShot").addEventListener("click",()=>shotInput.click());
 shotInput.addEventListener("change",()=>{
  const file=shotInput.files&&shotInput.files[0];if(!file)return;
+ shotRequestId++;
  if(shotObjectUrl)URL.revokeObjectURL(shotObjectUrl);
  shotObjectUrl=URL.createObjectURL(file);shotPreview.src=shotObjectUrl;shotPreview.hidden=false;
- document.getElementById("parseShot").disabled=false;ocrRaw.hidden=true;
- shotStatus.className="shotStatus";shotStatus.textContent="截圖已載入。按「解析截圖」先抓位置、BB、底池等文字線索。";
+ document.getElementById("parseShot").disabled=false;resetShotForm();
+ shotStatus.className="shotStatus";
+ shotStatus.textContent="截圖已載入。請使用原始 Natural8 截圖，不要傳整個匯入視窗的第二次截圖。可先按「辨識關鍵區域」，再核對欄位。";
 });
-function applyOcrHints(text){
- const up=text.toUpperCase(), positions=currentPositions();
- const hits=positions.filter(p=>up.includes(p));
- if(hits.length===1){const sel=document.getElementById("heroPos");if([...sel.options].some(o=>o.value===hits[0]))sel.value=hits[0]}
- const bb=[...text.matchAll(/(\d+(?:\.\d+)?)\s*BB/gi)].map(m=>Number(m[1])).filter(Number.isFinite);
- const potMatch=text.match(/(?:POT|底池)[^\d]{0,8}(\d+(?:\.\d+)?)/i);
- if(potMatch){const v=Number(potMatch[1]);if(Number.isFinite(v)&&v>0){runningPot=v;document.getElementById("pot").value=fmtBb(v)}}
- return{positions:hits,bb,pot:potMatch?Number(potMatch[1]):null};
+function cropShot(image,area){
+ const nw=image.naturalWidth,nh=image.naturalHeight;
+ if(!nw||!nh)throw new Error("圖片尚未載入完成");
+ const x=Math.floor(area[0]*nw),y=Math.floor(area[1]*nh);
+ const w=Math.max(1,Math.floor(area[2]*nw)),h=Math.max(1,Math.floor(area[3]*nh));
+ const zoom=Math.max(1,Math.min(3,1100/w));
+ const canvas=document.createElement("canvas");
+ canvas.width=Math.max(1,Math.round(w*zoom));canvas.height=Math.max(1,Math.round(h*zoom));
+ const ctx=canvas.getContext("2d",{willReadFrequently:true});
+ if(!ctx)throw new Error("無法處理圖片");
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.filter="grayscale(100%) contrast(195%) brightness(115%)";
+ ctx.drawImage(image,x,y,w,h,0,0,canvas.width,canvas.height);
+ return canvas;
 }
-document.getElementById("parseShot").addEventListener("click",async()=>{
+function parseBbCandidates(text){
+ const normalized=String(text||"").replace(/，/g,".").replace(/,/g,".");
+ const values=[];
+ const re=/(\d{1,4}(?:\.\d{1,2})?)\s*B\s*[B8]\b/gi;
+ let m;
+ while((m=re.exec(normalized))){
+   const n=Number(m[1]);
+   if(Number.isFinite(n)&&n>0&&n<=5000&&!values.some(v=>Math.abs(v-n)<.01))values.push(n);
+ }
+ return values;
+}
+function safeShotGuess(numbers,kind,confidence){
+ if(!Array.isArray(numbers)||!Number.isFinite(confidence)||confidence<45)return null;
+ // A hero crop may contain tiny blind chips (0.5 / 1) and the actual stack label.
+ const plausible=numbers.filter(n=>kind==="stack"?n>=2:n>=.1);
+ return plausible.length===1?plausible[0]:null;
+}
+async function runShotOcr(){
  const file=shotInput.files&&shotInput.files[0];if(!file)return;
- const btn=document.getElementById("parseShot");btn.disabled=true;shotStatus.className="shotStatus busy";shotStatus.textContent="正在本機解析文字… 第一次會載入辨識模型，可能需要幾秒。";
+ if(shotProcessing)return;
+ shotProcessing=true;const id=shotRequestId;
+ const btn=document.getElementById("parseShot");btn.disabled=true;
+ shotStatus.className="shotStatus busy";
+ shotStatus.textContent="正在從自己的籌碼區與中央底池區辨識；本機首次載入模型可能需較長時間…";
+ let worker=null;
  try{
-   if(!window.Tesseract)throw new Error("OCR 模組尚未載入");
-   const r=await Tesseract.recognize(file,"eng",{logger:m=>{if(m.status==="recognizing text")shotStatus.textContent="正在辨識文字… "+Math.round((m.progress||0)*100)+"%"}});
-   const text=(r.data&&r.data.text||"").trim();ocrRaw.textContent=text||"沒有讀到可用文字";ocrRaw.hidden=false;
-   const hints=applyOcrHints(text);
-   const found=[];if(hints.positions.length)found.push("位置 "+hints.positions.join("/"));if(hints.bb.length)found.push("BB 數字 "+hints.bb.slice(0,6).join(", "));if(hints.pot)found.push("底池 "+hints.pot);
-   shotStatus.className="shotStatus ok";shotStatus.textContent=found.length?"第一層辨識完成："+found.join("｜")+"。牌面與座位歸屬還需要用實際截圖校準。":"已完成 OCR，但目前還沒抓到穩定的牌局欄位。把這張實際牌桌截圖給我，我就能針對版型校準。";
- }catch(err){shotStatus.className="shotStatus";shotStatus.textContent="解析失敗："+(err&&err.message?err.message:"未知錯誤")+"。仍可先用截圖作為版型校準。"}
- finally{btn.disabled=false}
+   if(!window.Tesseract)throw new Error("本機 OCR 模組載入失敗，請確認網路後重試");
+   if(!shotPreview.complete||!shotPreview.naturalWidth){
+     await new Promise((resolve,reject)=>{shotPreview.onload=resolve;shotPreview.onerror=()=>reject(Error("圖片載入失敗"))});
+   }
+   if(id!==shotRequestId)return;
+   // ROI 以 Natural8 直向全螢幕牌桌為主；不同解析度、桌布與桌型不保證能辨識。
+   const regions=[
+     {name:"你的籌碼區",kind:"stack",rect:[.03,.78,.49,.15]},
+     {name:"中央底池區",kind:"pot",rect:[.32,.24,.39,.22]}
+   ];
+   const results=[];
+   if(window.Tesseract.createWorker){
+     worker=await window.Tesseract.createWorker("eng",1,{logger:m=>{
+       if(m.status==="recognizing text"&&id===shotRequestId)shotStatus.textContent="正在辨識重點文字… "+Math.round((m.progress||0)*100)+"%";
+     }});
+     await worker.setParameters({tessedit_pageseg_mode:"6",tessedit_char_whitelist:"0123456789.Bb "});
+   }
+   for(const region of regions){
+     if(id!==shotRequestId)return;
+     const canvas=cropShot(shotPreview,region.rect);
+     const res=worker?await worker.recognize(canvas):await window.Tesseract.recognize(canvas,"eng");
+     const data=res.data||{};
+     results.push({name:region.name,kind:region.kind,text:String(data.text||"").trim(),confidence:Number(data.confidence)||0,
+       nums:parseBbCandidates(data.text)});
+   }
+   if(id!==shotRequestId)return;
+   const found=[];
+   for(const region of results){
+     const val=safeShotGuess(region.nums,region.kind,region.confidence);
+     const label=region.kind==="stack"?"shotHeroStack":"shotPot";
+     const existing=document.getElementById(label);
+     if(val!==null&&existing.value===""){existing.value=String(val);found.push(region.name+"：可能是 "+val+"BB（請核對）")}
+     else found.push(region.name+"：無可靠的單一讀值（請自行輸入）");
+   }
+   shotClues.textContent=found.join("｜");
+   ocrRaw.textContent=results.map(r=>r.name+"（整區辨識可信度 "+r.confidence.toFixed(0)+"，僅供參考）\n"+(r.text||"[空白]")).join("\n\n");
+   shotStatus.className="shotStatus "+(results.some(r=>safeShotGuess(r.nums,r.kind,r.confidence)!==null)?"ok":"");
+   shotStatus.textContent="完成重點區域辨識。請確認莊家 D、自己位置與手牌；所有疑似 BB 數字也必須人工核對，才能套用。";
+ }catch(err){
+   if(id!==shotRequestId)return;
+   shotStatus.className="shotStatus";
+   shotStatus.textContent="OCR 辨識失敗或版型不符："+(err&&err.message?err.message:"未知原因")+"。仍可直接在下方手動確認牌局資料。";
+   shotClues.textContent="目前沒有可信賴的自動數字；請手動填入。";
+ }finally{
+   if(worker){try{await worker.terminate()}catch(e){}}
+   shotProcessing=false;btn.disabled=!(shotInput.files&&shotInput.files[0]);
+ }
+}
+document.getElementById("parseShot").addEventListener("click",runShotOcr);
+document.getElementById("applyShot").addEventListener("click",()=>{
+ const form={
+   players:shotTableSize.value,
+   heroPos:shotHeroPos.value,
+   stack:document.getElementById("shotHeroStack").value.trim(),
+   pot:document.getElementById("shotPot").value.trim(),
+   c1:document.getElementById("shotCard1").value,
+   c2:document.getElementById("shotCard2").value
+ };
+ if(!shotInput.files||!shotInput.files[0]){alert("請先選擇一張牌桌截圖。");return}
+ if(Boolean(form.c1)!==Boolean(form.c2)){alert("請將兩張手牌都選好，或先都留白。");return}
+ if(form.c1&&form.c1===form.c2){alert("兩張手牌不能是同一張牌。");return}
+ if((form.stack!==""&&(!Number.isFinite(Number(form.stack))||Number(form.stack)<0||Number(form.stack)>5000))||
+    (form.pot!==""&&(!Number.isFinite(Number(form.pot))||Number(form.pot)<=0||Number(form.pot)>50000))){
+   alert("BB 數字不合理，請檢查是不是誤把玩家名稱、下注額或底池讀成籌碼。");return;
+ }
+ if(!form.players&&!form.heroPos&&!form.stack&&!form.pot&&!form.c1){
+   alert("至少確認一項資料，再套用到分析器。");return
+ }
+ let summary=[];
+ if(form.players)summary.push(form.players+" 人桌");
+ if(form.heroPos)summary.push("位置 "+form.heroPos);
+ if(form.stack)summary.push("自己 "+form.stack+"BB");
+ if(form.pot)summary.push("底池 "+form.pot+"BB");
+ if(form.c1)summary.push("手牌 "+form.c1+" "+form.c2);
+ const missing=[];
+ if(!form.heroPos)missing.push("位置");
+ if(!form.stack)missing.push("自己剩餘 BB");
+ if(!form.pot)missing.push("總底池（預設會重設為 2BB）");
+ if(!form.c1)missing.push("兩張手牌");
+ const message="確認套用以下資料並開始新的一手嗎？\n"+summary.join("｜")+
+   (missing.length?"\n\n尚未確認："+missing.join("、")+"；需要之後手動檢查。":"")+
+   "\n\n原本未完成的牌局輸入會重置。";
+ if(!confirm(message))return;
+ // No OCR text is allowed to directly mutate any analysis state.
+ newHand();
+ if(form.players){
+   document.getElementById("players").value=form.players;syncHeroPositions();renderSeats();
+ }
+ if(form.heroPos){
+   const sel=document.getElementById("heroPos");
+   if(!Array.from(sel.options).some(o=>o.value===form.heroPos)){alert("位置不屬於目前桌型，請重新選擇。");return}
+   sel.value=form.heroPos;renderSeats();
+ }
+ if(form.stack!==""){
+   const h=posRow(document.getElementById("heroPos").value);
+   if(h){h.querySelector(".seatOn").checked=true;h.querySelector(".stackIn").value=form.stack}
+ }
+ if(form.pot!=="")putPot(Number(form.pot));
+ if(form.c1){cards.h0=form.c1;cards.h1=form.c2;renderCardSlots()}
+ updatePotPreview();
+ document.getElementById("flowInfo").textContent="截圖欄位已人工確認並套用；請再檢查剩餘 BB、位置與下注動作，才開始分析。";
+ shotStatus.className="shotStatus ok";shotStatus.textContent="已套用人工確認的欄位。";shotModal.classList.remove("show");
 });
 
 document.getElementById("back").addEventListener("click",()=>{location.href="./"});
