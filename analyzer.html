@@ -55,6 +55,10 @@ select:focus,input:focus{border-color:var(--green)}
 .rangeText{margin:4px 0 7px;color:#b9cde1}
 .rangeBars{display:grid;gap:4px}.rangeRow{display:grid;grid-template-columns:62px 1fr 30px;gap:6px;align-items:center}.rangeRow span{font-size:9px;color:#a9bed1}.rangeTrack{height:6px;background:#122334;border-radius:99px;overflow:hidden}.rangeFill{height:100%;background:#8cc8ff;border-radius:99px}.rangePct{text-align:right;font-size:9px;color:#dbeaff}
 .rangeMeta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;padding-top:6px;border-top:1px solid #ffffff12;font-size:9px;color:#8fa8bc}.rangeExamples{margin-top:5px;color:#d8e7f6;font-size:9px}.rangeTrail{margin-top:6px;padding:6px 8px;border-radius:8px;background:#0d2030;color:#9fc4e6;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comboBox{margin-top:7px;padding:10px;border:1px solid #3f7657;border-radius:11px;background:#0b2117;color:#d9eee1;font-size:10px;line-height:1.45}
+.comboBox>b{color:#7df0ad}.comboRole{font-size:15px;font-weight:1000;color:#fff;margin:4px 0 7px}
+.comboGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.comboItem{padding:7px 8px;border-radius:8px;background:#0d2a1c;border:1px solid #ffffff10}.comboItem span{display:block;color:#83a996;font-size:8px}.comboItem strong{display:block;margin-top:2px;color:#eaf8ef;font-size:10px}
+.runoutLine{margin-top:6px;padding:7px 8px;border-radius:8px;background:#10291d}.runoutLine span{color:#82b398}.runoutLine b{color:#f1fff5}.comboTrail{margin-top:6px;color:#9ed8b8;font-size:9px}.comboNote{margin-top:5px;color:#8aa699;font-size:9px}
 .behaviorBox{margin-top:7px;padding:9px 10px;border:1px solid #6b5333;border-radius:10px;background:#21170c;color:#f0dfbd;font-size:10px;line-height:1.45}
 .behaviorBox b{color:#ffd071}.behaviorHeadline{margin:4px 0 6px;font-size:12px;font-weight:900;color:#fff2d2}.behaviorGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
 .behaviorItem{padding:6px 7px;border-radius:8px;background:#2a1e10;border:1px solid #ffffff10}.behaviorItem span{display:block;font-size:8px;color:#bda883}.behaviorItem strong{display:block;margin-top:2px;font-size:10px;color:#f6e6c6}.behaviorFoot{margin-top:6px;color:#c8b58f;font-size:9px}
@@ -325,6 +329,18 @@ select:focus,input:focus{border-color:var(--green)}
 <div class="metric"><span>脈絡</span><b id="mContext">—</b></div>
 </div>
 <div class="flowInfo" id="flowInfo">尚未分析｜目前總底池 2BB</div>
+<div class="comboBox">
+<b>COMBO 角色｜每一街重新定位</b>
+<div class="comboRole" id="comboRole">尚未分析</div>
+<div class="comboGrid">
+ <div class="comboItem"><span>Blocker / Unblocker</span><strong id="comboBlocker">—</strong></div>
+ <div class="comboItem"><span>目前任務</span><strong id="comboJob">—</strong></div>
+</div>
+<div class="runoutLine"><span>適合繼續的下一張：</span> <b id="goodRunouts">—</b></div>
+<div class="runoutLine"><span>需要減速的下一張：</span> <b id="badRunouts">—</b></div>
+<div class="comboTrail" id="comboTrail">定位軌跡｜尚未建立</div>
+<div class="comboNote">啟發式策略層：不是 Solver 頻率；目的是判斷這個 combo 在你的 Range 裡負責什麼工作。</div>
+</div>
 <div class="behaviorBox">
 <b>行為／心理線路分析</b>
 <div class="behaviorHeadline" id="behaviorLine">尚未分析</div>
@@ -366,6 +382,7 @@ function currentPositions(){return tableLayouts[Number(document.getElementById("
 let street="preflop", activeSlot="h0", pickRank=null, pickSuit=null, runningPot=2, pendingPicker=false;
 let investedThisStreet={}, pendingDecision=null, selectedMove=null, waitingOnOpp=false, handFinished=false, selectedBetPos=null;
 let rangeMemory={villain:null,profile:null,history:[]};
+let comboHistory=[];
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
 
@@ -421,7 +438,9 @@ function newHand(){
  document.getElementById("analyze").disabled=false;document.getElementById("pot").value="2";
  Object.keys(cards).forEach(k=>cards[k]=null);
  rangeMemory={villain:null,profile:null,history:[]};
+ comboHistory=[];
  document.getElementById("rangeTrail").textContent="尚未建立逐街軌跡";
+ const ct=document.getElementById("comboTrail");if(ct)ct.textContent="定位軌跡｜尚未建立";
  resetBetInputs();setStreet("preflop",false);activeSlot="h0";renderCardSlots();
  document.getElementById("result").classList.remove("show");hideError();updateFlowBar();
 }
@@ -671,6 +690,109 @@ function renderRangeProfile(p){
  renderRangeTrail();
 }
 
+function handStrengthRank(name,score){
+ const map={"高牌":0,"底對":1,"中對":2,"口袋對":2,"頂對":3,"超對":3,"兩對":4,"三條":5,"順子":6,"同花":7,"葫蘆":8,"四條":9,"同花順":10};
+ return map[name]??score??0;
+}
+function dominantBoardSuit(board){
+ const sc={};board.map(parse).forEach(x=>sc[x.s]=(sc[x.s]||0)+1);
+ const entries=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+ return entries.length&&entries[0][1]>=2?entries[0][0]:null;
+}
+function blockerText(hole,board,tex){
+ if(!board.length)return"翻前尚無公牌 blocker";
+ const dom=dominantBoardSuit(board), h=hole.map(parse), bits=[];
+ if(dom){
+   const suited=h.filter(x=>x.s===dom).sort((a,b)=>b.v-a.v);
+   if(suited.length){
+     const top=suited[0];
+     if(top.v===14)bits.push("A"+dom+"：高花／堅果花 blocker");
+     else if(top.v>=12)bits.push(top.r+dom+"：高花 blocker");
+     else bits.push(top.r+dom+"：同花 suit blocker");
+   }else if(tex.mono||tex.two)bits.push("沒有主要花色 blocker");
+ }
+ const boardVals=board.map(parse).map(x=>x.v);
+ h.forEach(x=>{if(boardVals.includes(x.v))bits.push(x.r+" 阻擋部分 trips／兩對組合")});
+ if(!bits.length){
+   const high=h.sort((a,b)=>b.v-a.v)[0];
+   bits.push(high.v>=13?high.r+" 高張可阻擋部分頂端高牌組合":"目前 blocker 效應有限");
+ }
+ return [...new Set(bits)].slice(0,2).join("；");
+}
+function allDeckCards(){
+ const out=[];ranks.forEach(r=>suits.forEach(s=>out.push(r+s)));return out;
+}
+function summarizeRunoutCards(list){
+ if(!list.length)return"沒有明顯特定牌";
+ const countsR={},countsS={};list.forEach(c=>{countsR[c[0]]=(countsR[c[0]]||0)+1;const s=c.slice(1);countsS[s]=(countsS[s]||0)+1});
+ const rankParts=Object.entries(countsR).filter(([,n])=>n>=3).sort((a,b)=>ranks.indexOf(a[0])-ranks.indexOf(b[0])).map(([r])=>r);
+ const suitParts=Object.entries(countsS).filter(([,n])=>n>=5).map(([s])=>s+"牌");
+ const exact=list.filter(c=>!rankParts.includes(c[0])&&!suitParts.includes(c.slice(1)+"牌")).slice(0,5);
+ return [...rankParts,...suitParts,...exact].slice(0,6).join(" / ")||list.slice(0,6).join(" / ");
+}
+function futureRunoutPlan(hole,board,streetName){
+ if(streetName==="river")return{good:"已到 River",bad:"沒有下一街",goodCount:0,badCount:0};
+ if(streetName==="preflop")return{good:"先看 Flop 結構再重新定位",bad:"—",goodCount:0,badCount:0};
+ const used=new Set(hole.concat(board)), deck=allDeckCards().filter(c=>!used.has(c));
+ const baseMade=madeHand(hole.concat(board)),baseName=pairQuality(hole,board,baseMade),baseRank=handStrengthRank(baseName,baseMade.score),baseDraw=drawInfo(hole.concat(board),hole,board);
+ const good=[],soft=[],bad=[];
+ deck.forEach(card=>{
+   const nb=board.concat(card), nm=madeHand(hole.concat(nb)), nn=pairQuality(hole,nb,nm), nr=handStrengthRank(nn,nm.score), nd=drawInfo(hole.concat(nb),hole,nb), nt=boardTexture(nb);
+   const madeJump=nr>baseRank;
+   const drawJump=(nd.combo&&!baseDraw.combo)||(nd.oesd&&!baseDraw.oesd)||(nd.flush&&!baseDraw.flush)||(nd.gut&&!baseDraw.gut);
+   if(madeJump||nd.combo||((nd.oesd||nd.flush)&&drawJump))good.push(card);
+   else if(drawJump)soft.push(card);
+   else{
+     const dangerous=(nt.mono&&!boardTexture(board).mono)||(nt.paired&&!boardTexture(board).paired)||(nt.wet>=boardTexture(board).wet+2);
+     if(dangerous)bad.push(card);
+   }
+ });
+ const goodText=summarizeRunoutCards(good.length?good:soft);
+ const badText=summarizeRunoutCards(bad);
+ return{good:goodText,bad:badText,goodCount:good.length+soft.length,badCount:bad.length};
+}
+function comboRoleAnalysis(o){
+ const strongMade=o.made.score>=2||["頂對","超對"].includes(o.handName);
+ const weakMade=o.made.score===1&&!["頂對","超對"].includes(o.handName);
+ const dom=dominantBoardSuit(o.board), hasHighSuit=dom&&o.hole.map(parse).some(x=>x.s===dom&&x.v>=12);
+ let role="邊界牌",job="控制底池／依價格繼續";
+ if(o.street==="preflop"){
+   const p=preflopProfile(o.hole);
+   role=p.tier<=2?"核心強牌":p.tier===3?"中強可玩牌":p.tier===4?"帶可玩性的邊界牌":"弱邊界牌";
+   job=p.tier<=2?"建立價值／承受再加注":p.tier<=4?"依位置與對手範圍選擇進攻或實現 equity":"避免無理由擴大底池";
+ }else if(o.street==="river"){
+   if(o.made.score>=4){role="強價值牌";job="價值下注／面對反擊再看堅果結構"}
+   else if(strongMade){role=o.context==="面對下注"||o.context==="你下注後被 Raise"?"Bluff-catcher／攤牌價值":"攤牌價值／薄價值候選";job="不要把已有攤牌價值的牌自動轉成 Bluff"}
+   else if(weakMade){role="弱攤牌價值";job="多數時候停手，只有明確 blocker 才考慮 Bluff"}
+   else {role=hasHighSuit?"Blocker Bluff 候選":"Give-up／低品質 Bluff";job=hasHighSuit?"只在故事完整且能代表強 Value 時施壓":"多數停止詐唬"}
+ }else{
+   if(o.made.score>=3){role="強 Value";job=o.tex.wet>=2?"價值＋保護，願意打大底池":"取值並保留較弱繼續範圍"}
+   else if(o.made.score===2){role="Value / 保護";job="向一對與 Draw 取值，同時注意被 Raise 後 Range"}
+   else if(["頂對","超對"].includes(o.handName)){role="中強 Value／Showdown";job="取值但避免無理由升級成三街大底池"}
+   else if(o.draw.combo){role="高品質半詐唬";job="可主動施壓，兼具 fold equity 與大量改善牌"}
+   else if(o.draw.flush||o.draw.oesd){role="天然半詐唬";job="在合適 Range 優勢下進攻，保留下一街繼續計畫"}
+   else if(o.draw.gut){role=hasHighSuit?"帶 Blocker 的 Bluff 候選":"弱半詐唬";job="選擇性施壓，不必高頻開火"}
+   else if(weakMade){role="Showdown value";job="控制底池／保留 Bluff-catch 能力"}
+   else if(hasHighSuit||o.tex.connected){role="有後續性的 Bluff 候選";job="不是因為『沒牌』亂打，而是挑能在好 Runout 繼續的 combo"}
+   else {role="低品質 Bluff / Give-up";job="缺乏 blocker 與後續改善時降低詐唬頻率"}
+ }
+ const run=futureRunoutPlan(o.hole,o.board,o.street);
+ const blocker=blockerText(o.hole,o.board,o.tex);
+ return{role,job,blocker,good:run.good,bad:run.bad};
+}
+function renderComboRole(x,streetName){
+ document.getElementById("comboRole").textContent=x.role;
+ document.getElementById("comboBlocker").textContent=x.blocker;
+ document.getElementById("comboJob").textContent=x.job;
+ document.getElementById("goodRunouts").textContent=x.good;
+ document.getElementById("badRunouts").textContent=x.bad;
+ const label=streetLabel(streetName)+"："+x.role;
+ const idx=comboHistory.findIndex(h=>h.street===streetName);
+ if(idx>=0)comboHistory[idx]={street:streetName,label};else comboHistory.push({street:streetName,label});
+ const order={preflop:0,flop:1,turn:2,river:3};comboHistory.sort((a,b)=>order[a.street]-order[b.street]);
+ document.getElementById("comboTrail").textContent="定位軌跡｜"+comboHistory.map(h=>h.label).join(" → ");
+}
+
 function behaviorLineAnalysis(o){
  const tight=o.tendency==="tight"||o.tendency==="passive";
  const aggro=o.tendency==="aggressive";
@@ -876,6 +998,8 @@ function analyze(){
  const behaviorInput={street,context,tex,tendency,heroBet,maxBet,call,basePot,pot,spr,villainStack:bettor.stack,newVillainBet:bettor.bet};
  const behavior=behaviorLineAnalysis(behaviorInput);
  renderBehaviorLine(behavior);
+ const comboAnalysis=comboRoleAnalysis({street,hole,board,made,handName,draw,tex,context,role,ip});
+ renderComboRole(comboAnalysis,street);
  if(behavior.jam&&behavior.heroSmall&&behavior.flushHeavy){
    why.unshift("行為線路提醒：花面小注後遭突然 All-in，這是高度極化 spot；先區分強價值／保護型快打與自然半詐唬，再用 Pot Odds、blocker 與對手傾向決定是否 bluff-catch。");
  }
