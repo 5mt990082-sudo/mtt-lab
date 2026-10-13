@@ -141,9 +141,9 @@ function renderLesson(){
 }
 function renderQ(){
  var list=qs(active),node=el("quiz");
- if(pos>=list.length){var right=attempt.filter(function(x){return x.ok}).length,pct=Math.round(right/list.length*100);D.done[active]=true;D.best[active]=Math.max(Number(D.best[active])||0,pct);D.trials[active]=(Number(D.trials[active])||0)+1;save();
- el("lessonStatus").textContent="✓ 已完成";el("lessonProgress").style.width="100%";el("quizScoreHelp").textContent="最佳成績："+D.best[active]+"%";
- node.innerHTML='<div class="center"><h2>本章測驗完成</h2><div style="font-size:36px;font-weight:1000;color:var(--accent)">'+pct+'%</div><p class="muted">這次答對 '+right+' / '+list.length+' 題。'+(pct<80?"建議閱讀解析後再練一次。":"可以繼續下一章，也可隨時重新測驗。")+'</p><div class="tools" style="justify-content:center"><button class="ghost" id="retry">重新測驗</button><button class="primary" id="finishNext">下一章 →</button></div></div>';
+ if(pos>=list.length){var right=attempt.filter(function(x){return x.ok}).length,pct=Math.round(right/list.length*100);if(pct>=80)D.done[active]=true;D.best[active]=Math.max(Number(D.best[active])||0,pct);D.trials[active]=(Number(D.trials[active])||0)+1;save();
+ el("lessonStatus").textContent=D.done[active]?"✓ 已完成":"未達完成門檻";el("lessonProgress").style.width=D.done[active]?"100%":"0%";el("quizScoreHelp").textContent="最佳成績："+D.best[active]+"%（達 80% 才計完成）";
+ node.innerHTML='<div class="center"><h2>本章測驗完成</h2><div style="font-size:36px;font-weight:1000;color:var(--accent)">'+pct+'%</div><p class="muted">這次答對 '+right+' / '+list.length+' 題；達 80% 才會標記完成。'+(pct<80?"建議閱讀解析後再練一次。":"可以繼續下一章，也可隨時重新測驗。")+'</p><div class="tools" style="justify-content:center"><button class="ghost" id="retry">重新測驗</button><button class="primary" id="finishNext">下一章 →</button></div></div>';
  el("retry").onclick=function(){attempt=[];pos=0;pick=null;renderQ()};
  el("finishNext").onclick=function(){if(active<15)show("lesson",active+1);else show("dashboard")};return;
  }
