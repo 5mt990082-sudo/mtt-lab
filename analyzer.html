@@ -541,7 +541,11 @@ shotInput.addEventListener("change",()=>{
  shotObjectUrl=URL.createObjectURL(file);shotPreview.src=shotObjectUrl;shotPreview.hidden=false;
  document.getElementById("parseShot").disabled=false;resetShotForm();document.getElementById("shotReview").hidden=false;
  shotStatus.className="shotStatus";
- shotStatus.textContent="截圖已載入。請使用原始 Natural8 截圖，不要傳整個匯入視窗的第二次截圖。可先按「辨識關鍵區域」，再核對欄位。";
+ shotStatus.textContent="截圖載入中；載入完成會自動辨識左下角兩張手牌與籌碼，辨識完仍請人工核對。";
+ const chosenId=shotRequestId;
+ const begin=()=>{if(chosenId===shotRequestId)runShotOcr()};
+ if(shotPreview.complete&&shotPreview.naturalWidth)Promise.resolve().then(begin);
+ else shotPreview.onload=begin;
 });
 function cropShot(image,area){
  const nw=image.naturalWidth,nh=image.naturalHeight;
@@ -765,6 +769,9 @@ async function runShotOcr(){
  }finally{
    if(worker){try{await worker.terminate()}catch(e){}}
    shotProcessing=false;btn.disabled=!(shotInput.files&&shotInput.files[0]);
+   if(id!==shotRequestId&&shotInput.files&&shotInput.files[0]&&shotPreview.complete&&shotPreview.naturalWidth){
+     Promise.resolve().then(runShotOcr);
+   }
  }
 }
 document.getElementById("parseShot").addEventListener("click",runShotOcr);
