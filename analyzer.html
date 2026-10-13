@@ -389,15 +389,15 @@ body.advancedMode .advancedBanner{display:flex}
 
 <div class="shotModal" id="shotModal" role="dialog" aria-modal="true">
 <div class="sheet">
-<div class="sheetHead"><div><b>牌桌截圖匯入 Beta</b><span class="sheetSub">手機截圖 → 本機辨識文字 → 建立 Spot</span></div><button class="close" id="closeShot">×</button></div>
+<div class="sheetHead"><div><b>牌桌截圖匯入 Beta</b><span class="sheetSub">原始 Natural8 截圖 → 自動辨識兩張牌 → 人工確認</span></div><button class="close" id="closeShot">×</button></div>
 <div class="shotDrop">
 <input id="shotInput" type="file" accept="image/*" hidden>
 <img id="shotPreview" class="shotPreview" alt="牌桌截圖預覽" hidden>
-<div class="shotStatus" id="shotStatus">上傳原始牌桌截圖（不要再截圖這個視窗）。新版只嘗試辨識你自己的籌碼和中央底池，不再把玩家名稱、廣告與所有 BB 數字混成分析結果。</div>
+<div class="shotStatus" id="shotStatus">選擇原始 Natural8 直式截圖後，會自動嘗試辨識左下角 Hero 的兩張手牌、籌碼與底池；不支援的牌桌版型會請你手動確認。</div>
 <div class="shotActions"><button type="button" id="pickShot">選擇原始截圖</button><button type="button" class="primary" id="parseShot" disabled>辨識手牌與底池</button></div>
 <div class="shotReview" id="shotReview" hidden>
 <h3>確認資料後才套用到牌局分析器</h3>
-<p>OCR 只會提供可能的數字；座位、莊家 D、花色與手牌必須由你確認。空白欄位代表不要自動改動該資訊。</p>
+<p>牌面點數由局部 OCR 辨識，花色由圖形與顏色判斷。全部都是待確認的候選值；位置與莊家 D 仍需人工確認。</p>
 <div id="shotClues" class="statusLine">等待截圖。尚無任何資料會自動寫進分析器。</div>
 <div class="shotFieldRow">
 <div class="field"><label for="shotTableSize">牌桌人數</label><select id="shotTableSize"><option value="">沿用目前桌型</option><option value="2">2 人</option><option value="6">6 人</option><option value="7">7 人</option><option value="8">8 人</option><option value="9">9 人</option></select></div>
