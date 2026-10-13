@@ -394,7 +394,7 @@ body.advancedMode .advancedBanner{display:flex}
 <input id="shotInput" type="file" accept="image/*" hidden>
 <img id="shotPreview" class="shotPreview" alt="牌桌截圖預覽" hidden>
 <div class="shotStatus" id="shotStatus">上傳原始牌桌截圖（不要再截圖這個視窗）。新版只嘗試辨識你自己的籌碼和中央底池，不再把玩家名稱、廣告與所有 BB 數字混成分析結果。</div>
-<div class="shotActions"><button type="button" id="pickShot">選擇原始截圖</button><button type="button" class="primary" id="parseShot" disabled>辨識關鍵區域</button></div>
+<div class="shotActions"><button type="button" id="pickShot">選擇原始截圖</button><button type="button" class="primary" id="parseShot" disabled>辨識手牌與底池</button></div>
 <div class="shotReview" id="shotReview" hidden>
 <h3>確認資料後才套用到牌局分析器</h3>
 <p>OCR 只會提供可能的數字；座位、莊家 D、花色與手牌必須由你確認。空白欄位代表不要自動改動該資訊。</p>
@@ -407,7 +407,8 @@ body.advancedMode .advancedBanner{display:flex}
 <div class="field"><label for="shotCard1">我的手牌 1</label><select id="shotCard1"><option value="">請選牌</option></select></div>
 <div class="field"><label for="shotCard2">我的手牌 2</label><select id="shotCard2"><option value="">請選牌</option></select></div>
 </div>
-<p>底池數字如來自截圖，也請核對是否為「總底池」，而不是玩家下注額。套用前會請你再次確認。</p>
+<div class="statusLine" id="shotCardStatus">尚未辨識手牌。預設校準 Natural8 直式牌桌、左下角 Hero 兩張手牌；其他版型可能需手動選牌。</div>
+<p>即使自動填入手牌，也請逐張核對點數與花色，再按套用。底池數字也需確認是否為總底池。</p>
 <button type="button" id="applyShot" class="shotConfirm">套用我確認的牌局資料</button>
 <details class="shotDetails" id="shotDetails"><summary>辨識原始文字（除錯用，預設收合）</summary><div class="ocrRaw" id="ocrRaw">尚未辨識</div></details>
 </div>
@@ -525,6 +526,7 @@ function resetShotForm(){
  shotCardFields.forEach(id=>document.getElementById(id).value="");
  shotClues.textContent="尚未辨識。所有欄位需要核對後才會套用，不會自動更改底池或位置。";
  ocrRaw.textContent="尚未辨識";
+ document.getElementById("shotCardStatus").textContent="尚未辨識手牌。適用 Natural8 直式左下 Hero 版型，其他版型請手動確認。";
  document.getElementById("shotDetails").open=false;
 }
 resetShotForm();
@@ -573,13 +575,143 @@ function safeShotGuess(numbers,kind,confidence){
  const plausible=numbers.filter(n=>kind==="stack"?n>=2:n>=.1);
  return plausible.length===1?plausible[0]:null;
 }
+
+/* Beta card reader for the portrait Natural8 screenshot layout where Hero's
+   two exposed card corners appear bottom-left. No image goes to a server.
+   OCR gives candidate ranks; canvas shape/color clues give candidate suits.
+   Neither is allowed to write directly to the live hand-analysis state. */
+const nat8CardRois=[
+ {rank:[.065,.731,.067,.035], suit:[.069,.757,.063,.036]},
+ {rank:[.149,.729,.075,.035], suit:[.154,.755,.061,.040]}
+];
+function screenshotMask(region,ink){
+ const w=96,h=96,img=document.createElement("canvas");
+ img.width=w;img.height=h;
+ const c=img.getContext("2d",{willReadFrequently:true});
+ if(!c)throw new Error("無法讀取影像像素");
+ const W=shotPreview.naturalWidth,H=shotPreview.naturalHeight;
+ c.drawImage(shotPreview,Math.round(W*region[0]),Math.round(H*region[1]),
+   Math.max(1,Math.round(W*region[2])),Math.max(1,Math.round(H*region[3])),0,0,w,h);
+ const px=c.getImageData(0,0,w,h).data, mask=new Uint8Array(w*h);
+ for(let i=0;i<mask.length;i++){
+   const r=px[i*4],g=px[i*4+1],b=px[i*4+2];
+   mask[i]=ink==="red"
+     ? (r>75&&r>g*1.32&&r>b*1.24?1:0)
+     : (r<119&&g<119&&b<119&&Math.abs(r-g)<42&&Math.abs(g-b)<42?1:0);
+ }
+ return {w,h,mask};
+}
+function biggestShotShape(data){
+ const {w,h,mask}=data,seen=new Uint8Array(mask.length);
+ let best=null;
+ for(let i=0;i<mask.length;i++){
+   if(!mask[i]||seen[i])continue;
+   const queue=[i],pixels=[];seen[i]=1;
+   let minX=w,maxX=0,minY=h,maxY=0;
+   for(let q=0;q<queue.length;q++){
+     const k=queue[q],x=k%w,y=Math.floor(k/w);
+     pixels.push(k);minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);
+     for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+       if(!dx&&!dy)continue;
+       const nx=x+dx,ny=y+dy,j=ny*w+nx;
+       if(nx>=0&&nx<w&&ny>=0&&ny<h&&mask[j]&&!seen[j]){seen[j]=1;queue.push(j)}
+     }
+   }
+   if(!best||pixels.length>best.area)best={area:pixels.length,x:minX,y:minY,width:maxX-minX+1,height:maxY-minY+1,pixels};
+ }
+ if(!best||best.area<Math.round(mask.length*.016)||best.width<4||best.height<6)return null;
+ return best;
+}
+function shotSuitCandidate(side){
+ const r=nat8CardRois[side].suit;
+ const red=screenshotMask(r,"red"),black=screenshotMask(r,"black");
+ const A=biggestShotShape(red),B=biggestShotShape(black);
+ const isRed=!!A&&(!B||A.area>B.area*1.18);
+ const color=isRed?"red":"black",blob=isRed?A:B,data=isRed?red:black;
+ if(!blob||blob.area<75)return null;
+ let top=0,mid=0,low=0,topN=0,midN=0,lowN=0;
+ const present=new Set(blob.pixels);
+ for(let yy=0;yy<blob.height;yy++)for(let xx=0;xx<blob.width;xx++){
+   const yes=present.has((yy+blob.y)*data.w+(xx+blob.x))?1:0;
+   const z=(yy+.5)/blob.height;
+   if(z<.25){top+=yes;topN++}
+   else if(z<.75){mid+=yes;midN++}
+   else{low+=yes;lowN++}
+ }
+ top/=Math.max(1,topN);mid/=Math.max(1,midN);low/=Math.max(1,lowN);
+ let suit=null;
+ if(isRed){
+   if(top>.49&&low<.64)suit="♥";
+   else if(top<.40&&mid>.55)suit="♦";
+ }else{
+   if(top<.42&&mid>.58)suit="♠";
+   else if(top>.47&&mid>.45)suit="♣";
+ }
+ return {suit,color,top,mid,low};
+}
+function shotRankGlyph(side,color){
+ const data=screenshotMask(nat8CardRois[side].rank,color);
+ const shape=biggestShotShape(data);
+ if(!shape)return null;
+ // Normalize the largest colored glyph to a white-padded OCR canvas.
+ const out=document.createElement("canvas");
+ out.width=280;out.height=280;
+ const c=out.getContext("2d");
+ if(!c)return null;
+ const bitmap=c.createImageData(170,200);
+ const found=new Set(shape.pixels);
+ for(let y=0;y<200;y++)for(let x=0;x<170;x++){
+   const sx=shape.x+Math.min(shape.width-1,Math.floor(x/170*shape.width));
+   const sy=shape.y+Math.min(shape.height-1,Math.floor(y/200*shape.height));
+   const active=found.has(sy*data.w+sx),i=(y*170+x)*4;
+   bitmap.data[i]=bitmap.data[i+1]=bitmap.data[i+2]=active?0:255;bitmap.data[i+3]=255;
+ }
+ c.fillStyle="#fff";c.fillRect(0,0,280,280);c.putImageData(bitmap,55,40);
+ return out;
+}
+function parseShotRank(text){
+ const raw=String(text||"").trim().toUpperCase().replace(/\s/g,"");
+ if(raw==="10")return "T";
+ return /^[AKQJT2-9]$/.test(raw)?raw:null;
+}
+async function identifyShotCards(worker,requestId){
+ const W=shotPreview.naturalWidth,H=shotPreview.naturalHeight;
+ if(W/H<.39||W/H>.59)return {message:"目前只支援直式 Natural8 版型；請手動選擇兩張牌。",notes:[]};
+ const suggestions=[],notes=[];
+ if(!worker)return {message:"OCR 未載入，無法辨識點數，請自行選牌。",notes:[]};
+ await worker.setParameters({tessedit_pageseg_mode:"13",tessedit_char_whitelist:"AKQJT23456789"});
+ for(let k=0;k<2;k++){
+   if(requestId!==shotRequestId)return {message:"已更換截圖，本次辨識結果不再套用。",notes:[]};
+   const suit=shotSuitCandidate(k);
+   const crop=shotRankGlyph(k,suit?suit.color:"black");
+   if(!crop){notes.push("第 "+(k+1)+" 張找不到穩定的牌面區域");continue}
+   const rr=await worker.recognize(crop);
+   const rank=parseShotRank(rr?.data?.text);
+   if(!rank||!suit?.suit){
+     notes.push("第 "+(k+1)+" 張：點數 "+(rank||"無法辨識")+"／花色 "+(suit?.suit||"無法辨識"));
+     continue
+   }
+   const hand=rank+suit.suit;
+   suggestions[k]=hand;
+   notes.push("第 "+(k+1)+" 張可能是 "+hand+"（未驗證）");
+ }
+ if(suggestions[0]&&suggestions[1]&&suggestions[0]===suggestions[1]){
+   return {message:"兩張疑似辨識成同一張牌，未自動帶入。請手動確認。",notes};
+ }
+ for(let k=0;k<2;k++)if(suggestions[k]){
+   const sel=document.getElementById(k===0?"shotCard1":"shotCard2");
+   if(!sel.value)sel.value=suggestions[k];
+ }
+ return {message:notes.length?notes.join("｜")+"。請核對後再套用。":"未能可靠辨識手牌，請直接選牌。",notes};
+}
+
 async function runShotOcr(){
  const file=shotInput.files&&shotInput.files[0];if(!file)return;
  if(shotProcessing)return;
  shotProcessing=true;const id=shotRequestId;
  const btn=document.getElementById("parseShot");btn.disabled=true;
  shotStatus.className="shotStatus busy";
- shotStatus.textContent="正在從自己的籌碼區與中央底池區辨識；本機首次載入模型可能需較長時間…";
+ shotStatus.textContent="正在辨識左下角兩張手牌、籌碼與底池；首次載入可能稍慢…";
  let worker=null;
  try{
    if(!window.Tesseract)throw new Error("本機 OCR 模組載入失敗，請確認網路後重試");
@@ -608,6 +740,10 @@ async function runShotOcr(){
        nums:parseBbCandidates(data.text)});
    }
    if(id!==shotRequestId)return;
+   let cardInfo={message:"手牌辨識未完成；請手動核對。",notes:[]};
+   try{cardInfo=await identifyShotCards(worker,id)}catch(cardErr){cardInfo={message:"手牌辨識失敗，請手動選牌。",notes:[]}}
+   if(id!==shotRequestId)return;
+   document.getElementById("shotCardStatus").textContent=cardInfo.message;
    const found=[];
    for(const region of results){
      const val=safeShotGuess(region.nums,region.kind,region.confidence);
@@ -619,12 +755,13 @@ async function runShotOcr(){
    shotClues.textContent=found.join("｜");
    ocrRaw.textContent=results.map(r=>r.name+"（整區辨識可信度 "+r.confidence.toFixed(0)+"，僅供參考）\n"+(r.text||"[空白]")).join("\n\n");
    shotStatus.className="shotStatus "+(results.some(r=>safeShotGuess(r.nums,r.kind,r.confidence)!==null)?"ok":"");
-   shotStatus.textContent="完成重點區域辨識。請確認莊家 D、自己位置與手牌；所有疑似 BB 數字也必須人工核對，才能套用。";
+   shotStatus.textContent="辨識完成：可能的手牌已填入下方欄位（若未顯示請手動選擇）。務必確認兩張牌的點數與花色，再套用。";
  }catch(err){
    if(id!==shotRequestId)return;
    shotStatus.className="shotStatus";
    shotStatus.textContent="OCR 辨識失敗或版型不符："+(err&&err.message?err.message:"未知原因")+"。仍可直接在下方手動確認牌局資料。";
    shotClues.textContent="目前沒有可信賴的自動數字；請手動填入。";
+   document.getElementById("shotCardStatus").textContent="手牌未完成辨識，請手動確認兩張牌。";
  }finally{
    if(worker){try{await worker.terminate()}catch(e){}}
    shotProcessing=false;btn.disabled=!(shotInput.files&&shotInput.files[0]);
