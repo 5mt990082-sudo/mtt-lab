@@ -296,6 +296,8 @@ body.advancedMode .advancedBanner{display:flex}
 .quickCardRow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}.quickCardRow select{height:62px;font-size:23px;font-weight:950;text-align:center;color:#102419;background:#f5fbf6;border-color:#d1dfd5;border-radius:12px}
 .quickGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}.quickGrid label{font-size:11px;color:#afd0bc;margin:0;line-height:1.5}.quickGrid input,.quickGrid select{height:42px;font-size:15px;border:1px solid #3b6d4d;border-radius:10px;background:#091b11;color:#f3fff6;padding:0 10px;margin-top:5px;font-weight:800}
 .quickSegments{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 12px}.quickSegments button{border:1px solid #3a694a;border-radius:10px;background:#0a1b12;color:#a9c6b5;font-size:13px;padding:13px 4px;font-weight:850}.quickSegments button.on{background:#195436;border-color:#61f2a5;color:#caffdf}
+.quickImportBanner{background:#25351e;border:1px solid #957c3b;border-radius:10px;padding:11px;margin:8px 0 12px;font-size:12px;color:#ffe3a9;line-height:1.6}.quickImportBanner[hidden]{display:none!important}
+.shotReview[hidden]{display:none!important}
 .quickHelp{font-size:11px;color:#9ab6a4;line-height:1.65;background:#091810;border-radius:9px;padding:9px;margin:0 0 12px}
 .quickError{font-size:12px;color:#ffaaa0;line-height:1.5;margin-bottom:8px}.quickError:empty{display:none}
 .quickPrimary{width:100%;min-height:52px;font-weight:1000;font-size:16px;color:#052519;background:#61f2a5;border:0;border-radius:12px}
@@ -333,6 +335,7 @@ body.advancedMode .advancedBanner{display:flex}
 <label>對手剩餘 BB<input type="number" id="quickVillainStack" min="0.1" step=".1" value="30" inputmode="decimal"></label>
 <label>初始底池 BB <input type="number" id="quickBasePot" min=".1" step=".1" value="2.5" inputmode="decimal"></label>
 </div>
+<div class="quickImportBanner" id="quickImportBanner" hidden></div>
 <div class="quickHelp" id="quickHelp">預設 0.5/1 盲注、1BB 大盲 Ante，初始底池 2.5BB。對手開池、再加注或多玩家行動的複雜牌譜，請使用完整牌桌模式。這裡是複盤提示，並非 Solver 最優解。</div>
 <div class="quickError" id="quickError" role="alert" aria-live="polite"></div>
 <button class="quickPrimary" id="quickAnalyze">查看翻前決策方向 →</button>
@@ -391,7 +394,7 @@ body.advancedMode .advancedBanner{display:flex}
 <img id="shotPreview" class="shotPreview" alt="牌桌截圖預覽" hidden>
 <div class="shotStatus" id="shotStatus">上傳原始牌桌截圖（不要再截圖這個視窗）。新版只嘗試辨識你自己的籌碼和中央底池，不再把玩家名稱、廣告與所有 BB 數字混成分析結果。</div>
 <div class="shotActions"><button type="button" id="pickShot">選擇原始截圖</button><button type="button" class="primary" id="parseShot" disabled>辨識關鍵區域</button></div>
-<div class="shotReview" id="shotReview">
+<div class="shotReview" id="shotReview" hidden>
 <h3>確認資料後才套用到牌局分析器</h3>
 <p>OCR 只會提供可能的數字；座位、莊家 D、花色與手牌必須由你確認。空白欄位代表不要自動改動該資訊。</p>
 <div id="shotClues" class="statusLine">等待截圖。尚無任何資料會自動寫進分析器。</div>
@@ -513,7 +516,8 @@ shotCardFields.forEach(id=>{
  }
 });
 function resetShotForm(){
- shotTableSize.value="";
+ document.getElementById("shotReview").hidden=true;
+ shotTableSize.value=document.getElementById("players").value;
  updateShotPositions();
  document.getElementById("shotHeroStack").value="";
  document.getElementById("shotPot").value="";
@@ -532,7 +536,7 @@ shotInput.addEventListener("change",()=>{
  shotRequestId++;
  if(shotObjectUrl)URL.revokeObjectURL(shotObjectUrl);
  shotObjectUrl=URL.createObjectURL(file);shotPreview.src=shotObjectUrl;shotPreview.hidden=false;
- document.getElementById("parseShot").disabled=false;resetShotForm();
+ document.getElementById("parseShot").disabled=false;resetShotForm();document.getElementById("shotReview").hidden=false;
  shotStatus.className="shotStatus";
  shotStatus.textContent="截圖已載入。請使用原始 Natural8 截圖，不要傳整個匯入視窗的第二次截圖。可先按「辨識關鍵區域」，再核對欄位。";
 });
@@ -681,7 +685,12 @@ document.getElementById("applyShot").addEventListener("click",()=>{
  document.getElementById("flowInfo").textContent="截圖欄位已人工確認並套用；請再檢查剩餘 BB、位置與下注動作，才開始分析。";
  document.getElementById("shotBtn").textContent="✓ 已匯入";
  shotStatus.className="shotStatus ok";shotStatus.textContent="已套用人工確認的欄位。";shotModal.classList.remove("show");
- syncQuickFromImportedShot();showAnalyzerMode("advanced");
+ syncQuickFromImportedShot();showAnalyzerMode("quick");
+ quickSetAction("unknown");
+ const importedPot=document.getElementById("shotPot").value;
+ const banner=document.getElementById("quickImportBanner");
+ banner.textContent="已帶入你人工確認的手牌、位置與籌碼"+(importedPot?"；截圖底池為 "+importedPot+"BB":"")+"。截圖無法可靠辨識全部前序動作，請在下面選擇「前面全 Fold」或「有人 Open」後再分析。快速模式會重算底池；若已有多人下注，請使用完整模式核對。";
+ banner.hidden=false;
 });
 
 document.getElementById("back").addEventListener("click",()=>{location.href="./"});
@@ -1451,6 +1460,7 @@ function populateQuickVillains(){
 }
 function quickSetAction(a){
  quickAction=a;
+ if(a!=="unknown")document.getElementById("quickImportBanner").hidden=true;
  document.querySelectorAll("[data-quick-action]").forEach(b=>b.classList.toggle("on",b.dataset.quickAction===a));
  quickOppFields.classList.toggle("hidden",a!=="open");
  populateQuickVillains();
@@ -1465,6 +1475,7 @@ function quickAnalyze(){
  const vs=Number(document.getElementById("quickVillainStack").value);
  const base=quickAction==="open"?Number(document.getElementById("quickBasePot").value):2.5;
  const villain=quickVillainPos.value;
+ if(quickAction==="unknown")return quickSpotError("截圖無法可靠辨識完整行動。請先確認「前面全 Fold」或「有人 Open」，才能分析。");
  if(!h1||!h2)return quickSpotError("先選好兩張手牌，才有辦法分析。");
  if(h1===h2)return quickSpotError("兩張手牌不能是完全相同的一張。");
  if(!p)return quickSpotError("請選擇你的位置。");
