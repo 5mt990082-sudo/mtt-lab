@@ -681,6 +681,7 @@ document.getElementById("applyShot").addEventListener("click",()=>{
  document.getElementById("flowInfo").textContent="截圖欄位已人工確認並套用；請再檢查剩餘 BB、位置與下注動作，才開始分析。";
  document.getElementById("shotBtn").textContent="✓ 已匯入";
  shotStatus.className="shotStatus ok";shotStatus.textContent="已套用人工確認的欄位。";shotModal.classList.remove("show");
+ syncQuickFromImportedShot();showAnalyzerMode("advanced");
 });
 
 document.getElementById("back").addEventListener("click",()=>{location.href="./"});
@@ -1408,6 +1409,139 @@ function showError(t){const e=document.getElementById("error");e.textContent=t;e
 function hideError(){document.getElementById("error").classList.remove("show")}
 document.getElementById("analyze").addEventListener("click",analyze);
 syncHeroPositions();renderSeats();setStreet("preflop",false);document.getElementById("pot").value="2";
+
+/* Simplified mobile-first spot builder. Never mutates game state until user presses Analyze. */
+const quickCard1=document.getElementById("quickCard1"),quickCard2=document.getElementById("quickCard2");
+const quickPlayers=document.getElementById("quickPlayers"),quickHeroPos=document.getElementById("quickHeroPos");
+const quickVillainPos=document.getElementById("quickVillainPos"),quickOppFields=document.getElementById("quickOppFields");
+const quickError=document.getElementById("quickError");
+let quickAction="free";
+function showAnalyzerMode(mode){
+ const advanced=mode==="advanced";
+ document.body.classList.toggle("quickMode",!advanced);document.body.classList.toggle("advancedMode",advanced);
+ document.getElementById("advancedBanner").classList.toggle("hidden",!advanced);
+ document.getElementById("quickModeWrap").style.display=advanced?"none":"block";
+ if(!advanced)document.getElementById("quickError").textContent="";
+ window.scrollTo({top:0,behavior:"instant"});
+}
+function populateQuickCards(){
+ for(const s of [quickCard1,quickCard2]){
+   for(const r of ranks)for(const u of suits){
+     const opt=document.createElement("option");opt.value=r+u;opt.textContent=r+u;s.appendChild(opt)
+   }
+ }
+}
+function populateQuickPositions(){
+ const layout=tableLayouts[Number(quickPlayers.value)]||tableLayouts[6];
+ const chosen=quickHeroPos.value;
+ quickHeroPos.innerHTML="";
+ layout.forEach(p=>{const o=document.createElement("option");o.value=p;o.textContent=p;quickHeroPos.appendChild(o)});
+ quickHeroPos.value=layout.includes(chosen)?chosen:layout.includes("BTN")?"BTN":layout[0];
+ populateQuickVillains();
+}
+function populateQuickVillains(){
+ const layout=tableLayouts[Number(quickPlayers.value)]||tableLayouts[6];
+ const old=quickVillainPos.value,heroIndex=layout.indexOf(quickHeroPos.value);
+ const available=layout.slice(0,heroIndex);
+ quickVillainPos.innerHTML="";
+ available.forEach(p=>{const opt=document.createElement("option");opt.value=p;opt.textContent=p;quickVillainPos.appendChild(opt)});
+ quickVillainPos.value=available.includes(old)?old:(available.includes("CO")?"CO":available[available.length-1]||"");
+ if(quickAction==="open"&&!available.length)quickError.textContent="你的位置是第一個行動者；若有人再加注或其他特殊情境，請切換完整牌桌模式。";
+ else quickError.textContent="";
+}
+function quickSetAction(a){
+ quickAction=a;
+ document.querySelectorAll("[data-quick-action]").forEach(b=>b.classList.toggle("on",b.dataset.quickAction===a));
+ quickOppFields.classList.toggle("hidden",a!=="open");
+ populateQuickVillains();
+}
+function quickSpotError(t){quickError.textContent=t;return false}
+function quickAnalyze(){
+ quickError.textContent="";
+ const h1=quickCard1.value,h2=quickCard2.value;
+ const p=quickHeroPos.value,n=Number(quickPlayers.value);
+ const hs=Number(document.getElementById("quickHeroStack").value);
+ const fs=Number(document.getElementById("quickOpenSize").value);
+ const vs=Number(document.getElementById("quickVillainStack").value);
+ const base=quickAction==="open"?Number(document.getElementById("quickBasePot").value):2.5;
+ const villain=quickVillainPos.value;
+ if(!h1||!h2)return quickSpotError("先選好兩張手牌，才有辦法分析。");
+ if(h1===h2)return quickSpotError("兩張手牌不能是完全相同的一張。");
+ if(!p)return quickSpotError("請選擇你的位置。");
+ if(!(Number.isFinite(hs)&&hs>0&&hs<=5000))return quickSpotError("自己的剩餘籌碼 BB 不合理。");
+ if(quickAction==="free"&&p==="BB")return quickSpotError("BB 無法在前面都 Fold 的情境主動 RFI；請選擇對手開池或進入完整模式。");
+ if(quickAction==="open"){
+   const layout=tableLayouts[n]||tableLayouts[6];
+   if(!villain||layout.indexOf(villain)<0||layout.indexOf(villain)>=layout.indexOf(p))return quickSpotError("開池者必須在你之前行動。複雜行動順序請使用完整模式。");
+   if(!Number.isFinite(fs)||fs<=1||fs>=5000)return quickSpotError("請輸入對手開池至多少 BB，必須大於 1。");
+   if(!Number.isFinite(vs)||vs<=0||vs>=5000)return quickSpotError("對手剩餘籌碼 BB 不合理。");
+   if(!Number.isFinite(base)||base<1.5||base>=50000)return quickSpotError("初始底池 BB 不合理。");
+   const prior=villain==="SB"?.5:villain==="BB"?1:0;
+   if(fs<=prior)return quickSpotError("開池至的數字必須大於原本已投入的盲注。");
+   if(fs-prior>vs+.001)return quickSpotError("對手新增投入不能大於他剩餘籌碼。");
+ }
+ if(handFinished||pendingDecision||waitingOnOpp) {
+  if(!confirm("這會重設尚未完成的牌局，改用你填寫的翻前情境分析。繼續嗎？"))return;
+ }
+ newHand();
+ document.getElementById("players").value=String(n);syncHeroPositions();
+ document.getElementById("heroPos").value=p;renderSeats();
+ const rows=Array.from(document.querySelectorAll(".seat"));
+ rows.forEach(row=>{
+   const isHero=row.dataset.pos===p,active=isHero||(quickAction==="open"?row.dataset.pos===villain:row.dataset.pos==="BB");
+   row.querySelector(".seatOn").checked=active;
+   row.querySelector(".betIn").value="0";
+ });
+ const hero=posRow(p);
+ if(hero)hero.querySelector(".stackIn").value=String(hs);
+ cards.h0=h1;cards.h1=h2;renderCardSlots();
+ document.getElementById("phase").value=document.getElementById("quickStage").value;
+ document.getElementById("role").value=quickAction==="open"?"caller":"unknown";
+ if(quickAction==="open"){
+   investedThisStreet={SB:.5,BB:1};
+   const row=posRow(villain),posted=villain==="SB"?.5:villain==="BB"?1:0;
+   row.querySelector(".stackIn").value=String(vs);
+   row.querySelector(".betIn").value=String(Number((fs-posted).toFixed(2)));
+   putPot(base);
+ }else{
+   investedThisStreet={};
+   putPot(2.5);
+ }
+ updatePotPreview();setStreet("preflop",false);
+ analyze();
+ if(!document.getElementById("result").classList.contains("show")){
+  quickSpotError(document.getElementById("error").textContent||"無法分析，請檢查數字，或改用完整牌桌模式。");
+ }
+}
+populateQuickCards();populateQuickPositions();quickSetAction("free");
+quickPlayers.addEventListener("change",populateQuickPositions);
+quickHeroPos.addEventListener("change",populateQuickVillains);
+document.querySelectorAll("[data-quick-action]").forEach(b=>b.addEventListener("click",()=>quickSetAction(b.dataset.quickAction)));
+document.getElementById("quickShot").addEventListener("click",()=>document.getElementById("shotBtn").click());
+document.getElementById("quickAdvanced").addEventListener("click",()=>showAnalyzerMode("advanced"));
+document.getElementById("quickContinue").addEventListener("click",()=>showAnalyzerMode("advanced"));
+document.getElementById("quickBack").addEventListener("click",()=>showAnalyzerMode("quick"));
+document.getElementById("quickAnalyze").addEventListener("click",quickAnalyze);
+document.getElementById("expandInsight").addEventListener("click",()=>{
+ const result=document.getElementById("result"),opened=result.classList.toggle("detailsShown");
+ const btn=document.getElementById("expandInsight");
+ btn.textContent=opened?"收起進階推論 ▴":"更多推論與範圍說明 ▾";
+ btn.setAttribute("aria-expanded",String(opened));
+});
+function syncQuickFromImportedShot(){
+ const current=Number(document.getElementById("players").value);
+ if(["6","8","9"].includes(String(current)))quickPlayers.value=String(current);
+ populateQuickPositions();
+ const hero=document.getElementById("heroPos").value;
+ if(Array.from(quickHeroPos.options).some(x=>x.value===hero))quickHeroPos.value=hero;
+ quickCard1.value=cards.h0||"";quickCard2.value=cards.h1||"";
+ const seat=posRow(hero);
+ if(seat)document.getElementById("quickHeroStack").value=seat.querySelector(".stackIn").value;
+ document.getElementById("quickStage").value=document.getElementById("phase").value;
+}
+
+showAnalyzerMode("quick");
+if(location.hash==="#shot"){history.replaceState(null,"",location.pathname);document.getElementById("shotBtn").click();}
 })();
 </script>
 </body>
