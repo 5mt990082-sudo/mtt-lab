@@ -518,7 +518,7 @@ shotCardFields.forEach(id=>{
 });
 function resetShotForm(){
  document.getElementById("shotReview").hidden=true;
- shotTableSize.value=document.getElementById("players").value;
+ shotTableSize.value=document.body.classList.contains("quickMode")?document.getElementById("quickPlayers").value:document.getElementById("players").value;
  updateShotPositions();
  document.getElementById("shotHeroStack").value="";
  document.getElementById("shotPot").value="";
