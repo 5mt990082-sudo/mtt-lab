@@ -17,16 +17,43 @@
 .list{display:grid;gap:10px}.mistake{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px}.mistake small{color:var(--green)}.mistake h4{margin:7px 0}.mistake p{font-size:12px;color:var(--muted);margin:0}.mistake .bad{color:var(--red)}.mistake .good{color:var(--green);margin-left:10px}.barrow{display:grid;grid-template-columns:110px 1fr 42px;gap:10px;align-items:center;margin:14px 0}.barrow span,.barrow b{font-size:12px}.barrow b{text-align:right}.empty{text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:15px;padding:34px}
 .nav{position:fixed;z-index:10;left:50%;bottom:10px;transform:translateX(-50%);display:flex;gap:5px;background:#08150fee;border:1px solid var(--line);border-radius:17px;padding:7px;backdrop-filter:blur(14px)}.nav button{width:72px;border:0;border-radius:11px;padding:8px;background:transparent;color:#759184;font-weight:800}.nav button.active{background:#142a20;color:var(--green)}.nav span{display:block;font-size:16px}.nav small{font-size:10px}
 @media(max-width:620px){.nav{gap:2px;padding:5px}.nav button{width:53px;font-size:11px}.nav small{font-size:9px}.hero h1{font-size:32px}.two{grid-template-columns:1fr}.table{width:82%;border-width:7px}.grid3{gap:8px}.card{padding:13px}.card strong{font-size:25px}.nav button{width:64px}.seat{font-size:10px;min-width:54px;padding:5px}.co{right:-35px}.bb{left:-35px}.barrow{grid-template-columns:90px 1fr 38px}}
+
+/* 2026-10 mobile-first information architecture: three main tasks, the rest on demand. */
+body{background:radial-gradient(circle at 50% -130px,#18412d,#06100c 500px);line-height:1.5}
+.app{max-width:900px;padding:0 15px 110px}.top{height:68px}.view{padding-top:16px}
+.hero.welcome{padding:22px 20px;border-radius:23px;background:linear-gradient(140deg,#143626,#0b1a12 75%);}
+.hero.welcome h1{font-size:clamp(29px,5vw,39px);margin:11px 0 5px;line-height:1.2}.hero.welcome p{font-size:13px;margin:0 0 18px;line-height:1.55}
+.mainAction{display:flex;gap:13px;align-items:center;min-height:83px;background:var(--green);border-radius:16px;color:#06251a;text-decoration:none;padding:15px 16px;box-shadow:0 5px 18px #0002}.mainAction b{display:block;font-size:18px}.mainAction small{display:block;font-size:12px;color:#25553d;margin-top:4px}.mainAction .actionIcon{font-size:25px}.mainAction span:nth-child(2){flex:1}.arrow{font-size:21px;font-weight:700}.actionDuo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.secondaryAction{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;gap:3px;min-height:87px;padding:13px;border:1px solid #436950;border-radius:15px;color:#e7f7eb;background:#123022;text-decoration:none}
+.secondaryAction b{font-size:15px}.secondaryAction small{font-size:11px;color:#9ec0a8}.secondaryAction .emoji{font-size:20px;color:var(--green);line-height:1}
+.grid3{margin:14px 0 18px}.card{padding:14px}.card small{font-size:11px}.card strong{font-size:25px;margin-top:2px}
+.sectionHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 0 8px}.sectionHeader h2{font-size:17px;margin:0}.sectionHeader small{font-size:11px;color:var(--muted)}
+.learningLinks{display:grid;gap:10px}.learningLink{display:flex;gap:12px;align-items:center;min-height:77px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:17px;color:var(--text);text-decoration:none}.learningLink span:nth-child(2){flex:1}.learningLink b{font-size:14px;display:block}.learningLink small{font-size:11px;display:block;color:#8fb29e;margin-top:3px}.learnIcon{background:#173b27;color:var(--green);border-radius:10px;width:37px;height:37px;display:grid;place-items:center;font-size:22px;flex-shrink:0}.learningLink .arrow{color:var(--muted)}
+.homeStats{grid-template-columns:1fr 1fr}.homeStats .panel{padding:13px}.homeStats .panel h3{font-size:15px;margin:6px 0}.homeStats .leak{flex-wrap:wrap}.textButton{border:0;background:transparent;color:var(--green);padding:4px 0;font-size:12px;font-weight:900}.homeNotice{color:#9bb6a6;font-size:11px;line-height:1.55;margin:17px 0}
+.siteMore{position:relative}.siteMore summary{list-style:none;display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:var(--panel);font-size:24px;cursor:pointer}.siteMore summary::-webkit-details-marker{display:none}.siteDropdown{position:absolute;right:0;top:47px;z-index:20;width:min(270px,75vw);border-radius:14px;padding:14px;background:#10251b;border:1px solid #355d45;box-shadow:0 9px 25px #0008}.siteDropdown button{border:1px solid #886950;background:#302419;color:#ffd6bc;border-radius:8px;padding:9px;font-size:12px;width:100%}.siteDropdown p{font-size:11px;color:var(--muted)}
+.nav{gap:10px;padding:7px 8px max(8px,env(safe-area-inset-bottom));bottom:0;border-radius:15px 15px 0 0;width:100%;justify-content:space-evenly}.nav button{width:96px;min-height:47px}.nav span{font-size:19px}.nav small{font-size:11px}
+.choice{min-height:49px;font-size:13px}.hand{padding:14px}.tablewrap{padding:25px 0 20px}
+@media(max-width:620px){.app{padding:0 12px 100px}.hero.welcome{padding:19px 16px}.grid3{gap:8px}.card{padding:11px}.card strong{font-size:22px}.homeStats{grid-template-columns:1fr 1fr;gap:8px}.homeStats .panel{min-width:0}.homeStats .leak b{font-size:11px}.nav{left:0;transform:none;max-width:100%}.nav button{width:88px}.top{height:60px}.hero.welcome h1{font-size:29px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><div class="brand"><div class="logo">M</div><div><small>錦標賽訓練系統</small><b>MTT LAB</b></div></div><button id="reset" class="reset">↻</button></header>
+<header class="top"><div class="brand"><div class="logo">M</div><div><small>錦標賽學習與複盤</small><b>MTT LAB</b></div></div><details class="siteMore"><summary aria-label="更多選項">⋯</summary><div class="siteDropdown"><button id="reset" class="resetText" type="button">清除這台裝置的舊訓練紀錄</button><p>學院、RFI 和牌局分析器資料不會被這個按鈕清除。</p></div></details></header>
 <main>
 <section id="home" class="view active">
-<div class="hero"><span class="pill">自適應訓練</span><h1>練決策。<br>補漏洞。打得更深。</h1><p>依你的錯題，自動提高弱項題型的出題比例。這個版本先用示範題庫把訓練流程跑完整。</p><div style="display:flex;gap:9px;flex-wrap:wrap"><button id="start" class="primary">開始今日訓練 →</button><a href="./analyzer.html" style="display:inline-flex;align-items:center;text-decoration:none;border:1px solid #2b4a3a;background:#102119;color:#edf7f1;border-radius:13px;padding:14px 18px;font-weight:900;font-size:15px">牌局分析器 ♠</a><a href="./academy.html" style="display:inline-flex;align-items:center;text-decoration:none;border:1px solid #61f2a573;background:#163a27;color:#abffd0;border-radius:13px;padding:14px 18px;font-weight:900;font-size:15px">♠ 撲克學院 · 15 章</a><a href="./rfi.html" style="display:inline-flex;align-items:center;text-decoration:none;border:1px solid #61f2a573;background:#163a27;color:#abffd0;border-radius:13px;padding:14px 18px;font-weight:900;font-size:15px">▦ RFI 169 格範圍表</a></div></div>
-<div class="grid3"><div class="card"><small>連續訓練</small><strong id="streak">0</strong><small>天</small></div><div class="card"><small>完成題數</small><strong id="total">0</strong><small>題</small></div><div class="card"><small>目前正確率</small><strong id="acc">—</strong></div></div>
-<div class="two"><div class="panel"><span class="eyebrow">今日進度</span><h3>12 題訓練</h3><div class="progress"><i id="todaybar" style="width:0%"></i></div><p class="muted" id="todaytxt">0 / 12</p></div><div class="panel"><span class="eyebrow">漏洞雷達</span><h3>目前弱項</h3><div id="leaks"></div></div></div>
+<div class="hero welcome"><span class="pill">MTT LAB · 手機簡化版</span><h1>今天想練什麼？</h1><p>一個畫面開始，不必先設定一大堆參數。訓練和課程保留，進階工具用到時再打開。</p>
+<a href="./analyzer.html" class="mainAction"><span class="actionIcon">♠</span><span><b>牌局快速分析</b><small>輸入手牌與位置，先看決策方向</small></span><span class="arrow">→</span></a>
+<div class="actionDuo"><a href="./analyzer.html#shot" class="secondaryAction"><span class="emoji">▣</span><b>截圖匯入</b><small>辨識線索後確認</small></a><button id="start" class="secondaryAction"><span class="emoji">◎</span><b>練 12 題</b><small>練翻前與 MTT</small></button></div>
+</div>
+<div class="grid3" aria-label="訓練統計"><div class="card"><small>累積題數</small><strong id="total">0</strong></div><div class="card"><small>練習正確率</small><strong id="acc">—</strong></div><div class="card"><small>連續練習</small><strong id="streak">0</strong><small>天</small></div></div>
+<div class="sectionHeader"><h2>系統化學習</h2><small>選一個工具就好</small></div>
+<div class="learningLinks">
+<a href="./academy.html" class="learningLink"><span class="learnIcon">▤</span><span><b>繁體中文撲克學院</b><small>15 章，從開池到短碼與 ICM</small></span><span class="arrow">→</span></a>
+<a href="./rfi.html" class="learningLink"><span class="learnIcon">▦</span><span><b>169 格 RFI 起手牌表</b><small>切換位置與 BB，練開池範圍</small></span><span class="arrow">→</span></a>
+</div>
+<div class="sectionHeader"><h2>訓練紀錄</h2><button class="textButton" data-go="analysis">看能力分析 →</button></div>
+<div class="two homeStats"><div class="panel"><span class="eyebrow">今日進度</span><h3>12 題訓練</h3><div class="progress"><i id="todaybar" style="width:0%"></i></div><p class="muted" id="todaytxt">0 / 12</p></div><div class="panel"><span class="eyebrow">目前弱項</span><div id="leaks"></div><button class="textButton" data-go="mistakes">看錯題本 →</button></div></div>
+<div class="homeNotice">訓練器的基準解答屬教學示例，不是經 Solver 驗證的唯一解。建議把它當成離桌複盤工具，而不是即時比賽的決策依據。</div>
 </section>
 
 <section id="train" class="view">
@@ -41,7 +68,7 @@
 <section id="mistakes" class="view"><div class="head"><div><span class="eyebrow">錯題複習</span><h2>錯題本</h2></div><div id="mcount" class="count">0</div></div><p class="muted">系統會自動收集你做錯的情境。<a href="./academy.html#review" style="color:var(--green);font-weight:900">查看學院錯題與補強課程 →</a></p><div id="mlist" class="list"></div></section>
 <section id="analysis" class="view"><div class="head"><div><span class="eyebrow">玩家能力檔案</span><h2>漏洞分析</h2></div></div><p class="muted">依目前作答資料找出最需要加強的題型。<a href="./academy.html" style="color:var(--green);font-weight:900">進入 15 章系統課程 →</a> · <a href="./rfi.html" style="color:var(--green);font-weight:900">169 格 RFI 範圍練習 →</a></p><div class="panel"><h3>分類正確率</h3><div id="bars"></div></div><div class="panel" style="margin-top:12px"><h3>下一輪建議</h3><p id="nextAdvice" class="muted">先完成一些題目，系統才有足夠樣本。</p></div></section>
 </main>
-<nav class="nav"><button class="active" data-view="home"><span>⌂</span><small>首頁</small></button><button type="button" onclick="location.href='./academy.html'" aria-label="進入撲克學院"><span>▤</span><small>學院</small></button><button type="button" onclick="location.href='./rfi.html'" aria-label="互動式 RFI 169 格"><span>▦</span><small>RFI</small></button><button data-view="train"><span>♠</span><small>訓練</small></button><button data-view="mistakes"><span>↺</span><small>錯題</small></button><button data-view="analysis"><span>▥</span><small>分析</small></button></nav>
+<nav class="nav"><button class="active" data-view="home"><span>⌂</span><small>首頁</small></button><button data-view="train"><span>♠</span><small>練習</small></button><button data-view="analysis"><span>▥</span><small>進度</small></button></nav>
 </div>
 
 <script>
@@ -65,7 +92,7 @@ try{var old=JSON.parse(localStorage.getItem(KEY)||"null");if(old)S=Object.assign
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 function day(){return new Date().toISOString().slice(0,10)}
 function streak(){var t=day();if(S.last===t)return;if(!S.last)S.streak=1;else{var d=(new Date(t)-new Date(S.last))/86400000;S.streak=d===1?S.streak+1:1}S.last=t}
-function show(id){document.querySelectorAll(".view").forEach(function(v){v.classList.toggle("active",v.id===id)});document.querySelectorAll(".nav button").forEach(function(b){b.classList.toggle("active",b.dataset.view===id)});if(id==="home")renderHome();if(id==="mistakes")renderMistakes();if(id==="analysis")renderAnalysis();if(id==="train"&&!current)startSession();window.scrollTo(0,0)}
+function show(id){document.querySelectorAll(".view").forEach(function(v){v.classList.toggle("active",v.id===id)});document.querySelectorAll(".nav button").forEach(function(b){b.classList.toggle("active",b.dataset.view===(id==="mistakes"?"analysis":id))});if(id==="home")renderHome();if(id==="mistakes")renderMistakes();if(id==="analysis")renderAnalysis();if(id==="train"&&!current)startSession();window.scrollTo(0,0)}
 document.querySelectorAll("[data-view]").forEach(function(b){b.onclick=function(){show(b.dataset.view)}});document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){show(b.dataset.go)}});
 document.getElementById("start").onclick=function(){startSession();show("train")};document.getElementById("next").onclick=nextQ;
 document.getElementById("reset").onclick=function(){if(confirm("要清除這台裝置上的訓練紀錄嗎？")){localStorage.removeItem(KEY);S={answered:0,correct:0,today:0,streak:0,last:null,mistakes:[],cats:{}};current=null;renderHome()}};
