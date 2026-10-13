@@ -275,11 +275,71 @@ select:focus,input:focus{border-color:var(--green)}
   .seatSection{flex:0 1 auto;max-height:min(43dvh,420px)}
   .actionSection{margin-top:0;flex:0 0 auto}
 }
+
+/* Mobile-first quick preflop flow. Original full analyzer is preserved behind a mode switch. */
+body.quickMode{background:radial-gradient(circle at 50% -120px,#194b33,#07150e 510px)}
+body.quickMode .workspace{display:none}
+body.quickMode .newhand{display:none}
+body.quickMode .app{height:auto;min-height:100dvh;overflow:visible;padding-bottom:max(36px,env(safe-area-inset-bottom))}
+body.quickMode .quickModeWrap{display:block}
+.quickModeWrap{display:none}
+body.advancedMode .quickModeWrap{display:none}
+body.advancedMode .advancedBanner{display:flex}
+.advancedBanner{align-items:center;justify-content:space-between;gap:12px;background:#163724;border:1px solid #3a7750;border-radius:13px;padding:10px 12px;margin:9px 0}
+.advancedBanner b,.advancedBanner small{display:block}.advancedBanner b{font-size:13px}.advancedBanner small{font-size:10px;color:#b7d4c0}.advancedBanner button{background:#1d4e33;border:1px solid #67b28a;color:#ddffea;border-radius:9px;padding:10px;font-size:11px;font-weight:900;white-space:nowrap}
+.quickModeWrap{max-width:670px;margin:0 auto;padding:14px 0 24px}
+.quickWelcome{margin:2px 0 12px}.quickWelcome>span{font-size:10px;color:#61f2a5;letter-spacing:.12em;font-weight:900}.quickWelcome h1{font-size:clamp(25px,5vw,32px);margin:4px 0 2px;line-height:1.25}.quickWelcome p{font-size:12px;color:#a4c6b1;line-height:1.55;margin:6px 0}
+.quickActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.quickOutline{height:46px;border-radius:11px;border:1px solid #437959;background:#153924;color:#e3ffed;font-size:12px;font-weight:850}
+.quickPanel{background:#0d2016;border:1px solid #2e6144;border-radius:18px;padding:16px}
+.quickSectionTitle{display:flex;align-items:center;justify-content:space-between;margin:10px 0 8px;gap:10px}.quickSectionTitle:first-child{margin-top:0}.quickSectionTitle b{font-size:15px}.quickSectionTitle small{font-size:10px;color:#9bb8a4}
+.quickCardRow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}.quickCardRow select{height:62px;font-size:23px;font-weight:950;text-align:center;color:#102419;background:#f5fbf6;border-color:#d1dfd5;border-radius:12px}
+.quickGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}.quickGrid label{font-size:11px;color:#afd0bc;margin:0;line-height:1.5}.quickGrid input,.quickGrid select{height:42px;font-size:15px;border:1px solid #3b6d4d;border-radius:10px;background:#091b11;color:#f3fff6;padding:0 10px;margin-top:5px;font-weight:800}
+.quickSegments{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 12px}.quickSegments button{border:1px solid #3a694a;border-radius:10px;background:#0a1b12;color:#a9c6b5;font-size:13px;padding:13px 4px;font-weight:850}.quickSegments button.on{background:#195436;border-color:#61f2a5;color:#caffdf}
+.quickHelp{font-size:11px;color:#9ab6a4;line-height:1.65;background:#091810;border-radius:9px;padding:9px;margin:0 0 12px}
+.quickError{font-size:12px;color:#ffaaa0;line-height:1.5;margin-bottom:8px}.quickError:empty{display:none}
+.quickPrimary{width:100%;min-height:52px;font-weight:1000;font-size:16px;color:#052519;background:#61f2a5;border:0;border-radius:12px}
+.quickNext{display:flex;align-items:center;gap:9px;flex-direction:column;margin:12px 0}.quickNext b{font-size:11px;color:#98bba6}.quickNext button{border:0;color:#7feaaf;background:transparent;font-weight:900;font-size:12px;padding:8px}
+.resultScroll{display:flex;flex-direction:column;gap:8px}
+.resultScroll>.recommend{order:0;margin:0}.resultScroll>.summary{order:1}.resultScroll>.decision{order:2;margin:0}.resultScroll>.flowInfo{order:3;margin:0}.resultScroll>.comboBox{order:5;margin:0}.resultScroll>.behaviorBox{order:6;margin:0}.resultScroll>.rangeDetails{order:7}.resultScroll>.detailToggle{order:4}
+.resultScroll>.comboBox,.resultScroll>.behaviorBox,.resultScroll>.rangeDetails{display:none}
+#result.detailsShown .resultScroll>.comboBox,#result.detailsShown .resultScroll>.behaviorBox,#result.detailsShown .resultScroll>.rangeDetails{display:block}
+.detailToggle{background:#0e2419;border:1px solid #3f7553;color:#bcebd0;border-radius:9px;min-height:38px;font-size:12px;font-weight:900}
+.result .sheet{max-height:calc(100dvh - 18px)}
+@media(max-width:620px){html,body{height:auto;overflow:auto}body.advancedMode,body.advancedMode .app{height:100dvh;overflow:hidden}body.advancedMode .app{display:flex;flex-direction:column}.quickPanel{padding:13px}.quickModeWrap{padding:12px 0 35px}.quickWelcome h1{font-size:26px}.quickGrid{gap:8px}.quickGrid input,.quickGrid select{height:45px}.shotPreview{max-height:24dvh}.top{height:52px}}
 </style>
 </head>
 <body>
 <div class="app" id="app">
 <header class="top"><button class="back" id="back">←</button><div class="brand"><small><a href="./academy.html?chapter=5" style="color:var(--green);text-decoration:none" aria-label="前往翻前課程">♠ 學院</a> · <a href="./rfi.html" style="color:var(--green);text-decoration:none" aria-label="前往 RFI 範圍表">RFI 表</a></small><b>牌局分析器</b></div><button class="shotBtn" id="shotBtn">📷 截圖</button><button class="newhand" id="newHand">新的一局</button></header>
+
+<section class="quickModeWrap" id="quickModeWrap">
+<div class="quickWelcome"><span>翻前快速複盤</span><h1>只填這手牌的重點</h1><p>選手牌、位置、對手動作，先了解決策方向；需要完整多街記帳再進進階模式。</p></div>
+<div class="quickActions"><button id="quickShot" class="quickOutline">▣ 從牌桌截圖匯入</button><button id="quickAdvanced" class="quickOutline">⚙ 完整牌桌模式</button></div>
+<div class="quickPanel"><div class="quickSectionTitle"><b>① 我的手牌</b><small>直接點選兩張牌</small></div>
+<div class="quickCardRow"><select id="quickCard1" aria-label="第一張手牌"><option value="">第一張牌</option></select><select id="quickCard2" aria-label="第二張手牌"><option value="">第二張牌</option></select></div>
+<div class="quickSectionTitle"><b>② 位置與籌碼</b><small>常見 MTT 翻前情境</small></div>
+<div class="quickGrid">
+<label>牌桌人數<select id="quickPlayers"><option value="6">6 人</option><option value="8" selected>8 人</option><option value="9">9 人</option></select></label>
+<label>我的位置<select id="quickHeroPos"></select></label>
+<label>我剩餘的 BB<input type="number" id="quickHeroStack" min="0.1" step=".1" value="30" inputmode="decimal"></label>
+<label>賽事階段<select id="quickStage"><option value="normal">一般階段</option><option value="bubble">泡沫期</option><option value="ft">決賽桌</option></select></label>
+</div>
+<div class="quickSectionTitle"><b>③ 前面發生什麼動作？</b></div>
+<div class="quickSegments" role="group" aria-label="翻前動作"><button type="button" class="on" data-quick-action="free">前面全 Fold</button><button type="button" data-quick-action="open">有人 Open</button></div>
+<div id="quickOppFields" class="quickGrid hidden">
+<label>誰先 Open？<select id="quickVillainPos"></select></label>
+<label>他開到多少 BB<input type="number" id="quickOpenSize" min="1.1" step=".1" value="2.2" inputmode="decimal"></label>
+<label>對手剩餘 BB<input type="number" id="quickVillainStack" min="0.1" step=".1" value="30" inputmode="decimal"></label>
+<label>初始底池 BB <input type="number" id="quickBasePot" min=".1" step=".1" value="2.5" inputmode="decimal"></label>
+</div>
+<div class="quickHelp" id="quickHelp">預設 0.5/1 盲注、1BB 大盲 Ante，初始底池 2.5BB。對手開池、再加注或多玩家行動的複雜牌譜，請使用完整牌桌模式。這裡是複盤提示，並非 Solver 最優解。</div>
+<div class="quickError" id="quickError" role="alert" aria-live="polite"></div>
+<button class="quickPrimary" id="quickAnalyze">查看翻前決策方向 →</button>
+</div>
+<div class="quickNext"><b>想繼續打到 Flop／Turn／River？</b><button id="quickContinue" type="button">切換完整牌桌接續這手牌 →</button></div>
+</section>
+<div class="advancedBanner hidden" id="advancedBanner"><div><b>完整牌桌模式</b><small>適合已經下注、多人底池，以及翻牌後多街操作</small></div><button id="quickBack" type="button">← 回快速模式</button></div>
 
 <div class="workspace">
 <section class="section topSection">
@@ -394,7 +454,8 @@ select:focus,input:focus{border-color:var(--green)}
 </div>
 <div class="behaviorFoot" id="behaviorNote">這裡分析的是下注行為，不是讀心；只作為 Range / Pot Odds / SPR 之外的 exploit 修正。</div>
 </div>
-<div class="recommend"><small>訓練建議</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
+<div class="recommend"><small>教學參考建議 · 非 Solver</small><h3 id="recAction">—</h3><div class="size" id="recSize"></div><div class="reason" id="reasons"></div></div>
+<button type="button" id="expandInsight" class="detailToggle" aria-expanded="false">更多推論與範圍說明 ▾</button>
 
 <details class="rangeDetails" id="rangeDetails"><summary>展開對手 Range 與進階資訊 <span>⌄</span></summary>
 <div class="rangeBox">
