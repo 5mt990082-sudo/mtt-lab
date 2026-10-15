@@ -34,6 +34,27 @@ body{background:radial-gradient(circle at 50% -130px,#18412d,#06100c 500px);line
 .nav{gap:10px;padding:7px 8px max(8px,env(safe-area-inset-bottom));bottom:0;border-radius:15px 15px 0 0;width:100%;justify-content:space-evenly}.nav button{width:96px;min-height:47px}.nav span{font-size:19px}.nav small{font-size:11px}
 .choice{min-height:49px;font-size:13px}.hand{padding:14px}.tablewrap{padding:25px 0 20px}
 @media(max-width:620px){.app{padding:0 12px 100px}.hero.welcome{padding:19px 16px}.grid3{gap:8px}.card{padding:11px}.card strong{font-size:22px}.homeStats{grid-template-columns:1fr 1fr;gap:8px}.homeStats .panel{min-width:0}.homeStats .leak b{font-size:11px}.nav{left:0;transform:none;max-width:100%}.nav button{width:88px}.top{height:60px}.hero.welcome h1{font-size:29px}}
+
+/* 2026-10-15 App-style trainer home */
+.trainerHero{padding:18px;border-radius:22px;background:linear-gradient(145deg,#173d2b,#0a1b12 72%);border:1px solid #2d5b42}
+.trainerTop{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.trainerHero h1{font-size:30px;line-height:1.15;margin:8px 0 5px}.trainerHero p{font-size:12px;color:#9db9a9;margin:0}
+.levelBadge{flex:0 0 auto;text-align:right}.levelBadge span{display:block;font-size:9px;color:#89a698}.levelBadge b{font-size:24px;color:var(--green)}
+.dailyCard{margin-top:16px;padding:15px;border-radius:17px;background:#f0f6f2;color:#0d2418}
+.dailyCard small{color:#567064;font-weight:800}.dailyCard h3{margin:4px 0;font-size:19px}.dailyCard p{font-size:11px;color:#607568;margin:0 0 12px;line-height:1.45}
+.dailyStart{width:100%;height:47px;border:0;border-radius:12px;background:#0d2a1b;color:#dff9e8;font-weight:1000;font-size:14px}
+.modeTitle{display:flex;align-items:end;justify-content:space-between;margin:20px 1px 9px}.modeTitle h2{font-size:17px;margin:0}.modeTitle span{font-size:10px;color:var(--muted)}
+.modeGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.modeCard{min-height:112px;padding:14px;border-radius:16px;background:#0d1b15;border:1px solid #254433;color:#eaf5ee;text-align:left}
+.modeCard .modeIcon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#173b29;color:var(--green);font-size:18px;margin-bottom:11px}
+.modeCard b{display:block;font-size:14px}.modeCard small{display:block;color:#8eac9c;font-size:10px;margin-top:3px;line-height:1.4}
+.modeCard.featured{border-color:#5fae7f;background:#123020}.modeCard.link{display:block;text-decoration:none}
+.skillStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.skillCell{padding:10px;border:1px solid #1f392d;background:#09150f;border-radius:12px}.skillCell span{display:block;font-size:9px;color:#7f9f8e}.skillCell b{display:block;font-size:18px;margin-top:2px}
+.focusBox{margin-top:12px;padding:13px;border:1px solid #694f2a;border-radius:14px;background:#21180c}.focusBox small{color:#c9ad75}.focusBox b{display:block;font-size:13px;margin-top:3px}.focusBox p{font-size:10px;color:#baa984;margin:4px 0 0}
+.nav button[data-view="ranges"]{cursor:pointer}
+@media(max-width:620px){.trainerHero{padding:15px}.trainerHero h1{font-size:25px}.dailyCard{padding:13px}.modeGrid{gap:7px}.modeCard{min-height:102px;padding:12px}.skillStrip{gap:6px}.skillCell{padding:8px}.nav{gap:0;padding-left:2px;padding-right:2px}.nav button{width:25%;min-width:0;padding:7px 2px}}
+
 </style>
 </head>
 <body>
@@ -41,19 +62,42 @@ body{background:radial-gradient(circle at 50% -130px,#18412d,#06100c 500px);line
 <header class="top"><div class="brand"><div class="logo">M</div><div><small>錦標賽學習與複盤</small><b>MTT LAB</b></div></div><details class="siteMore"><summary aria-label="更多選項">⋯</summary><div class="siteDropdown"><button id="reset" class="resetText" type="button">清除這台裝置的舊訓練紀錄</button><p>學院、RFI 和牌局分析器資料不會被這個按鈕清除。</p></div></details></header>
 <main>
 <section id="home" class="view active">
-<div class="hero welcome"><span class="pill">MTT LAB · 手機簡化版</span><h1>今天想練什麼？</h1><p>一個畫面開始，不必先設定一大堆參數。訓練和課程保留，進階工具用到時再打開。</p>
-<a href="./analyzer.html" class="mainAction"><span class="actionIcon">♠</span><span><b>牌局快速分析</b><small>輸入手牌與位置，先看決策方向</small></span><span class="arrow">→</span></a>
-<div class="actionDuo"><a href="./analyzer.html#shot" class="secondaryAction"><span class="emoji">▣</span><b>截圖匯入</b><small>辨識線索後確認</small></a><button id="start" class="secondaryAction"><span class="emoji">◎</span><b>練 12 題</b><small>練翻前與 MTT</small></button></div>
+<div class="trainerHero">
+  <div class="trainerTop">
+    <div><span class="eyebrow">MTT LAB TRAINER</span><h1>今天練你的弱點</h1><p>系統依你過去的錯題，自動把最需要補強的情境排到前面。</p></div>
+    <div class="levelBadge"><span>訓練正確率</span><b id="acc">—</b></div>
+  </div>
+  <div class="dailyCard">
+    <small>今日個人化訓練 · 12 HANDS</small>
+    <h3 id="dailyFocus">先建立你的訓練基準</h3>
+    <p id="dailyDesc">完成幾題後，系統會優先出你最常犯錯的籌碼深度與位置情境。</p>
+    <button id="start" class="dailyStart">開始今日訓練 →</button>
+  </div>
+  <div class="skillStrip">
+    <div class="skillCell"><span>累積訓練</span><b id="total">0</b></div>
+    <div class="skillCell"><span>今日完成</span><b><span id="todayNum">0</span>/12</b></div>
+    <div class="skillCell"><span>連續練習</span><b><span id="streak">0</span>天</b></div>
+  </div>
 </div>
-<div class="grid3" aria-label="訓練統計"><div class="card"><small>累積題數</small><strong id="total">0</strong></div><div class="card"><small>練習正確率</small><strong id="acc">—</strong></div><div class="card"><small>連續練習</small><strong id="streak">0</strong><small>天</small></div></div>
-<div class="sectionHeader"><h2>系統化學習</h2><small>選一個工具就好</small></div>
-<div class="learningLinks">
-<a href="./academy.html" class="learningLink"><span class="learnIcon">▤</span><span><b>繁體中文撲克學院</b><small>15 章，從開池到短碼與 ICM</small></span><span class="arrow">→</span></a>
-<a href="./rfi.html" class="learningLink"><span class="learnIcon">▦</span><span><b>169 格 RFI 起手牌表</b><small>切換位置與 BB，練開池範圍</small></span><span class="arrow">→</span></a>
+
+<div class="modeTitle"><h2>訓練模式</h2><span>選你今天要強化的方向</span></div>
+<div class="modeGrid">
+  <button class="modeCard featured" id="adaptiveMode"><span class="modeIcon">◎</span><b>弱點優先</b><small>根據你的錯誤率自動挑 Spot</small></button>
+  <button class="modeCard" id="shuffleMode"><span class="modeIcon">↻</span><b>Shuffle</b><small>隨機混合各種 MTT 翻前情境</small></button>
+  <button class="modeCard" id="shortMode"><span class="modeIcon">⚡</span><b>短碼 10–20BB</b><small>Jam、Resteal、盲戰與防守</small></button>
+  <button class="modeCard" id="icmMode"><span class="modeIcon">△</span><b>ICM 壓力</b><small>泡沫期與決賽桌風險溢價</small></button>
 </div>
-<div class="sectionHeader"><h2>訓練紀錄</h2><button class="textButton" data-go="analysis">看能力分析 →</button></div>
-<div class="two homeStats"><div class="panel"><span class="eyebrow">今日進度</span><h3>12 題訓練</h3><div class="progress"><i id="todaybar" style="width:0%"></i></div><p class="muted" id="todaytxt">0 / 12</p></div><div class="panel"><span class="eyebrow">目前弱項</span><div id="leaks"></div><button class="textButton" data-go="mistakes">看錯題本 →</button></div></div>
-<div class="homeNotice">訓練器的基準解答屬教學示例，不是經 Solver 驗證的唯一解。建議把它當成離桌複盤工具，而不是即時比賽的決策依據。</div>
+
+<div class="modeTitle"><h2>Study & Review</h2><span>像 Trainer 一樣：先學，再做，再複盤</span></div>
+<div class="modeGrid">
+  <a href="./rfi.html" class="modeCard link"><span class="modeIcon">▦</span><b>Preflop Range</b><small>169 格 RFI 起手牌表與位置範圍</small></a>
+  <a href="./academy.html" class="modeCard link"><span class="modeIcon">▤</span><b>MTT 學院</b><small>短碼、3-bet、ICM 與翻後思考</small></a>
+  <a href="./analyzer.html" class="modeCard link"><span class="modeIcon">♠</span><b>Hand Review</b><small>Range、Combo、Blocker、行為線路</small></a>
+  <a href="./analyzer.html#shot" class="modeCard link"><span class="modeIcon">▣</span><b>截圖匯入</b><small>牌桌截圖快速建立複盤 Spot</small></a>
+</div>
+
+<div class="focusBox"><small>目前最需要加強</small><b id="focusLeak">尚未有足夠樣本</b><p id="focusLeakDesc">先完成一輪 12 題，系統就會開始建立你的 Preflop Leak Radar。</p></div>
+<div class="homeNotice">目前訓練題的基準屬教學模型，不是假裝成 Solver 精確頻率；之後可再接合法的 solver 資料，把每個 Spot 升級成頻率與 EV 訓練。</div>
 </section>
 
 <section id="train" class="view">
@@ -68,7 +112,7 @@ body{background:radial-gradient(circle at 50% -130px,#18412d,#06100c 500px);line
 <section id="mistakes" class="view"><div class="head"><div><span class="eyebrow">錯題複習</span><h2>錯題本</h2></div><div id="mcount" class="count">0</div></div><p class="muted">系統會自動收集你做錯的情境。<a href="./academy.html#review" style="color:var(--green);font-weight:900">查看學院錯題與補強課程 →</a></p><div id="mlist" class="list"></div></section>
 <section id="analysis" class="view"><div class="head"><div><span class="eyebrow">玩家能力檔案</span><h2>漏洞分析</h2></div></div><p class="muted">依目前作答資料找出最需要加強的題型。<a href="./academy.html" style="color:var(--green);font-weight:900">進入 15 章系統課程 →</a> · <a href="./rfi.html" style="color:var(--green);font-weight:900">169 格 RFI 範圍練習 →</a></p><div class="panel"><h3>分類正確率</h3><div id="bars"></div></div><div class="panel" style="margin-top:12px"><h3>下一輪建議</h3><p id="nextAdvice" class="muted">先完成一些題目，系統才有足夠樣本。</p></div></section>
 </main>
-<nav class="nav"><button class="active" data-view="home"><span>⌂</span><small>首頁</small></button><button data-view="train"><span>♠</span><small>練習</small></button><button data-view="analysis"><span>▥</span><small>進度</small></button></nav>
+<nav class="nav"><button class="active" data-view="home"><span>⌂</span><small>首頁</small></button><button data-view="train"><span>♠</span><small>訓練</small></button><button id="rangeNav" data-view="ranges"><span>▦</span><small>Range</small></button><button data-view="analysis"><span>▥</span><small>進度</small></button></nav>
 </div>
 
 <script>
@@ -94,12 +138,27 @@ function day(){var d=new Date(),n=function(x){return String(x).padStart(2,"0")};
 function refreshToday(){var d=day();if(S.todayDate!==d){S.today=0;S.todayDate=d;save()}}
 function streak(){var t=day();if(S.last===t)return;if(!S.last)S.streak=1;else{var d=(new Date(t)-new Date(S.last))/86400000;S.streak=d===1?S.streak+1:1}S.last=t}
 function show(id){document.querySelectorAll(".view").forEach(function(v){v.classList.toggle("active",v.id===id)});document.querySelectorAll(".nav button").forEach(function(b){b.classList.toggle("active",b.dataset.view===(id==="mistakes"?"analysis":id))});if(id==="home")renderHome();if(id==="mistakes")renderMistakes();if(id==="analysis")renderAnalysis();if(id==="train"&&!current)startSession();window.scrollTo(0,0)}
-document.querySelectorAll("[data-view]").forEach(function(b){b.onclick=function(){show(b.dataset.view)}});document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){show(b.dataset.go)}});
-document.getElementById("start").onclick=function(){startSession();show("train")};document.getElementById("next").onclick=nextQ;
+document.querySelectorAll("[data-view]").forEach(function(b){b.onclick=function(){if(b.dataset.view==="ranges"){location.href="./rfi.html";return}show(b.dataset.view)}});document.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){show(b.dataset.go)}});
+document.getElementById("start").onclick=function(){startSession("adaptive");show("train")};
+document.getElementById("adaptiveMode").onclick=function(){startSession("adaptive");show("train")};
+document.getElementById("shuffleMode").onclick=function(){startSession("random");show("train")};
+document.getElementById("shortMode").onclick=function(){startSession("short");show("train")};
+document.getElementById("icmMode").onclick=function(){startSession("icm");show("train")};
+document.getElementById("next").onclick=nextQ;
 document.getElementById("reset").onclick=function(){if(confirm("要清除這台裝置上的訓練紀錄嗎？")){localStorage.removeItem(KEY);S={answered:0,correct:0,today:0,streak:0,last:null,mistakes:[],cats:{}};current=null;renderHome()}};
 
 function weak(cat){var x=S.cats[cat];return x&&x.a?1-x.c/x.a:0}
-function startSession(){session=Q.slice().sort(function(a,b){return weak(b.cat)-weak(a.cat)||Math.random()-.5}).slice(0,12);idx=0;current=session[0];locked=false;renderQ()}
+function startSession(mode){
+ var pool=Q.slice();
+ if(mode==="short")pool=pool.filter(function(q){return q.stack<=20||/短碼|全下/.test(q.cat)});
+ if(mode==="icm")pool=pool.filter(function(q){return /ICM|泡沫|決賽桌/.test(q.cat)});
+ if(!pool.length)pool=Q.slice();
+ if(mode==="random")pool.sort(function(){return Math.random()-.5});
+ else pool.sort(function(a,b){return weak(b.cat)-weak(a.cat)||Math.random()-.5});
+ session=[];
+ while(session.length<12&&pool.length){session.push(pool[session.length%pool.length])}
+ idx=0;current=session[0];locked=false;renderQ()
+}
 function nextQ(){idx++;if(idx>=session.length){current=null;show("analysis");return}current=session[idx];locked=false;renderQ()}
 function renderQ(){document.getElementById("feedback").classList.add("hidden");document.getElementById("spot").textContent=current.stack+"BB • "+current.cat;document.getElementById("title").textContent=current.cat;document.getElementById("qcount").textContent=(idx+1)+" / "+session.length;document.getElementById("pot").textContent=current.pot;document.getElementById("villainAction").textContent=current.act;document.getElementById("stack").textContent=current.stack+"BB";document.getElementById("stage").textContent=current.stage;document.getElementById("question").textContent=current.q;
 document.querySelectorAll(".seat").forEach(function(x){x.classList.remove("heroSeat","actSeat")});var h=document.getElementById("s"+current.hero),v=document.getElementById("s"+current.villain);if(h)h.classList.add("heroSeat");if(v)v.classList.add("actSeat");
@@ -107,7 +166,18 @@ var cards=document.getElementById("cards");cards.innerHTML="";current.hand.forEa
 var c=document.getElementById("choices");c.innerHTML="";current.c.forEach(function(x){var b=document.createElement("button");b.className="choice";b.textContent=x;b.onclick=function(){answer(x)};c.appendChild(b)})}
 function answer(x){if(locked)return;locked=true;refreshToday();streak();S.answered++;S.today++;if(!S.cats[current.cat])S.cats[current.cat]={a:0,c:0};S.cats[current.cat].a++;var ok=x===current.a;if(ok){S.correct++;S.cats[current.cat].c++}else{S.mistakes.unshift({id:current.id,cat:current.cat,hand:current.hand.join(" "),picked:x,best:current.a});S.mistakes=S.mistakes.slice(0,60)}save();var f=document.getElementById("feedback");f.classList.remove("hidden");var r=document.getElementById("result");r.textContent=ok?"✓ 正確":"✕ 待複習";r.className=ok?"ok":"wrong";document.getElementById("best").textContent=current.a;document.getElementById("why").textContent=current.why;document.getElementById("lesson").textContent=current.lesson;f.scrollIntoView({behavior:"smooth",block:"nearest"})}
 function getLeaks(){return Object.keys(S.cats).map(function(k){var x=S.cats[k];return{cat:k,a:x.a,err:x.a?Math.round((1-x.c/x.a)*100):0}}).filter(function(x){return x.a>0}).sort(function(a,b){return b.err-a.err||b.a-a.a})}
-function renderHome(){refreshToday();document.getElementById("streak").textContent=S.streak||0;document.getElementById("total").textContent=S.answered;document.getElementById("acc").textContent=S.answered?Math.round(S.correct/S.answered*100)+"%":"—";var t=Math.min(12,S.today||0);document.getElementById("todaytxt").textContent=t+" / 12";document.getElementById("todaybar").style.width=(t/12*100)+"%";var l=getLeaks(),box=document.getElementById("leaks");box.innerHTML="";if(!l.length){box.innerHTML="<p class='muted'>先完成一些訓練，系統才會找到你的弱項。</p>"}else l.slice(0,3).forEach(function(x){box.innerHTML+="<div class='leak'><b>"+x.cat+"</b><span>錯 "+x.err+"%</span></div>"})}
+function renderHome(){
+ refreshToday();
+ document.getElementById("streak").textContent=S.streak||0;
+ document.getElementById("total").textContent=S.answered;
+ document.getElementById("acc").textContent=S.answered?Math.round(S.correct/S.answered*100)+"%":"—";
+ var t=Math.min(12,S.today||0);document.getElementById("todayNum").textContent=t;
+ var l=getLeaks(),top=l[0];
+ document.getElementById("dailyFocus").textContent=top?"今日優先："+top.cat:"先完成第一輪 12 題";
+ document.getElementById("dailyDesc").textContent=top?"你目前這類 Spot 的錯誤率約 "+top.err+"%，今天會把它排在前面。":"完成幾題後，系統會優先出你最常犯錯的籌碼深度與位置情境。";
+ document.getElementById("focusLeak").textContent=top?top.cat+"｜錯誤率 "+top.err+"%":"尚未有足夠樣本";
+ document.getElementById("focusLeakDesc").textContent=top?"下一輪會增加這類題目的出現優先度，直到錯誤率下降。":"先完成一輪 12 題，系統就會開始建立你的 Preflop Leak Radar。";
+}
 function renderMistakes(){document.getElementById("mcount").textContent=S.mistakes.length;var box=document.getElementById("mlist");box.innerHTML="";if(!S.mistakes.length){box.innerHTML="<div class='empty'>目前沒有錯題。</div>";return}S.mistakes.forEach(function(m){var q=Q.find(function(x){return x.id===m.id});box.innerHTML+="<div class='mistake'><small>"+m.cat+"</small><h4>"+m.hand+" • "+(q?q.q:"")+"</h4><p><span class='bad'>你："+m.picked+"</span><span class='good'>基準："+m.best+"</span></p></div>"})}
 function renderAnalysis(){var cats=["30BB 翻牌前","20BB 翻牌前","15BB 短碼","10BB 全下／棄牌","ICM 泡沫期","決賽桌 ICM"],box=document.getElementById("bars");box.innerHTML="";cats.forEach(function(k){var x=S.cats[k]||{a:0,c:0},p=x.a?Math.round(x.c/x.a*100):0;box.innerHTML+="<div class='barrow'><span>"+k+"</span><div class='progress'><i style='width:"+p+"%'></i></div><b>"+(x.a?p+"%":"—")+"</b></div>"});var l=getLeaks()[0];document.getElementById("nextAdvice").textContent=l?"下一輪優先加強「"+l.cat+"」，目前錯誤率 "+l.err+"%。":"先完成 12–20 題後，再建立你的弱點排序。"}
 renderHome();
