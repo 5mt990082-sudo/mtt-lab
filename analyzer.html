@@ -40,6 +40,11 @@ select:focus,input:focus{border-color:var(--green)}
 .seatName .toggle{display:flex;gap:4px;align-items:center}.seatName b{font-size:11px}.seatName span{font-size:9px;color:var(--muted)}
 .toggle input{width:14px;height:14px;min-height:0}.seat label{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.seat input{height:30px;font-size:12px;padding:0 5px}.heroTag{color:var(--green)!important;font-weight:900}
 .advanced{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:6px}
+.hudWrap{display:grid;grid-template-columns:1fr auto;gap:4px}.hudBtn{width:36px;height:34px;border:1px solid #3d6c51;border-radius:9px;background:#10251a;color:var(--green);font-size:10px;font-weight:1000;padding:0}
+.hudModal{display:none;position:fixed;inset:0;z-index:60;background:#020806bb;backdrop-filter:blur(4px);padding:12px;align-items:flex-end;justify-content:center}.hudModal.show{display:flex}
+.hudGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.hudField label{font-size:9px}.hudField input{height:38px}
+.hudResult{margin-top:10px;padding:11px;border:1px solid #385f49;border-radius:12px;background:#0a1b13}.hudType{font-size:18px;font-weight:1000;color:#fff}.hudConfidence{font-size:9px;color:#8fa99b;margin-top:2px}.hudTags{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.hudTag{font-size:9px;padding:4px 7px;border-radius:99px;background:#173425;color:#bff1d3;border:1px solid #315b43}.hudRead{font-size:11px;line-height:1.55;color:#c7ddd1}.hudWarn{margin-top:7px;font-size:9px;line-height:1.45;color:#d7c28f}
+.hudApply{width:100%;height:42px;border:0;border-radius:10px;background:var(--green);color:#062316;font-weight:1000;margin-top:9px}
 .actionsBar{display:grid;grid-template-columns:1fr 128px;gap:8px;align-items:end}
 .analyze{height:43px;border:0;border-radius:11px;background:var(--green);color:#062316;font-size:14px;font-weight:1000}
 .hint{font-size:9px;color:var(--muted);line-height:1.3}.error{display:none;margin-top:5px;color:#ff9b9b;font-size:10px}.error.show{display:block}
@@ -377,13 +382,34 @@ body.advancedMode .advancedBanner{display:flex}
 <div class="advanced">
 <div><label>賽事階段</label><select id="phase"><option value="normal">一般階段</option><option value="bubble">泡沫期</option><option value="ft">決賽桌</option></select></div>
 <div><label>玩家數</label><select id="players"><option>2</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select></div>
-<div><label>主要對手</label><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注</option><option value="aggressive">高侵略</option></select></div>
+<div><label>主要對手</label><div class="hudWrap"><select id="tendency"><option value="unknown">未知／一般</option><option value="tight">偏緊</option><option value="loose">偏鬆</option><option value="passive">被動跟注</option><option value="aggressive">高侵略</option></select><button type="button" class="hudBtn" id="hudBtn" aria-label="分析 HUD 數據">HUD</button></div></div>
 </div>
 <div class="potPreview" id="potPreview" aria-live="polite">目前已入池 2BB</div>
 <div class="actionsBar"><button class="analyze" id="analyze">分析我該怎麼做 →</button><div class="hint">輸入對手本次新增投入 BB，再分析；分析不會直接記帳。</div></div>
 <div id="waitingBar" class="waitingBar"><div id="waitingText" class="waitingText"></div><div class="waitingActions"><button type="button" id="oppCalls">對手跟注</button><button type="button" id="oppFolds">對手棄牌</button><button type="button" id="streetDone">確認本街結束</button></div></div>
 <div class="error" id="error"></div>
 </section>
+</div>
+</div>
+
+<div class="hudModal" id="hudModal" role="dialog" aria-modal="true">
+<div class="sheet">
+<div class="sheetHead"><div><b>對手 HUD 快判</b><span class="sheetSub">只輸入 N8 這 5 個數字</span></div><button class="close" id="closeHud">×</button></div>
+<div class="hudGrid">
+  <div class="hudField"><label>牌局數 Hands</label><input id="hudHands" type="number" min="0" step="1" inputmode="numeric" placeholder="例如 320"></div>
+  <div class="hudField"><label>VPIP %</label><input id="hudVpip" type="number" min="0" max="100" step="1" inputmode="decimal" placeholder="例如 28"></div>
+  <div class="hudField"><label>PFR %</label><input id="hudPfr" type="number" min="0" max="100" step="1" inputmode="decimal" placeholder="例如 22"></div>
+  <div class="hudField"><label>ATS %</label><input id="hudAts" type="number" min="0" max="100" step="1" inputmode="decimal" placeholder="例如 43"></div>
+  <div class="hudField"><label>3BET %</label><input id="hud3bet" type="number" min="0" max="100" step="1" inputmode="decimal" placeholder="例如 9"></div>
+</div>
+<div class="hudResult" id="hudResult">
+  <div class="hudType" id="hudType">等待輸入</div>
+  <div class="hudConfidence" id="hudConfidence">先看樣本數，再看 VPIP / PFR 差距。</div>
+  <div class="hudTags" id="hudTags"></div>
+  <div class="hudRead" id="hudRead">這裡只建立「翻前玩家輪廓」，不會把 ATS / 3BET 直接當成 River 炸唬率。</div>
+  <div class="hudWarn" id="hudWarn">判斷 River 是否 bluff，仍要搭配當手牌面、下注線、尺寸與 missed draw。</div>
+</div>
+<button type="button" class="hudApply" id="hudApply" disabled>套用到「主要對手」</button>
 </div>
 </div>
 
@@ -494,6 +520,56 @@ let rangeMemory={villain:null,profile:null,history:[]};
 let comboHistory=[];
 const cards={h0:null,h1:null,b0:null,b1:null,b2:null,b3:null,b4:null};
 const app=document.getElementById("app");
+
+const hudModal=document.getElementById("hudModal");
+let hudProfile={tendency:"unknown",label:"未知／一般"};
+document.getElementById("hudBtn").addEventListener("click",()=>{hudModal.classList.add("show");updateHudProfile()});
+document.getElementById("closeHud").addEventListener("click",()=>hudModal.classList.remove("show"));
+hudModal.addEventListener("click",e=>{if(e.target===hudModal)hudModal.classList.remove("show")});
+["hudHands","hudVpip","hudPfr","hudAts","hud3bet"].forEach(id=>document.getElementById(id).addEventListener("input",updateHudProfile));
+
+function hudNum(id){const v=Number(document.getElementById(id).value);return Number.isFinite(v)?v:null}
+function classifyHudProfile(){
+ const hands=hudNum("hudHands"),vpip=hudNum("hudVpip"),pfr=hudNum("hudPfr"),ats=hudNum("hudAts"),b3=hudNum("hud3bet");
+ if(vpip===null||pfr===null)return{valid:false};
+ const gap=Math.max(0,vpip-pfr), tags=[], notes=[];
+ let tendency="unknown",label="一般／未知";
+ if(vpip>=40&&gap>=15){tendency="passive";label="鬆被動型";tags.push("進池很寬","Call/Limp 偏多")}
+ else if(vpip>=34&&pfr>=26){tendency="aggressive";label="鬆兇型";tags.push("Range 偏寬","主動性高")}
+ else if(vpip<=20&&gap>=8){tendency="tight";label="緊被動型";tags.push("Range 偏緊","主動性低")}
+ else if(vpip<=22&&pfr>=16){tendency="tight";label="緊主動型";tags.push("Range 偏緊","主動開池")}
+ else if(gap>=12){tendency="passive";label="跟注型";tags.push("VPIP-PFR 差距大")}
+ else if((b3!==null&&b3>=10)||(ats!==null&&ats>=48)||pfr>=25){tendency="aggressive";label="主動型 Reg";tags.push("有主動施壓能力")}
+ else if(vpip>=30){tendency="loose";label="偏鬆型";tags.push("進池範圍偏寬")}
+ else{label="標準型";tags.push("暫無明顯極端")}
+ if(ats!==null){if(ats>=50)tags.push("晚位偷盲積極");else if(ats<=22)tags.push("晚位偏保守")}
+ if(b3!==null){if(b3>=11)tags.push("3BET 偏高");else if(b3<=4)tags.push("3BET 偏低")}
+ let confidence="樣本不足";
+ if(hands!==null){confidence=hands<20?"樣本很低｜只當暫時印象":hands<80?"低～中可信｜先信 VPIP/PFR":hands<250?"中等可信｜玩家輪廓可參考":"較高可信｜ATS/3BET 也更有參考性"}
+ if(tendency==="passive")notes.push("面對 Turn / River 突然大 Raise 或 Jam，預設更尊重 Value。");
+ else if(tendency==="aggressive")notes.push("保留較多 Bluff 候選，但不能因為 ATS/3BET 高就自動 Hero Call。");
+ else if(tendency==="tight")notes.push("前位與大尺寸通常給更多信用；但仍要看位置與牌面。");
+ else if(tendency==="loose")notes.push("他的到達 Flop/Turn Range 較雜，但『鬆』不等於『愛炸』。");
+ else notes.push("先以未知玩家處理，優先看當手 Betting Line。");
+ if(gap>=15)notes.push("VPIP-PFR 差距很大：他更像用跟注進池，而不是靠 aggression 進池。");
+ return{valid:true,hands,vpip,pfr,ats,b3,gap,tendency,label,tags,confidence,read:notes.join(" ")};
+}
+function updateHudProfile(){
+ const p=classifyHudProfile();hudProfile=p.valid?p:{tendency:"unknown",label:"未知／一般"};
+ const apply=document.getElementById("hudApply");
+ if(!p.valid){document.getElementById("hudType").textContent="等待 VPIP / PFR";document.getElementById("hudConfidence").textContent="至少輸入 VPIP 與 PFR。";document.getElementById("hudTags").innerHTML="";document.getElementById("hudRead").textContent="ATS、3BET 可以留空；有數字再補。";apply.disabled=true;return}
+ document.getElementById("hudType").textContent=p.label;
+ document.getElementById("hudConfidence").textContent=p.confidence+(p.hands!==null?"｜"+p.hands+" hands":"");
+ document.getElementById("hudTags").innerHTML=p.tags.map(x=>'<span class="hudTag">'+x+'</span>').join("");
+ document.getElementById("hudRead").textContent=p.read;
+ document.getElementById("hudWarn").textContent="翻前快判："+p.vpip+"/"+p.pfr+(p.ats!==null?"/"+p.ats:"/—")+(p.b3!==null?"/"+p.b3:"/—")+"。這不是 River bluff 機率；River 還要看下注線、尺寸、Blocker 與 missed draw。";
+ apply.disabled=false;
+}
+document.getElementById("hudApply").addEventListener("click",()=>{
+ const p=classifyHudProfile();if(!p.valid)return;
+ document.getElementById("tendency").value=p.tendency;
+ hudModal.classList.remove("show");
+});
 const shotModal=document.getElementById("shotModal"),shotInput=document.getElementById("shotInput"),shotPreview=document.getElementById("shotPreview"),shotStatus=document.getElementById("shotStatus"),ocrRaw=document.getElementById("ocrRaw");
 let shotObjectUrl=null;
 let shotRequestId=0;
